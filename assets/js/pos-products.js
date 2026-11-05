@@ -79,7 +79,6 @@
 			loading: false,
 			loaded: false,
 			error: '',
-			scanBusy: false,     // procesando un alta por escaneo
 			expanded: {},        // id -> { loading, error, rows: [] }
 			_searchTimer: null,
 			// selección para etiquetas en lote: id -> { id, title, barcode, qty }
@@ -180,41 +179,6 @@
 				var self = this;
 				clearTimeout( this._searchTimer );
 				this._searchTimer = setTimeout( function () { self.load( 1 ); }, 250 );
-			},
-
-			// ¿La búsqueda es un código de barras de 12 dígitos? (para ofrecer el alta
-			// por escaneo cuando no hay resultados).
-			isScanCode: function () {
-				return /^\d{12}$/.test( ( this.filters.search || '' ).trim() );
-			},
-
-			// Alta por escaneo: decodifica el código y abre / agrega variación / crea
-			// producto, según corresponda. Después abre el editor del resultado.
-			scanFromCode: function () {
-				var code = ( this.filters.search || '' ).trim();
-				if ( ! /^\d{12}$/.test( code ) || this.scanBusy ) { return; }
-				var self = this;
-				this.scanBusy = true;
-				this.error = '';
-				sendJSON( API.root + 'keytill/v1/admin/scan-product', 'POST', { code: code } ).then( function ( res ) {
-					self.scanBusy = false;
-					if ( ! res.ok ) { self.error = ( res.data && res.data.message ) || 'No se pudo procesar el código.'; return; }
-					var d = res.data || {};
-					self._catalogDirty();
-					// Abre el editor del producto resultante (para completar nombre/precio).
-					self.openEditor( { id: d.product_id, name: '', type: 'variable' } );
-					// Mensaje en el editor según lo que pasó.
-					if ( d.action === 'created' ) {
-						self.genMsg = 'Producto nuevo creado desde el código. Completá nombre y precio.';
-					} else if ( d.action === 'variation_added' ) {
-						self.genMsg = 'Variación agregada a un producto existente del mismo modelo.';
-					} else {
-						self.genMsg = 'El código ya existía: se abrió el producto.';
-					}
-					// Limpia la búsqueda y recarga la lista para reflejar el alta.
-					self.filters.search = '';
-					self.load( 1 );
-				} ).catch( function () { self.scanBusy = false; self.error = 'No se pudo procesar el código.'; } );
 			},
 
 			goPage: function ( p ) {

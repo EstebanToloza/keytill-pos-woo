@@ -232,7 +232,6 @@ kbd.kbd-brand { background: var(--brand); }
 .prod__new:hover { background: var(--brand-600); }
 .prod__readonly { padding: 2px 2px; }
 .prod__err { color: var(--danger); font-family: var(--font-mono); font-size: var(--t-sm); }
-.prod__scan { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 8px 0; padding: 10px 14px; background: var(--warn-tint, #fff4e5); border: 1px solid var(--warn, #e0913a); border-radius: var(--r-sm); font-size: var(--t-sm); }
 
 .prod__list { flex: 1; min-height: 0; overflow-y: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); }
 .prod__table { width: 100%; border-collapse: collapse; }
@@ -479,6 +478,7 @@ kbd.kbd-brand { background: var(--brand); }
 
 /* Marca (usada en el nav de la consola) */
 .keytill-brand { font-size: 20px; font-weight: 800; letter-spacing: 0.14em; color: var(--ink); }
+.keytill-brand__logo { max-height: 28px; width: auto; display: block; flex: 0 0 auto; }
 
 /* ================= COMMAND FIELD ================= */
 .cmd-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }

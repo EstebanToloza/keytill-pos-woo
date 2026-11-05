@@ -8,12 +8,15 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+// Marca del COMERCIO (configurable en Ajustes; por defecto el nombre del sitio).
+$keytill_brand = KEYTILL_Settings::business()['name'];
 ?><!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Manual de Mostrador · Keytill POS</title>
+<title>Manual de Mostrador · <?php echo esc_html( $keytill_brand ); ?></title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -200,7 +203,7 @@ defined( 'ABSPATH' ) || exit;
   <div class="mast__in">
     <div class="brandbar">
       <div class="brandbar__id">
-        <span class="logo">KEYTILL</span>
+        <span class="logo"><?php echo esc_html( $keytill_brand ); ?></span>
         <span class="kicker">POS &middot; Manual de mostrador</span>
       </div>
       <button class="theme-btn" id="themeToggle" type="button" aria-label="Cambiar tema">
@@ -569,7 +572,7 @@ defined( 'ABSPATH' ) || exit;
       <div><h4>Sin emails</h4><p>El POS <strong>no envía ningún email</strong>: ni al crear clientes ni al cerrar ventas. Eso es solo para la tienda web.</p></div>
       <div><h4>Navegador</h4><p>Usar <strong>Google Chrome</strong> a pantalla completa. La caja debe estar abierta para poder vender.</p></div>
     </div>
-    <p style="margin-top:24px;color:var(--ink-faint);font-family:var(--font-mono);font-size:12px;letter-spacing:.04em">KEYTILL · POS de mostrador · Manual de operatoria</p>
+    <p style="margin-top:24px;color:var(--ink-faint);font-family:var(--font-mono);font-size:12px;letter-spacing:.04em"><?php echo esc_html( $keytill_brand ); ?> · POS de mostrador · Manual de operatoria</p>
   </div>
 </footer>
 

@@ -12,12 +12,21 @@ defined( 'ABSPATH' ) || exit;
 $keytill_user       = wp_get_current_user();
 $keytill_can_manage = current_user_can( KEYTILL_CAP_MANAGE );
 $keytill_logout_url = wp_logout_url( get_permalink() ); // tras salir, vuelve al login del POS
+// La marca que se muestra es la DEL COMERCIO (configurable en Ajustes; por
+// defecto, el nombre del sitio). El POS no impone su propia marca.
+$keytill_biz        = KEYTILL_Settings::business();
+$keytill_brand      = $keytill_biz['name'];
+$keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keytill_biz['logo'], 'medium' ) : '';
 ?>
 <div class="keytill" id="keytill-app" x-data="keytillApp()" :class="{ 'is-cart-open': cartSheet }" x-cloak>
 
 	<!-- ================= NAV GLOBAL (shell) ================= -->
 	<nav class="keytill-nav">
-		<span class="keytill-brand">KEYTILL</span>
+		<?php if ( $keytill_logo ) : ?>
+			<img class="keytill-brand__logo" src="<?php echo esc_url( $keytill_logo ); ?>" alt="<?php echo esc_attr( $keytill_brand ); ?>" />
+		<?php else : ?>
+			<span class="keytill-brand"><?php echo esc_html( $keytill_brand ); ?></span>
+		<?php endif; ?>
 		<div class="keytill-nav__tabs" role="tablist">
 			<template x-for="t in $store.pos.tabs" :key="t.id">
 				<button type="button" class="keytill-nav__tab"
@@ -467,15 +476,6 @@ $keytill_logout_url = wp_logout_url( get_permalink() ); // tras salir, vuelve al
 
 		<div class="prod__readonly mono muted" x-show="!canManage" x-cloak><?php esc_html_e( 'Solo lectura — la edición requiere permiso de gestión.', 'keytill' ); ?></div>
 		<div class="prod__err" x-show="error" x-cloak x-text="error"></div>
-
-		<!-- Escaneo: código de 12 díg. sin resultados → crear/agregar desde el código. -->
-		<div class="prod__scan" x-show="canManage && isScanCode() && !loading && total === 0" x-cloak>
-			<span class="mono"><?php esc_html_e( 'Código', 'keytill' ); ?> <b x-text="filters.search"></b> <?php esc_html_e( 'no encontrado.', 'keytill' ); ?></span>
-			<button type="button" class="prod__new" :disabled="scanBusy" @click="scanFromCode()">
-				<span x-show="!scanBusy"><?php esc_html_e( '＋ Crear / agregar desde el código', 'keytill' ); ?></span>
-				<span x-show="scanBusy" x-cloak><?php esc_html_e( 'Procesando…', 'keytill' ); ?></span>
-			</button>
-		</div>
 
 		<!-- Modo de selección: etiquetas (por defecto) o sucursal. Solo con gestión y
 		     si hay sucursales cargadas. Nunca se ven dos columnas de checkboxes a la vez. -->

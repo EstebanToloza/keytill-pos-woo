@@ -227,8 +227,6 @@ KEYTILL_Branches::init();
 require_once KEYTILL_DIR . 'includes/class-keytill-branch-stock.php';
 KEYTILL_Branch_Stock::init();
 
-// Decodificador del código de barras (utilitario, sin hooks).
-require_once KEYTILL_DIR . 'includes/class-keytill-barcode.php';
 
 require_once KEYTILL_DIR . 'includes/class-keytill-export.php';
 KEYTILL_Export::init();
