@@ -6,3 +6,5 @@ tools
 README.md
 *.zip
 node_modules
+phpstan.neon
+phpcs.xml

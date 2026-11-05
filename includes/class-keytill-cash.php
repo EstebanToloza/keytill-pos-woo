@@ -91,7 +91,7 @@ class KEYTILL_Cash {
 					: esc_html( $txt );
 				break;
 			case 'cierre':
-				echo self::fmt_date( get_post_meta( $post_id, '_keytill_closed_at', true ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo self::fmt_date( get_post_meta( $post_id, '_keytill_closed_at', true ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fmt_date() ya devuelve escapado.
 				break;
 			case 'cajero':
 				echo esc_html( self::cashier_label( (int) get_post_meta( $post_id, '_keytill_cajero_id', true ) ) );
@@ -522,7 +522,8 @@ class KEYTILL_Cash {
 	 * Suma ventas de la sesión: total por medio de pago + efectivo esperado.
 	 *
 	 * @param int $id Session ID.
-	 * @return array{breakdown:array,sales_total:float,cash_sales:float,expected_cash:float}
+	 * @return array{breakdown:array<int,array>,by_cashier:array<int,array>,sales_total:float,
+	 *               cash_sales:float,cash_refunds:float,deposits:float,expected_cash:float}
 	 */
 	public static function compute_summary( $id ) {
 		$methods   = KEYTILL_REST::payment_methods();
