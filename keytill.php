@@ -299,7 +299,7 @@ function keytill_render_gate_notice() {
  * @return array
  */
 function keytill_register_page_template( $templates ) {
-	$templates[ KEYTILL_TEMPLATE ] = __( 'HM POS — Pantalla completa', 'keytill' );
+	$templates[ KEYTILL_TEMPLATE ] = __( 'Keytill — Pantalla completa', 'keytill' );
 	return $templates;
 }
 add_filter( 'theme_page_templates', 'keytill_register_page_template' );
@@ -454,7 +454,7 @@ add_action(
 			define( 'DONOTCACHEPAGE', true );
 		}
 		// LiteSpeed Cache: pedir explícitamente no cachear esta respuesta.
-		do_action( 'litespeed_control_set_nocache', 'HM POS: pantalla dinámica por-usuario' );
+		do_action( 'litespeed_control_set_nocache', 'Keytill: pantalla dinámica por-usuario' );
 		nocache_headers();
 	},
 	1

@@ -61,7 +61,7 @@ class KEYTILL_Cash_Digital {
 				),
 				'public'              => false,
 				'show_ui'             => true,
-				'show_in_menu'        => 'keytill', // submenú de "HM POS"
+				'show_in_menu'        => 'keytill', // submenú de "Keytill"
 				'show_in_rest'        => false,
 				'menu_icon'           => 'dashicons-bank',
 				'exclude_from_search' => true,

@@ -34,7 +34,7 @@ git clone git@github.com:EstebanToloza/POS-woo.git keytill
 Después, en el sitio:
 
 1. **Activar** el plugin *Keytill POS*. Al activarse crea el rol **`cajero`** (capability `keytill_operate`) y el rol **`encargado`** (`keytill_operate` + `keytill_manage` + `upload_files`); el administrador recibe ambas capabilities.
-2. Crear una página **"Caja"** con el shortcode `[keytill]` y asignarle el template **"HM POS — Pantalla completa"**.
+2. Crear una página **"Caja"** con el shortcode `[keytill]` y asignarle el template **"Keytill — Pantalla completa"**.
 3. Crear un usuario con rol **cajero** (o encargado) e ingresar a esa página.
 4. *(Opcional, demo)* Cargar catálogo de prueba: `wp keytill seed-demo` (idempotente; `--force` reescribe stock/precios).
 
@@ -99,9 +99,9 @@ La pantalla de **Venta** se adapta a pantallas táctiles (móvil y tablet) **sin
 
 ---
 
-## Configuración (menú «HM POS» → Ajustes)
+## Configuración (menú «Keytill» → Ajustes)
 
-En el admin, un único menú **«HM POS»** agrupa: **Inicio** (atajo a la pantalla del POS + estado), **Ajustes**, **Cajas** (historial de arqueos, solo lectura), **Créditos** y **Manual**. Cada submenú respeta su permiso (Ajustes/Cajas/Créditos = gerencia; Manual/Inicio = operador).
+En el admin, un único menú **«Keytill»** agrupa: **Inicio** (atajo a la pantalla del POS + estado), **Ajustes**, **Cajas** (historial de arqueos, solo lectura), **Créditos** y **Manual**. Cada submenú respeta su permiso (Ajustes/Cajas/Créditos = gerencia; Manual/Inicio = operador).
 
 **Cajas** es el **historial de arqueos** (solo lectura, se genera desde el POS): lista de cada apertura→cierre con columnas apertura/cierre, cajero, estado, fondo, retiros, esperado, contado y **diferencia** (con color: faltante/sobrante/OK).
 

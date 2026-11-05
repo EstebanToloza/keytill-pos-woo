@@ -11,8 +11,6 @@
 
 	var API = window.wpApiSettings || { root: '/wp-json/', nonce: '' };
 
-	// Debe coincidir con KEYTILL_Customers::fiscal_options() (default primero).
-	var FISCAL = [ 'Consumidor Final', 'Responsable Inscripto', 'Monotributista', 'Exento', 'No Responsable' ];
 
 	function qs( obj ) {
 		var parts = [];
@@ -60,7 +58,6 @@
 			loaded: false,
 			error: '',
 			_searchTimer: null,
-			fiscalOptions: FISCAL,
 
 			// detalle / edición
 			selected: null,
@@ -74,7 +71,7 @@
 			createBusy: false,
 			createError: '',
 			createConflict: null,
-			newCust: { name: '', email: '', doc: '', iva: 'Consumidor Final' },
+			newCust: { name: '', email: '', doc: '', iva: '' },
 
 			init: function () {
 				var self = this;
@@ -156,7 +153,7 @@
 			openCreate: function () {
 				this.createError = '';
 				this.createConflict = null;
-				this.newCust = { name: '', email: '', doc: '', phone: '', birthdate: '', iva: 'Consumidor Final' };
+				this.newCust = { name: '', email: '', doc: '', phone: '', birthdate: '', iva: '' };
 				this.createOpen = true;
 				var self = this;
 				this.$nextTick( function () { if ( self.$refs.newName ) { self.$refs.newName.focus(); } } );

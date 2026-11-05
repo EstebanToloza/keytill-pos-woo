@@ -235,7 +235,7 @@ class KEYTILL_Cash {
 				),
 				'public'          => false,
 				'show_ui'         => true,
-				'show_in_menu'    => 'keytill', // submenú de "HM POS"
+				'show_in_menu'    => 'keytill', // submenú de "Keytill"
 				'show_in_rest'    => false,
 				'menu_icon'       => 'dashicons-money-alt',
 				'capability_type' => 'post',

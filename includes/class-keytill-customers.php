@@ -5,7 +5,7 @@
  *
  * Reglas:
  * - Opcional: una venta puede ser anónima (sin cliente).
- * - Para GUARDAR un cliente reutilizable hace falta al menos EMAIL o DNI/CUIT.
+ * - Para GUARDAR un cliente reutilizable hace falta al menos EMAIL o DOCUMENTO.
  * - Deduplicación por email Y por DNI: si alguno ya existe, no se crea uno
  *   nuevo; se devuelve el existente para seleccionarlo.
  * - Condición fiscal = lista fija (default "Consumidor Final").
@@ -34,18 +34,16 @@ class KEYTILL_Customers {
 	const META_BIRTH = 'keytill_birthdate';
 
 	/**
-	 * Condiciones fiscales admitidas (lista estándar AR). La primera es el default.
+	 * Condiciones fiscales admitidas.
+	 *
+	 * Vacío por defecto: el campo es de TEXTO LIBRE, así sirve en cualquier país.
+	 * Un comercio o una extensión regional puede definir su propia lista con el
+	 * filtro `keytill_fiscal_options` (la primera opción pasa a ser el default).
 	 *
 	 * @return string[]
 	 */
 	public static function fiscal_options() {
-		return array(
-			'Consumidor Final',
-			'Responsable Inscripto',
-			'Monotributista',
-			'Exento',
-			'No Responsable',
-		);
+		return array_values( array_filter( array_map( 'strval', (array) apply_filters( 'keytill_fiscal_options', array() ) ) ) );
 	}
 
 	/**
@@ -286,7 +284,7 @@ class KEYTILL_Customers {
 			return new WP_Error( 'keytill_bad_email', __( 'El email no es válido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( '' === $email && '' === $norm ) {
-			return new WP_Error( 'keytill_need_id', __( 'El cliente necesita al menos email o DNI.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_need_id', __( 'El cliente necesita al menos email o documento.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Deduplicación contra OTROS clientes.
@@ -474,7 +472,7 @@ class KEYTILL_Customers {
 		);
 		$ids = array_merge( $ids, (array) $by_text->get_results() );
 
-		// 2) DNI/CUIT normalizado (dígitos): match por prefijo.
+		// 2) Documento normalizado (alfanumígitos): match por prefijo.
 		$norm = self::normalize_doc( $q );
 		if ( '' !== $norm ) {
 			$by_doc = new WP_User_Query(
@@ -505,7 +503,7 @@ class KEYTILL_Customers {
 	 * ================================================================== */
 
 	/**
-	 * Crea un cliente. Requiere al menos email o DNI. Deduplica por ambos.
+	 * Crea un cliente. Requiere al menos email o documento. Deduplica por ambos.
 	 *
 	 * @param array $data { name, email, doc, iva }
 	 * @return WP_REST_Response|WP_Error 201 con payload, o 409 con el existente.
@@ -521,7 +519,7 @@ class KEYTILL_Customers {
 			return new WP_Error( 'keytill_bad_email', __( 'El email no es válido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( '' === $email && '' === $norm ) {
-			return new WP_Error( 'keytill_need_id', __( 'Para guardar un cliente cargá al menos email o DNI.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_need_id', __( 'Para guardar un cliente cargá al menos email o documento.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// --- Deduplicación ---
@@ -597,14 +595,14 @@ class KEYTILL_Customers {
 		$payload = self::payload( $uid );
 		$mismatch = '';
 		if ( 'email' === $matched && '' !== $other_norm && $payload['doc_norm'] !== $other_norm ) {
-			$mismatch = __( 'El DNI no coincide con el registrado en ese cliente.', 'keytill' );
+			$mismatch = __( 'El documento no coincide con el registrado en ese cliente.', 'keytill' );
 		}
 		if ( 'doc' === $matched && '' !== $other_email && strtolower( $payload['email'] ) !== strtolower( $other_email ) ) {
 			$mismatch = __( 'El email no coincide con el registrado en ese cliente.', 'keytill' );
 		}
 		$msg = ( 'email' === $matched )
 			? __( 'Ya existe un cliente con ese email.', 'keytill' )
-			: __( 'Ya existe un cliente con ese DNI.', 'keytill' );
+			: __( 'Ya existe un cliente con ese documento.', 'keytill' );
 		return new WP_Error(
 			'keytill_customer_exists',
 			trim( $msg . ' ' . $mismatch ),
@@ -698,7 +696,10 @@ class KEYTILL_Customers {
 	 * @return string
 	 */
 	public static function normalize_doc( $doc ) {
-		return preg_replace( '/\D+/', '', (string) $doc );
+		// Identificador fiscal global (DNI, CUIT, RFC, NIF, VAT…): se normaliza a
+		// alfanumérico en MAYÚSCULAS para comparar sin espacios, puntos ni guiones.
+		// (No se puede filtrar solo dígitos: fuera de AR suelen llevar letras.)
+		return strtoupper( preg_replace( '/[^A-Za-z0-9]/', '', (string) $doc ) );
 	}
 
 	/**
@@ -708,8 +709,11 @@ class KEYTILL_Customers {
 	 * @return string
 	 */
 	public static function sanitize_iva( $iva ) {
-		$iva     = trim( (string) $iva );
+		$iva     = sanitize_text_field( trim( (string) $iva ) );
 		$options = self::fiscal_options();
+		if ( empty( $options ) ) {
+			return $iva; // sin lista definida: texto libre (default global).
+		}
 		return in_array( $iva, $options, true ) ? $iva : $options[0];
 	}
 

@@ -136,9 +136,7 @@
 			custBusy: false,
 			custError: '',
 			custConflict: null,   // payload del cliente existente (dedup)
-			newCust: { name: '', email: '', doc: '', phone: '', birthdate: '', iva: 'Consumidor Final' },
-			// Debe coincidir con KEYTILL_Customers::fiscal_options() (default primero).
-			fiscalOptions: [ 'Consumidor Final', 'Responsable Inscripto', 'Monotributista', 'Exento', 'No Responsable' ],
+			newCust: { name: '', email: '', doc: '', phone: '', birthdate: '', iva: '' },
 			discount: 0, // valor aplicado (porcentaje o monto fijo según discountType)
 			discountType: 'percent', // 'percent' | 'fixed' — tipo aplicado
 			discountDraft: '',
@@ -1780,7 +1778,7 @@
 			},
 			startCreateCustomer: function () {
 				var q = this.custQuery.trim();
-				var pre = { name: '', email: '', doc: '', phone: '', birthdate: '', iva: 'Consumidor Final' };
+				var pre = { name: '', email: '', doc: '', phone: '', birthdate: '', iva: '' };
 				if ( /@/.test( q ) ) { pre.email = q; }
 				else if ( /^[0-9][0-9.\-\s]*$/.test( q ) ) { pre.doc = q; }
 				else if ( q ) { pre.name = q; }

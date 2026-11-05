@@ -1,10 +1,10 @@
 <?php
 /**
- * Ajustes del POS + menú unificado "HM POS".
+ * Ajustes del POS + menú unificado "Keytill".
  *
  * Centraliza la configuración del plugin (datos del negocio para el comprobante,
  * vigencia del crédito, medios de pago, etiqueta de la caja) y arma un único menú
- * de admin "HM POS" con submenús (Inicio · Ajustes · Cajas · Créditos · Manual),
+ * de admin "Keytill" con submenús (Inicio · Ajustes · Cajas · Créditos · Manual),
  * reemplazando los menús top-level sueltos.
  *
  * Fuente única de configuración: opciones prefijadas `keytill_`. Todo tiene defaults
@@ -45,6 +45,7 @@ class KEYTILL_Settings {
 			'receipt_footer'   => __( 'Documento no válido como factura. ¡Gracias por su compra!', 'keytill' ),
 			'register_label'   => __( 'CAJA 01', 'keytill' ),
 			'exchange_days'    => 30, // validez del ticket de cambio (0 = sin plazo)
+			'tax_status_field' => 0,  // mostrar el campo "condicion fiscal" del cliente
 		);
 	}
 
@@ -201,18 +202,18 @@ class KEYTILL_Settings {
 		wp_add_inline_script( 'keytill-settings', $js );
 	}
 
-	/** Registra el menú padre "HM POS" + submenús propios (Inicio, Ajustes). */
+	/** Registra el menú padre "Keytill" + submenús propios (Inicio, Ajustes). */
 	public static function register_menu() {
 		add_menu_page(
-			__( 'HM POS', 'keytill' ),
-			__( 'HM POS', 'keytill' ),
+			__( 'Keytill', 'keytill' ),
+			__( 'Keytill', 'keytill' ),
 			KEYTILL_CAP, // operate: cajero/encargado/gerente/admin ven el menú (Inicio)
 			self::MENU,
 			array( __CLASS__, 'render_home' ),
 			'dashicons-store',
 			'56.7'
 		);
-		// El primer submenú lo genera WP automáticamente (etiqueta "HM POS" → Inicio).
+		// El primer submenú lo genera WP automáticamente (etiqueta "Keytill" → Inicio).
 		add_submenu_page(
 			self::MENU,
 			__( 'Ajustes del POS', 'keytill' ),
@@ -278,6 +279,7 @@ class KEYTILL_Settings {
 		$out['receipt_footer']   = sanitize_text_field( $input['receipt_footer'] ?? $d['receipt_footer'] );
 		$out['register_label']   = sanitize_text_field( $input['register_label'] ?? $d['register_label'] );
 		$out['exchange_days']    = max( 0, (int) ( $input['exchange_days'] ?? $d['exchange_days'] ) );
+		$out['tax_status_field'] = empty( $input['tax_status_field'] ) ? 0 : 1;
 		return $out;
 	}
 
@@ -319,7 +321,7 @@ class KEYTILL_Settings {
 		$open    = class_exists( 'KEYTILL_Cash' ) ? KEYTILL_Cash::get_open_session_id() : 0;
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'HM POS', 'keytill' ); ?></h1>
+			<h1><?php esc_html_e( 'Keytill', 'keytill' ); ?></h1>
 			<p class="description"><?php esc_html_e( 'Punto de venta de mostrador sobre WooCommerce.', 'keytill' ); ?></p>
 
 			<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:16px">
@@ -329,7 +331,7 @@ class KEYTILL_Settings {
 						<p><a class="button button-primary button-hero" href="<?php echo esc_url( $pos_url ); ?>"><?php esc_html_e( 'Abrir pantalla de venta', 'keytill' ); ?></a></p>
 						<p class="description"><code><?php echo esc_html( $pos_url ); ?></code></p>
 					<?php else : ?>
-						<p><?php esc_html_e( 'Todavía no hay una página con el shortcode [keytill]. Creá una página, pegá el shortcode [keytill] y asignale el template «HM POS — Pantalla completa».', 'keytill' ); ?></p>
+						<p><?php esc_html_e( 'Todavía no hay una página con el shortcode [keytill]. Creá una página, pegá el shortcode [keytill] y asignale el template «Keytill — Pantalla completa».', 'keytill' ); ?></p>
 					<?php endif; ?>
 				</div>
 
@@ -372,7 +374,7 @@ class KEYTILL_Settings {
 						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_name]" id="keytill_business_name" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_name'] ); ?>" placeholder="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="keytill_business_tax_id"><?php esc_html_e( 'CUIT / ID fiscal', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_business_tax_id"><?php esc_html_e( 'ID fiscal', 'keytill' ); ?></label></th>
 						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_tax_id]" id="keytill_business_tax_id" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_tax_id'] ); ?>" /></td>
 					</tr>
 					<tr>
@@ -415,6 +417,16 @@ class KEYTILL_Settings {
 						<td>
 							<input name="<?php echo esc_attr( self::OPTION ); ?>[exchange_days]" id="keytill_exchange_days" type="number" min="0" class="small-text" value="<?php echo esc_attr( $opt['exchange_days'] ); ?>" />
 							<p class="description">Dias para cambiar presentando el ticket de cambio. 0 = sin plazo.</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Condición fiscal del cliente', 'keytill' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[tax_status_field]" value="1" <?php checked( ! empty( $opt['tax_status_field'] ) ); ?> />
+								<?php esc_html_e( 'Mostrar el campo "Condición fiscal" en la ficha del cliente', 'keytill' ); ?>
+							</label>
+							<p class="description"><?php esc_html_e( 'Desactivado por defecto. Actívalo si tu país lo requiere (ej. Responsable Inscripto / Consumidor Final en Argentina). Es un campo de texto libre; una extensión puede definir una lista con el filtro keytill_fiscal_options.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 				</table>

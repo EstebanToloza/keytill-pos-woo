@@ -14,10 +14,16 @@ $keytill_can_manage = current_user_can( KEYTILL_CAP_MANAGE );
 $keytill_logout_url = wp_logout_url( get_permalink() ); // tras salir, vuelve al login del POS
 // La marca que se muestra es la DEL COMERCIO (configurable en Ajustes; por
 // defecto, el nombre del sitio). El POS no impone su propia marca.
+// Campo "condición fiscal" del cliente: desactivado por defecto (solo lo usan
+// algunos países). Se activa en Ajustes.
+$keytill_tax_status = (bool) KEYTILL_Settings::get( 'tax_status_field' );
 $keytill_biz        = KEYTILL_Settings::business();
 $keytill_brand      = $keytill_biz['name'];
 $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keytill_biz['logo'], 'medium' ) : '';
 ?>
+<?php if ( $keytill_tax_status ) : $keytill_fiscal = KEYTILL_Customers::fiscal_options(); ?>
+<datalist id="keytill-fiscal-opts"><?php foreach ( $keytill_fiscal as $o ) : ?><option value="<?php echo esc_attr( $o ); ?>"></option><?php endforeach; ?></datalist>
+<?php endif; ?>
 <div class="keytill" id="keytill-app" x-data="keytillApp()" :class="{ 'is-cart-open': cartSheet }" x-cloak>
 
 	<!-- ================= NAV GLOBAL (shell) ================= -->
@@ -1089,7 +1095,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 	<div class="keytill-view keytill-customers" x-show="$store.pos.view === 'clientes'" x-data="keytillCustomers()" x-cloak>
 
 		<div class="cx__bar">
-			<input type="search" class="cx__search" placeholder="<?php esc_attr_e( 'Buscar por nombre, email o DNI…', 'keytill' ); ?>"
+			<input type="search" class="cx__search" placeholder="<?php esc_attr_e( 'Buscar por nombre, email o documento…', 'keytill' ); ?>"
 				x-model="search" @input="onSearch()" @keydown.enter="load(1)" autocomplete="off" />
 			<span class="cx__spacer"></span>
 			<button type="button" class="cx__new" @click="openCreate()">+ <?php esc_html_e( 'Nuevo cliente', 'keytill' ); ?></button>
@@ -1103,7 +1109,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					<tr>
 						<th><?php esc_html_e( 'Cliente', 'keytill' ); ?></th>
 						<th><?php esc_html_e( 'Email', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'DNI / CUIT', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Documento', 'keytill' ); ?></th>
 						<th><?php esc_html_e( 'Cond. fiscal', 'keytill' ); ?></th>
 						<th class="n"><?php esc_html_e( 'Pedidos', 'keytill' ); ?></th>
 						<th class="n"><?php esc_html_e( 'Total gastado', 'keytill' ); ?></th>
@@ -1171,7 +1177,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 								<label class="modal__label"><?php esc_html_e( 'Email', 'keytill' ); ?>
 									<input type="email" x-model="selected.email" class="modal__input mono" placeholder="—" autocomplete="off" spellcheck="false" />
 								</label>
-								<label class="modal__label"><?php esc_html_e( 'DNI / CUIT', 'keytill' ); ?>
+								<label class="modal__label"><?php esc_html_e( 'Documento', 'keytill' ); ?>
 									<input type="text" x-model="selected.doc" class="modal__input mono" placeholder="—" autocomplete="off" />
 								</label>
 							</div>
@@ -1183,11 +1189,11 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 									<input type="date" x-model="selected.birthdate" class="modal__input mono" />
 								</label>
 							</div>
+							<?php if ( $keytill_tax_status ) : ?>
 							<label class="modal__label"><?php esc_html_e( 'Condición fiscal', 'keytill' ); ?>
-								<select x-model="selected.iva" class="modal__input">
-									<template x-for="opt in (selected.fiscal || fiscalOptions)" :key="opt"><option :value="opt" x-text="opt"></option></template>
-								</select>
+								<input type="text" x-model="selected.iva" class="modal__input" list="keytill-fiscal-opts" autocomplete="off" />
 							</label>
+							<?php endif; ?>
 							<span class="cust__error mono" x-show="saveError" x-text="saveError"></span>
 							<div class="cx__conflict" x-show="saveConflict" x-cloak>
 								<button type="button" class="cust__link" @click="useConflict(saveConflict)"><?php esc_html_e( 'Ver cliente existente', 'keytill' ); ?> ↗</button>
@@ -1226,7 +1232,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 		<div class="prod__modal" x-show="createOpen" x-cloak @click.self="closeCreate()">
 			<div class="prod__card">
 				<span class="modal__title"><?php esc_html_e( 'NUEVO CLIENTE', 'keytill' ); ?></span>
-				<span class="mono modal__sub"><?php esc_html_e( 'Al menos email o DNI · no se envía ningún email', 'keytill' ); ?></span>
+				<span class="mono modal__sub"><?php esc_html_e( 'Al menos email o documento · no se envía ningún email', 'keytill' ); ?></span>
 				<label class="modal__label"><?php esc_html_e( 'Nombre', 'keytill' ); ?>
 					<input type="text" x-ref="newName" x-model="newCust.name" class="modal__input" autocomplete="off" @keydown.enter="submitCreate()" />
 				</label>
@@ -1234,7 +1240,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					<label class="modal__label"><?php esc_html_e( 'Email', 'keytill' ); ?>
 						<input type="email" x-model="newCust.email" class="modal__input mono" placeholder="—" autocomplete="off" spellcheck="false" @keydown.enter="submitCreate()" />
 					</label>
-					<label class="modal__label"><?php esc_html_e( 'DNI / CUIT', 'keytill' ); ?>
+					<label class="modal__label"><?php esc_html_e( 'Documento', 'keytill' ); ?>
 						<input type="text" x-model="newCust.doc" class="modal__input mono" placeholder="—" autocomplete="off" @keydown.enter="submitCreate()" />
 					</label>
 				</div>
@@ -1246,11 +1252,11 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 						<input type="date" x-model="newCust.birthdate" class="modal__input mono" @keydown.enter="submitCreate()" />
 					</label>
 				</div>
+				<?php if ( $keytill_tax_status ) : ?>
 				<label class="modal__label"><?php esc_html_e( 'Condición fiscal', 'keytill' ); ?>
-					<select x-model="newCust.iva" class="modal__input">
-						<template x-for="opt in fiscalOptions" :key="opt"><option :value="opt" x-text="opt"></option></template>
-					</select>
+					<input type="text" x-model="newCust.iva" class="modal__input" list="keytill-fiscal-opts" autocomplete="off" />
 				</label>
+				<?php endif; ?>
 				<span class="cust__error mono" x-show="createError" x-text="createError"></span>
 				<div class="cx__conflict" x-show="createConflict" x-cloak>
 					<button type="button" class="cust__link" @click="useConflict(createConflict)"><?php esc_html_e( 'Ver cliente existente', 'keytill' ); ?> ↗</button>
@@ -1619,8 +1625,8 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<!-- BUSCAR / SELECCIONAR -->
 			<template x-if="custStage === 'search'">
 				<div class="cust">
-					<span class="mono modal__sub"><?php esc_html_e( 'Buscá por nombre, email o DNI · ↑↓ elegí · ENTER asigna · TAB crear nuevo · ESC cierra', 'keytill' ); ?></span>
-					<input type="text" x-ref="custSearch" x-model="custQuery" @input.debounce.250ms="searchCustomers()" class="modal__input" placeholder="<?php esc_attr_e( 'Nombre / email / DNI', 'keytill' ); ?>" autocomplete="off" spellcheck="false" />
+					<span class="mono modal__sub"><?php esc_html_e( 'Buscá por nombre, email o documento · ↑↓ elegí · ENTER asigna · TAB crear nuevo · ESC cierra', 'keytill' ); ?></span>
+					<input type="text" x-ref="custSearch" x-model="custQuery" @input.debounce.250ms="searchCustomers()" class="modal__input" placeholder="<?php esc_attr_e( 'Nombre / email / documento', 'keytill' ); ?>" autocomplete="off" spellcheck="false" />
 					<div class="cust__results" x-show="custResults.length">
 						<template x-for="(c, i) in custResults" :key="c.id">
 							<div class="cust__row" :class="{ 'is-sel': i === custSel }" @click="selectCustomer(c)" @mouseenter="custSel = i">
@@ -1644,7 +1650,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<!-- CREAR NUEVO -->
 			<template x-if="custStage === 'create'">
 				<div class="cust">
-					<span class="mono modal__sub"><?php esc_html_e( 'Nuevo cliente · al menos email o DNI · TAB entre campos · ENTER guarda · ESC vuelve', 'keytill' ); ?></span>
+					<span class="mono modal__sub"><?php esc_html_e( 'Nuevo cliente · al menos email o documento · TAB entre campos · ENTER guarda · ESC vuelve', 'keytill' ); ?></span>
 					<label class="modal__label"><?php esc_html_e( 'Nombre', 'keytill' ); ?>
 						<input type="text" x-ref="custName" x-model="newCust.name" class="modal__input" autocomplete="off" />
 					</label>
@@ -1652,7 +1658,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 						<label class="modal__label"><?php esc_html_e( 'Email', 'keytill' ); ?>
 							<input type="email" x-model="newCust.email" class="modal__input mono" placeholder="—" autocomplete="off" spellcheck="false" />
 						</label>
-						<label class="modal__label"><?php esc_html_e( 'DNI / CUIT', 'keytill' ); ?>
+						<label class="modal__label"><?php esc_html_e( 'Documento', 'keytill' ); ?>
 							<input type="text" x-model="newCust.doc" class="modal__input mono" placeholder="—" autocomplete="off" />
 						</label>
 					</div>
@@ -1664,13 +1670,11 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 							<input type="date" x-model="newCust.birthdate" class="modal__input mono" />
 						</label>
 					</div>
+					<?php if ( $keytill_tax_status ) : ?>
 					<label class="modal__label"><?php esc_html_e( 'Condición fiscal', 'keytill' ); ?>
-						<select x-model="newCust.iva" class="modal__input">
-							<template x-for="opt in fiscalOptions" :key="opt">
-								<option :value="opt" x-text="opt"></option>
-							</template>
-						</select>
+						<input type="text" x-model="newCust.iva" class="modal__input" list="keytill-fiscal-opts" autocomplete="off" />
 					</label>
+					<?php endif; ?>
 					<span class="cust__error mono" x-show="custError" x-text="custError"></span>
 					<div class="pay__enter" x-show="!$store.pos.touch">
 						<kbd class="kbd-brand">ENTER</kbd>

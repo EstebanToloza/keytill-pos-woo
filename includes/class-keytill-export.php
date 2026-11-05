@@ -152,7 +152,7 @@ class KEYTILL_Export {
 			__( 'Estado', 'keytill' ),
 			__( 'Origen', 'keytill' ),
 			__( 'Cliente', 'keytill' ),
-			__( 'DNI/CUIT', 'keytill' ),
+			__( 'Documento', 'keytill' ),
 			__( 'Vendedor', 'keytill' ),
 			__( 'Cajero', 'keytill' ),
 			__( 'Medio de pago', 'keytill' ),
