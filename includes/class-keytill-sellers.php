@@ -325,7 +325,7 @@ class KEYTILL_Sellers {
 					'total' => 0.0,
 				);
 			}
-			$rows[ $key ]['count']++;
+			++$rows[ $key ]['count'];
 			$rows[ $key ]['total'] += $net;
 		}
 

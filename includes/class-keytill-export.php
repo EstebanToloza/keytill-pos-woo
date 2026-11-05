@@ -71,6 +71,7 @@ class KEYTILL_Export {
 	 */
 	private static function stream_csv() {
 		$g = function ( $k ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- maybe_render() ya verifico el nonce y la capability antes de llegar aca.
 			return isset( $_GET[ $k ] ) ? sanitize_text_field( wp_unslash( $_GET[ $k ] ) ) : '';
 		};
 
@@ -143,7 +144,9 @@ class KEYTILL_Export {
 		header( 'Content-Disposition: attachment; filename="' . $fname . '"' );
 		header( 'X-Accel-Buffering: no' ); // no bufferear en proxies/Nginx
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- php://output es el stream de la respuesta HTTP, no el filesystem: WP_Filesystem no aplica.
 		$out = fopen( 'php://output', 'w' );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- idem: stream de salida.
 		fwrite( $out, "\xEF\xBB\xBF" ); // BOM UTF-8 para Excel.
 
 		$cols = array(
@@ -163,7 +166,7 @@ class KEYTILL_Export {
 			__( 'Amount', 'keytill' ),
 			__( 'Order total', 'keytill' ),
 		);
-		fputcsv( $out, $cols, ';' );
+		fputcsv( $out, $cols, self::delimiter() );
 
 		$statuses = wc_get_order_statuses();
 
@@ -182,81 +185,97 @@ class KEYTILL_Export {
 					continue;
 				}
 				$number    = $o->get_order_number();
-			$date      = $o->get_date_created() ? $o->get_date_created()->date_i18n( 'Y-m-d H:i' ) : '';
-			$st_key    = 'wc-' . $o->get_status();
-			$st        = isset( $statuses[ $st_key ] ) ? $statuses[ $st_key ] : $o->get_status();
-			$is_pos    = 'keytill' === $o->get_created_via();
-			$origin_lb = $is_pos ? 'POS' : __( 'Web', 'keytill' );
+				$date      = $o->get_date_created() ? $o->get_date_created()->date_i18n( 'Y-m-d H:i' ) : '';
+				$st_key    = 'wc-' . $o->get_status();
+				$st        = isset( $statuses[ $st_key ] ) ? $statuses[ $st_key ] : $o->get_status();
+				$is_pos    = 'keytill' === $o->get_created_via();
+				$origin_lb = $is_pos ? 'POS' : __( 'Web', 'keytill' );
 
-			$cust = (string) $o->get_meta( '_keytill_customer_name' );
-			if ( '' === $cust ) {
-				$cust = trim( $o->get_billing_first_name() . ' ' . $o->get_billing_last_name() );
-			}
-			$doc = (string) $o->get_meta( '_keytill_customer_doc' );
+				$cust = (string) $o->get_meta( '_keytill_customer_name' );
+				if ( '' === $cust ) {
+					$cust = trim( $o->get_billing_first_name() . ' ' . $o->get_billing_last_name() );
+				}
+				$doc = (string) $o->get_meta( '_keytill_customer_doc' );
 
-			$seller = (string) $o->get_meta( '_keytill_seller' );
-			if ( '' === $seller ) {
-				$sid    = (string) $o->get_meta( '_keytill_seller_id' );
-				$seller = ( '' !== $sid && class_exists( 'KEYTILL_Sellers' ) ) ? KEYTILL_Sellers::name_of( $sid ) : '';
-			}
+				$seller = (string) $o->get_meta( '_keytill_seller' );
+				if ( '' === $seller ) {
+					$sid    = (string) $o->get_meta( '_keytill_seller_id' );
+					$seller = ( '' !== $sid && class_exists( 'KEYTILL_Sellers' ) ) ? KEYTILL_Sellers::name_of( $sid ) : '';
+				}
 
-			$cashier = self::cashier_name( (int) $o->get_meta( '_keytill_cajero_id' ) );
-			$pay     = $o->get_payment_method_title();
-			$o_total = self::num( (float) $o->get_total() );
+				$cashier = self::cashier_name( (int) $o->get_meta( '_keytill_cajero_id' ) );
+				$pay     = $o->get_payment_method_title();
+				$o_total = self::num( (float) $o->get_total() );
 
-			$items = $o->get_items( 'line_item' );
-			if ( empty( $items ) ) {
-				continue;
-			}
-			foreach ( $items as $item ) {
-				if ( ! $item instanceof WC_Order_Item_Product ) {
+				$items = $o->get_items( 'line_item' );
+				if ( empty( $items ) ) {
 					continue;
 				}
-				$qty   = (int) $item->get_quantity();
-				$total = (float) $item->get_total();
-				$unit  = $qty ? $total / $qty : $total;
+				foreach ( $items as $item ) {
+					if ( ! $item instanceof WC_Order_Item_Product ) {
+						continue;
+					}
+					$qty   = (int) $item->get_quantity();
+					$total = (float) $item->get_total();
+					$unit  = $qty ? $total / $qty : $total;
 
-				// Variación: atributos de la línea, en una sola celda.
-				$attrs = wc_display_item_meta(
-					$item,
-					array( 'before' => '', 'after' => '', 'separator' => ' · ', 'echo' => false, 'autop' => false )
-				);
+					// Variación: atributos de la línea, en una sola celda.
+					$attrs = wc_display_item_meta(
+						$item,
+						array( 'before' => '', 'after' => '', 'separator' => ' · ', 'echo' => false, 'autop' => false )
+					);
 
-				fputcsv(
-					$out,
-					array(
-						$number,
-						$date,
-						$st,
-						$origin_lb,
-						$cust,
-						$doc,
-						$seller,
-						$cashier,
-						$pay,
-						$item->get_name(),
-						wp_strip_all_tags( (string) $attrs ),
-						$qty,
-						self::num( $unit ),
-						self::num( $total ),
-						$o_total,
-					),
-					';'
-				);
+					fputcsv(
+						$out,
+						array(
+							$number,
+							$date,
+							$st,
+							$origin_lb,
+							$cust,
+							$doc,
+							$seller,
+							$cashier,
+							$pay,
+							$item->get_name(),
+							wp_strip_all_tags( (string) $attrs ),
+							$qty,
+							self::num( $unit ),
+							self::num( $total ),
+							$o_total,
+						),
+						self::delimiter()
+					);
+				}
 			}
-		}
 			$offset += $batch;
 			if ( function_exists( 'flush' ) ) {
 				flush();
 			}
 		} while ( $count === $batch );
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- idem: stream de salida.
 		fclose( $out );
 	}
 
-	/** Número con coma decimal, sin separador de miles (Excel es-AR). */
+	/**
+	 * Número para el CSV: toma los decimales y el separador de WooCommerce, así
+	 * los importes del export coinciden con los que muestra la tienda en
+	 * cualquier país. Sin separador de miles, que confunde a las planillas.
+	 */
 	private static function num( $n ) {
-		return number_format( (float) $n, 2, ',', '' );
+		$dec = function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2;
+		$sep = function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '.';
+		return number_format( (float) $n, $dec, $sep, '' );
+	}
+
+	/**
+	 * Delimitador del CSV. Si los decimales usan coma hay que separar con punto
+	 * y coma, o la planilla parte los importes en dos columnas.
+	 */
+	private static function delimiter() {
+		$sep = function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '.';
+		return ( ',' === $sep ) ? ';' : ',';
 	}
 
 	/** Nombre del cajero (usuario WP) sin exponer el email/login. */

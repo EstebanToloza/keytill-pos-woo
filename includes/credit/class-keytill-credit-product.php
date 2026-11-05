@@ -460,10 +460,13 @@ class KEYTILL_Credit_Product {
 		}
 
 		$store   = get_bloginfo( 'name' );
+		/* translators: %s: store name. */
 		$subject = sprintf( __( 'Your %s gift card', 'keytill' ), $store );
+		/* translators: %s: customer's first name. */
 		$body    = sprintf( __( 'Hi %s,', 'keytill' ), $order->get_billing_first_name() ) . "\n\n";
 		$body   .= __( 'Thank you for your purchase! These are your gift card code(s):', 'keytill' ) . "\n\n";
 		foreach ( $codes as $c ) {
+			/* translators: %s: expiry date. */
 			$exp   = $c['expires'] ? sprintf( __( ' (expires %s)', 'keytill' ), mysql2date( 'd/m/Y', $c['expires'] ) ) : '';
 			$body .= '  • ' . $c['code'] . ' — ' . wp_strip_all_tags( wc_price( $c['amount'] ) ) . $exp . "\n";
 		}

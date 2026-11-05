@@ -236,14 +236,23 @@
 				var head = [ __( 'Date', 'keytill' ), __( 'Source', 'keytill' ), __( 'Movement', 'keytill' ), __( 'Type', 'keytill' ), __( 'Account', 'keytill' ), __( 'Amount', 'keytill' ), __( 'Detail', 'keytill' ), __( 'Reconciliation', 'keytill' ) ];
 				var self = this;
 				var esc = function ( v ) { v = ( v === null || v === undefined ) ? '' : String( v ); return '"' + v.replace( /"/g, '""' ) + '"'; };
-				var lines = [ head.map( esc ).join( ',' ) ];
+				// Mismo criterio que el export de pedidos (class-keytill-export.php):
+				// decimales y separador de WooCommerce, y si el separador es coma el
+				// CSV se delimita con punto y coma para que la planilla no parta los
+				// importes en dos columnas.
+				var cfg = window.keytillConfig || {};
+				var dSep = ( cfg.decimalSep === undefined ) ? '.' : cfg.decimalSep;
+				var dDec = ( cfg.decimals === undefined || cfg.decimals === null ) ? 2 : parseInt( cfg.decimals, 10 );
+				var delim = ( ',' === dSep ) ? ';' : ',';
+				var csvNum = function ( n ) { return Number( n ).toFixed( dDec ).replace( '.', dSep ); };
+				var lines = [ head.map( esc ).join( delim ) ];
 				rows.forEach( function ( r ) {
 					lines.push( [
 						r.date, self.origenLabel( r.origen ), self.movementLabel( r.movement ),
 						self.typeLabel( r.type ), self.accountLabel( r.account ),
-						( r.movement === 'egreso' ? '-' : '' ) + Number( r.amount ).toFixed( 2 ),
+						( r.movement === 'egreso' ? '-' : '' ) + csvNum( r.amount ),
 						r.detail, ( r.order_id ? self.verifyLabel( r.verification ) : '' )
-					].map( esc ).join( ',' ) );
+					].map( esc ).join( delim ) );
 				} );
 				var csv = '﻿' + lines.join( '\r\n' ); // BOM para Excel
 				var blob = new Blob( [ csv ], { type: 'text/csv;charset=utf-8;' } );

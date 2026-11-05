@@ -738,7 +738,7 @@ class KEYTILL_Customers {
 		$i     = 1;
 		while ( username_exists( $login ) ) {
 			$login = $base . '-' . $i;
-			$i++;
+			++$i;
 		}
 		return $login;
 	}

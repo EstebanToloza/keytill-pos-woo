@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<ruleset name="Keytill">
+	<description>Estándar de código de Keytill POS (WordPress Coding Standards).</description>
+
+	<file>.</file>
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<exclude-pattern>/tools/*</exclude-pattern>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/assets/js/vendor/*</exclude-pattern>
+
+	<rule ref="WordPress-Extra">
+		<!--
+		Arrays asociativos de una línea. WPCS pide partirlos en varias líneas,
+		pero el fixer automático no reconverge la indentación y deja el código
+		peor que antes (probado: 61 arrays quedaron desalineados). No es una
+		regla que el equipo de revisión de WordPress.org haga cumplir, así que
+		se mantiene el estilo compacto donde el array entra cómodo en la línea.
+		-->
+		<exclude name="WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound"/>
+		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned"/>
+		<exclude name="Generic.Formatting.MultipleStatementAlignment"/>
+	</rule>
+
+	<!--
+	Capabilities propias del plugin (ver keytill.php). Sin declararlas, el sniff
+	de capabilities las reporta como desconocidas: 14 falsos positivos.
+	-->
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="keytill_operate"/>
+				<element value="keytill_manage"/>
+				<!-- De WooCommerce, que es dependencia declarada del plugin. -->
+				<element value="manage_woocommerce"/>
+				<element value="edit_shop_orders"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Mínimos declarados en la cabecera del plugin. -->
+	<config name="minimum_wp_version" value="6.0"/>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="keytill"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

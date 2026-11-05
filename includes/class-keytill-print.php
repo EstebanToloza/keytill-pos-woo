@@ -293,10 +293,10 @@ class KEYTILL_Print {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo esc_html( sprintf( __( 'Sale receipt #%s', 'keytill' ), $number ) ); ?></title>
+<title><?php /* translators: %s: order number. */ echo esc_html( sprintf( __( 'Sale receipt #%s', 'keytill' ), $number ) ); ?></title>
 <style>
 	/* Ticket térmico de 58 mm (área imprimible ~48 mm). Fuente monoespaciada para
-	   que los importes queden alineados; todo en negro sobre blanco. */
+		que los importes queden alineados; todo en negro sobre blanco. */
 	*{ box-sizing:border-box; }
 	html,body{ margin:0; padding:0; background:#e9edf2; color:#000;
 		font-family:'Courier New',ui-monospace,monospace; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
@@ -332,21 +332,36 @@ class KEYTILL_Print {
 </head>
 <body>
 	<div class="t">
-		<?php if ( $logo_src ) : ?><img class="logo" src="<?php echo esc_url( $logo_src ); ?>" alt=""><?php endif; ?>
+		<?php
+		if ( $logo_src ) :
+			?>
+			<img class="logo" src="<?php echo esc_url( $logo_src ); ?>" alt=""><?php endif; ?>
 		<div class="store"><?php echo esc_html( $store ); ?></div>
-		<?php if ( '' !== $subtitle ) : ?><div class="sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
+		<?php
+		if ( '' !== $subtitle ) :
+			?>
+			<div class="sub"><?php echo esc_html( $subtitle ); ?></div><?php endif; ?>
 		<?php if ( $biz['tax_id'] || $biz['address'] || $biz['phone'] ) : ?>
 			<div class="biz"><?php echo esc_html( implode( ' · ', array_filter( array( $biz['tax_id'], $biz['address'], $biz['phone'] ) ) ) ); ?></div>
 		<?php endif; ?>
 
 		<hr class="hr">
-		<div class="doc"><span class="b"><?php echo esc_html( sprintf( __( 'Sale #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
-		<?php if ( $cashier ) : ?><div class="who muted"><?php esc_html_e( 'Cashier', 'keytill' ); ?>: <?php echo esc_html( $cashier ); ?></div><?php endif; ?>
+		<div class="doc"><span class="b"><?php /* translators: %s: order number. */ echo esc_html( sprintf( __( 'Sale #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
+		<?php
+		if ( $cashier ) :
+			?>
+			<div class="who muted"><?php esc_html_e( 'Cashier', 'keytill' ); ?>: <?php echo esc_html( $cashier ); ?></div><?php endif; ?>
 		<?php if ( '' !== $cust_name || '' !== $cust_doc ) : ?>
 			<div class="who muted">
 				<?php esc_html_e( 'Customer', 'keytill' ); ?>: <?php echo esc_html( $cust_name ? $cust_name : __( 'Walk-in customer', 'keytill' ) ); ?>
-				<?php if ( '' !== $cust_doc ) : ?><br><?php echo esc_html( $cust_doc ); ?><?php endif; ?>
-				<?php if ( '' !== $cust_iva ) : ?> · <?php echo esc_html( $cust_iva ); ?><?php endif; ?>
+				<?php
+				if ( '' !== $cust_doc ) :
+					?>
+					<br><?php echo esc_html( $cust_doc ); ?><?php endif; ?>
+				<?php
+				if ( '' !== $cust_iva ) :
+					?>
+					· <?php echo esc_html( $cust_iva ); ?><?php endif; ?>
 			</div>
 		<?php endif; ?>
 
@@ -357,7 +372,10 @@ class KEYTILL_Print {
 			?>
 			<div class="it">
 				<div class="nm"><?php echo esc_html( $r['name'] ); ?></div>
-				<?php if ( '' !== $r['attrs'] ) : ?><div class="at"><?php echo esc_html( $r['attrs'] ); ?></div><?php endif; ?>
+				<?php
+				if ( '' !== $r['attrs'] ) :
+					?>
+					<div class="at"><?php echo esc_html( $r['attrs'] ); ?></div><?php endif; ?>
 				<div class="row">
 					<span class="l"><?php echo esc_html( $r['qty'] ); ?> × <?php echo wp_kses_post( wc_price( $unit, array( 'currency' => $order->get_currency() ) ) ); ?></span>
 					<span class="v"><?php echo wp_kses_post( wc_price( $r['total'], array( 'currency' => $order->get_currency() ) ) ); ?></span>
@@ -429,7 +447,7 @@ class KEYTILL_Print {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo esc_html( sprintf( __( 'Voucher %s', 'keytill' ), $code ) ); ?></title>
+<title><?php /* translators: %s: credit code. */ echo esc_html( sprintf( __( 'Voucher %s', 'keytill' ), $code ) ); ?></title>
 <style>
 	*{ box-sizing:border-box; }
 	html,body{ margin:0; padding:0; background:#e9edf2; color:#000;
@@ -503,7 +521,10 @@ class KEYTILL_Print {
 		$days      = class_exists( 'KEYTILL_Settings' ) ? (int) KEYTILL_Settings::get( 'exchange_days' ) : 30;
 		$valid_str = '';
 		if ( $days > 0 ) {
-			$ts        = $date ? $date->getTimestamp() : current_time( 'timestamp' );
+			// time() y no current_time('timestamp'): wp_date() aplica la zona del
+			// sitio, y current_time ya trae el offset incorporado (se aplicaria
+			// dos veces). El camino principal usa getTimestamp(), tambien UTC real.
+			$ts        = $date ? $date->getTimestamp() : time();
 			$valid_str = wp_date( 'd/m/Y', $ts + $days * DAY_IN_SECONDS );
 		}
 
@@ -536,7 +557,7 @@ class KEYTILL_Print {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo esc_html( sprintf( __( 'Gift receipt #%s', 'keytill' ), $number ) ); ?></title>
+<title><?php /* translators: %s: order number. */ echo esc_html( sprintf( __( 'Gift receipt #%s', 'keytill' ), $number ) ); ?></title>
 <style>
 	*{ box-sizing:border-box; }
 	html,body{ margin:0; padding:0; background:#e9edf2; color:#000;
@@ -566,19 +587,25 @@ class KEYTILL_Print {
 </head>
 <body>
 	<div class="t">
-		<?php if ( $logo_src ) : ?><img class="logo" src="<?php echo esc_url( $logo_src ); ?>" alt=""><?php endif; ?>
+		<?php
+		if ( $logo_src ) :
+			?>
+			<img class="logo" src="<?php echo esc_url( $logo_src ); ?>" alt=""><?php endif; ?>
 		<div class="store"><?php echo esc_html( $store ); ?></div>
 		<div class="title"><?php esc_html_e( 'GIFT RECEIPT', 'keytill' ); ?></div>
 
 		<hr class="hr">
-		<div class="doc"><span style="font-weight:700"><?php echo esc_html( sprintf( __( 'Sale #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
+		<div class="doc"><span style="font-weight:700"><?php /* translators: %s: order number. */ echo esc_html( sprintf( __( 'Sale #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
 
 		<hr class="hr">
 		<?php foreach ( $rows as $r ) : ?>
 			<div class="it">
 				<div class="nm"><?php echo esc_html( $r['name'] ); ?></div>
-				<?php if ( '' !== $r['attrs'] ) : ?><div class="at"><?php echo esc_html( $r['attrs'] ); ?></div><?php endif; ?>
-				<div class="qty"><?php echo esc_html( sprintf( __( 'Quantity: %d', 'keytill' ), $r['qty'] ) ); ?></div>
+				<?php
+				if ( '' !== $r['attrs'] ) :
+					?>
+					<div class="at"><?php echo esc_html( $r['attrs'] ); ?></div><?php endif; ?>
+				<div class="qty"><?php /* translators: %d: number of units. */ echo esc_html( sprintf( __( 'Quantity: %d', 'keytill' ), $r['qty'] ) ); ?></div>
 			</div>
 		<?php endforeach; ?>
 
@@ -593,6 +620,7 @@ class KEYTILL_Print {
 		<div class="note">
 			<?php
 			if ( '' !== $valid_str ) {
+				/* translators: %1$s: expiry date. %2$d: number of days. */
 				echo esc_html( sprintf( __( 'Valid for exchanges until %1$s (%2$d days).', 'keytill' ), $valid_str, $days ) );
 			} else {
 				esc_html_e( 'Present this receipt to make an exchange.', 'keytill' );

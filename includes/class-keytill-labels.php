@@ -144,7 +144,7 @@ class KEYTILL_Labels {
 			// Topes de seguridad: en vez de descartar en silencio, contamos lo que
 			// queda afuera para avisarlo en la hoja impresa.
 			if ( count( $units ) >= self::MAX_ITEMS || $total >= self::MAX_TOTAL ) {
-				$dropped_cap++;
+				++$dropped_cap;
 				continue;
 			}
 			$id = absint( $id );
@@ -157,7 +157,7 @@ class KEYTILL_Labels {
 			}
 			$code = (string) $product->get_meta( '_keytill_barcode' );
 			if ( '' === $code ) {
-				$no_barcode++;
+				++$no_barcode;
 				continue; // sin código de barras: no se puede imprimir.
 			}
 			$qty = max( 1, min( self::MAX_QTY, absint( $qty ) ) );
@@ -165,7 +165,7 @@ class KEYTILL_Labels {
 				$qty = self::MAX_TOTAL - $total; // recorta al tope global.
 			}
 			if ( $qty < 1 ) {
-				$dropped_cap++;
+				++$dropped_cap;
 				continue;
 			}
 			$units[] = self::make_unit( $product, $code, $qty );
@@ -265,7 +265,9 @@ class KEYTILL_Labels {
 			$total += (int) $u['qty'];
 		}
 		$title = $qty_control && isset( $opts['code'] )
+			/* translators: %1$s: barcode. %2$d: number of labels. */
 			? sprintf( __( 'Labels %1$s (%2$d)', 'keytill' ), $opts['code'], $total )
+			/* translators: %d: number of labels. */
 			: sprintf( _n( 'Label (%d)', 'Labels (%d)', $total, 'keytill' ), $total );
 
 		header( 'Content-Type: text/html; charset=utf-8' );
@@ -281,7 +283,7 @@ class KEYTILL_Labels {
 	html,body{ margin:0; padding:0; background:#e9edf2; font-family:'Helvetica Neue',Arial,system-ui,sans-serif; color:#0A1A33;
 		-webkit-print-color-adjust:exact; print-color-adjust:exact; }
 	/* Cada hoja es una grilla FIJA: misma cantidad y misma posición de etiquetas
-	   en todas las hojas (apilables para cortar juntas en guillotina). */
+		en todas las hojas (apilables para cortar juntas en guillotina). */
 	.page{ width:210mm; margin:0 auto 6mm; background:#fff; padding:8mm; box-shadow:0 1px 6px rgba(10,26,51,.15);
 		break-after:page; page-break-after:always; }
 	.page:last-child{ break-after:auto; page-break-after:auto; }
@@ -339,12 +341,12 @@ class KEYTILL_Labels {
 				<input id="keytill-qty" type="number" min="1" max="<?php echo (int) self::MAX_QTY; ?>" value="<?php echo (int) $total; ?>" />
 				<button type="button" onclick="keytillSetQty(document.getElementById('keytill-qty').value)"><?php esc_html_e( 'Refresh', 'keytill' ); ?></button>
 			</span>
-			<span class="muted"><?php echo esc_html( sprintf( __( '%1$d labels · %2$s · 3.5 × 3.5 cm', 'keytill' ), $total, isset( $opts['code'] ) ? $opts['code'] : '' ) ); ?></span>
+			<span class="muted"><?php /* translators: %1$d: number of labels. %2$s: barcode. */ echo esc_html( sprintf( __( '%1$d labels · %2$s · 3.5 × 3.5 cm', 'keytill' ), $total, isset( $opts['code'] ) ? $opts['code'] : '' ) ); ?></span>
 		<?php else : ?>
-			<span class="muted"><?php echo esc_html( sprintf( _n( '%1$d label · %2$d product · 3.5 × 3.5 cm', '%1$d labels · %2$d products · 3.5 × 3.5 cm', $total, 'keytill' ), $total, count( $units ) ) ); ?></span>
+			<span class="muted"><?php /* translators: %1$d: number of labels. %2$d: number of products. */ echo esc_html( sprintf( _n( '%1$d label · %2$d product · 3.5 × 3.5 cm', '%1$d labels · %2$d products · 3.5 × 3.5 cm', $total, 'keytill' ), $total, count( $units ) ) ); ?></span>
 		<?php endif; ?>
 	</div>
-	<?php if ( ! empty( $opts['notice'] ) ) : ?>
+		<?php if ( ! empty( $opts['notice'] ) ) : ?>
 		<div class="notice-bar">⚠ <?php echo esc_html( $opts['notice'] ); ?></div>
 	<?php endif; ?>
 	<script>

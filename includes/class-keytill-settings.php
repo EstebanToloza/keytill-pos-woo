@@ -157,7 +157,7 @@ class KEYTILL_Settings {
 				'id'   => $id,
 				'name' => $label,
 			);
-			$key++;
+			++$key;
 		}
 		return $out;
 	}
@@ -187,18 +187,18 @@ class KEYTILL_Settings {
 		// Handle vacío con deps: el inline JS se imprime después de jQuery + media.
 		wp_register_script( 'keytill-settings', '', array( 'jquery', 'media-editor' ), KEYTILL_VERSION, true );
 		wp_enqueue_script( 'keytill-settings' );
-		$js = "(function($){var frame;" .
+		$js = '(function($){var frame;' .
 			"$('#keytill_logo_pick').on('click',function(e){e.preventDefault();" .
-			"if(frame){frame.open();return;}" .
-			"frame=wp.media({title:" . wp_json_encode( __( 'Choose logo', 'keytill' ) ) . ",library:{type:'image'},multiple:false,button:{text:" . wp_json_encode( __( 'Use as logo', 'keytill' ) ) . "}});" .
+			'if(frame){frame.open();return;}' .
+			'frame=wp.media({title:' . wp_json_encode( __( 'Choose logo', 'keytill' ) ) . ",library:{type:'image'},multiple:false,button:{text:" . wp_json_encode( __( 'Use as logo', 'keytill' ) ) . '}});' .
 			"frame.on('select',function(){var a=frame.state().get('selection').first().toJSON();" .
-			"var url=(a.sizes&&a.sizes.medium)?a.sizes.medium.url:a.url;" .
+			'var url=(a.sizes&&a.sizes.medium)?a.sizes.medium.url:a.url;' .
 			"$('#keytill_business_logo').val(a.id);" .
 			"$('#keytill_logo_preview').show().find('img').attr('src',url);" .
 			"$('#keytill_logo_clear').show();});frame.open();});" .
 			"$('#keytill_logo_clear').on('click',function(e){e.preventDefault();" .
 			"$('#keytill_business_logo').val('');$('#keytill_logo_preview').hide();$(this).hide();});" .
-			"})(jQuery);";
+			'})(jQuery);';
 		wp_add_inline_script( 'keytill-settings', $js );
 	}
 
@@ -339,7 +339,7 @@ class KEYTILL_Settings {
 					<h2 style="margin-top:0"><?php esc_html_e( 'Status', 'keytill' ); ?></h2>
 					<p>
 						<?php esc_html_e( 'Register:', 'keytill' ); ?>
-						<strong><?php echo $open ? esc_html( sprintf( __( 'open (#%d)', 'keytill' ), $open ) ) : esc_html__( 'closed', 'keytill' ); ?></strong>
+						<strong><?php /* translators: %d: id of the open register session. */ echo $open ? esc_html( sprintf( __( 'open (#%d)', 'keytill' ), $open ) ) : esc_html__( 'closed', 'keytill' ); ?></strong>
 					</p>
 					<p><?php esc_html_e( 'Version:', 'keytill' ); ?> <code><?php echo esc_html( KEYTILL_VERSION ); ?></code></p>
 					<?php if ( current_user_can( 'manage_woocommerce' ) ) : ?>

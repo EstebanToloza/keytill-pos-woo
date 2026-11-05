@@ -338,7 +338,7 @@ class KEYTILL_Credit {
 		if ( (float) $row->balance <= 0 ) {
 			return false;
 		}
-		if ( $row->expires_at && strtotime( $row->expires_at ) <= current_time( 'timestamp' ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp
+		if ( $row->expires_at && strtotime( $row->expires_at ) <= current_time( 'timestamp' ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp -- expires_at se guarda en hora local (current_time('mysql')) y el cron expire_due() compara en local; current_time('timestamp') mantiene la misma convencion a los dos lados de la comparacion.
 			return false;
 		}
 		return true;
@@ -357,7 +357,7 @@ class KEYTILL_Credit {
 		if ( 'void' === $row->status ) {
 			return __( 'The credit was voided.', 'keytill' );
 		}
-		if ( 'expired' === $row->status || ( $row->expires_at && strtotime( $row->expires_at ) <= current_time( 'timestamp' ) ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp
+		if ( 'expired' === $row->status || ( $row->expires_at && strtotime( $row->expires_at ) <= current_time( 'timestamp' ) ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp -- expires_at se guarda en hora local (current_time('mysql')) y el cron expire_due() compara en local; current_time('timestamp') mantiene la misma convencion a los dos lados de la comparacion.
 			return __( 'The credit has expired.', 'keytill' );
 		}
 		if ( (float) $row->balance <= 0 || 'used' === $row->status ) {
@@ -399,6 +399,7 @@ class KEYTILL_Credit {
 		// restaría el monto dos veces y marcaría 'used' de más).
 		$affected = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 				"UPDATE $table
 				 SET status = CASE WHEN balance - %s <= 0 THEN 'used' ELSE status END,
 				     balance = balance - %s,
@@ -445,6 +446,7 @@ class KEYTILL_Credit {
 
 		$affected = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 				"UPDATE $table
 				 SET balance = balance + %s,
 				     status = CASE WHEN status = 'used' THEN 'active' ELSE status END,
@@ -511,6 +513,7 @@ class KEYTILL_Credit {
 		$now   = current_time( 'mysql' );
 		return (int) $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 				"UPDATE $table SET status = 'expired', updated_at = %s
 				 WHERE status = 'active' AND expires_at IS NOT NULL AND expires_at <= %s",
 				$now,
@@ -635,7 +638,7 @@ class KEYTILL_Credit {
 					'<strong>' . wp_kses_post( wc_price( $sum_active ) ) . '</strong>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				);
 				?>
-				· <?php printf( esc_html__( 'Default validity: %d days', 'keytill' ), (int) self::get_expiry_days() ); ?>
+				· <?php /* translators: %d: number of days. */ printf( esc_html__( 'Default validity: %d days', 'keytill' ), (int) self::get_expiry_days() ); ?>
 			</p>
 
 			<?php if ( '' !== $issued ) : ?>
@@ -714,11 +717,13 @@ class KEYTILL_Credit {
 										echo '<span class="dashicons dashicons-tickets-alt" style="color:#996b00"></span> ';
 										esc_html_e( 'Gift card', 'keytill' );
 										if ( $r->source_order_id ) {
+											/* translators: %d: order id. */
 											echo ' · <a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'sale #%d', 'keytill' ), (int) $r->source_order_id ) ) . '</a>';
 										} else {
 											echo ' <span class="description">(' . esc_html__( 'admin', 'keytill' ) . ')</span>';
 										}
 									} elseif ( $r->source_order_id ) {
+										/* translators: %d: order id. */
 										echo '<a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'refund #%d', 'keytill' ), (int) $r->source_order_id ) ) . '</a>';
 									} else {
 										echo '—';

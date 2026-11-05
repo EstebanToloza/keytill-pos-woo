@@ -175,6 +175,7 @@ class KEYTILL_Branch_Stock {
 	public static function is_managed( $product_id ) {
 		global $wpdb;
 		return (int) $wpdb->get_var(
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 			$wpdb->prepare( 'SELECT COUNT(*) FROM ' . self::table() . ' WHERE product_id = %d', (int) $product_id )
 		) > 0;
 	}
@@ -218,6 +219,7 @@ class KEYTILL_Branch_Stock {
 		global $wpdb;
 		$v = $wpdb->get_var(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 				'SELECT qty FROM ' . self::table() . ' WHERE product_id = %d AND branch_id = %s',
 				(int) $product_id,
 				(string) $branch_id
@@ -230,6 +232,7 @@ class KEYTILL_Branch_Stock {
 	public static function by_product( $product_id ) {
 		global $wpdb;
 		$rows = $wpdb->get_results(
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 			$wpdb->prepare( 'SELECT branch_id, qty FROM ' . self::table() . ' WHERE product_id = %d', (int) $product_id ),
 			ARRAY_A
 		);
@@ -256,6 +259,7 @@ class KEYTILL_Branch_Stock {
 	public static function total( $product_id ) {
 		global $wpdb;
 		$v = $wpdb->get_var(
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 			$wpdb->prepare( 'SELECT COALESCE(SUM(qty),0) FROM ' . self::table() . ' WHERE product_id = %d', (int) $product_id )
 		);
 		return (int) $v;
@@ -270,6 +274,7 @@ class KEYTILL_Branch_Stock {
 		global $wpdb;
 		$wpdb->query(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 				'INSERT INTO ' . self::table() . ' (product_id, branch_id, qty, updated_at) VALUES (%d, %s, %d, %s)
 				 ON DUPLICATE KEY UPDATE qty = VALUES(qty), updated_at = VALUES(updated_at)',
 				(int) $product_id,
@@ -326,6 +331,7 @@ class KEYTILL_Branch_Stock {
 		// Asegura la fila (0 si no existía).
 		$wpdb->query(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 				"INSERT IGNORE INTO $table (product_id, branch_id, qty, updated_at) VALUES (%d, %s, 0, %s)",
 				(int) $product_id,
 				$branch_id,
@@ -337,6 +343,7 @@ class KEYTILL_Branch_Stock {
 			// Resta atómica: solo si hay suficiente (evita sobreventa con dos cajas).
 			$affected = $wpdb->query(
 				$wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 					"UPDATE $table SET qty = qty + %d, updated_at = %s WHERE product_id = %d AND branch_id = %s AND qty >= %d",
 					$delta,
 					$now,
@@ -352,6 +359,7 @@ class KEYTILL_Branch_Stock {
 			// Sin guard: aplica el delta tal cual (puede quedar negativo = faltante).
 			$wpdb->query(
 				$wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 					"UPDATE $table SET qty = qty + %d, updated_at = %s WHERE product_id = %d AND branch_id = %s",
 					$delta,
 					$now,
@@ -461,6 +469,7 @@ class KEYTILL_Branch_Stock {
 				$bid = $default;
 			}
 			// No pisar si ya hay una fila (idempotencia fina). get_var devuelve string.
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 			if ( 0 === (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . self::table() . ' WHERE product_id = %d', $pid ) ) ) {
 				self::put( $pid, $bid, $qty );
 			}

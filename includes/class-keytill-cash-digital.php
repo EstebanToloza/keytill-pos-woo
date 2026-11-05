@@ -297,6 +297,7 @@ class KEYTILL_Cash_Digital {
 			array(
 				'post_type'   => self::CPT,
 				'post_status' => 'publish',
+				/* translators: %s: date and time the period was opened. */
 				'post_title'  => sprintf( __( 'Digital register %s', 'keytill' ), wp_date( 'd/m/Y H:i' ) ),
 			),
 			true

@@ -867,7 +867,8 @@ class KEYTILL_REST {
 		// Estado.
 		$status       = sanitize_key( (string) $request->get_param( 'status' ) );
 		$all_statuses = array_map(
-			function ( $s ) { return 'wc-' === substr( $s, 0, 3 ) ? substr( $s, 3 ) : $s; },
+			function ( $s ) {
+				return 'wc-' === substr( $s, 0, 3 ) ? substr( $s, 3 ) : $s; },
 			array_keys( wc_get_order_statuses() )
 		);
 		if ( $status && 'any' !== $status && in_array( $status, $all_statuses, true ) ) {
@@ -1282,7 +1283,7 @@ class KEYTILL_REST {
 				$t->update_meta_data( KEYTILL_Branches::META, $branch );
 			}
 			$t->save(); // dispara woocommerce_update_product → invalida el caché del catálogo.
-			$updated++;
+			++$updated;
 		}
 
 		return new WP_REST_Response(
@@ -1552,7 +1553,9 @@ class KEYTILL_REST {
 			$meta = $wpdb->prefix . 'wc_orders_meta';
 			$id   = $wpdb->get_var(
 				$wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 					"SELECT k.order_id FROM {$meta} k
+					 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
 					 INNER JOIN {$meta} c ON c.order_id = k.order_id
 					 WHERE k.meta_key = '_keytill_idempotency_key' AND k.meta_value = %s
 					   AND c.meta_key = '_keytill_cajero_id' AND c.meta_value = %s
@@ -2339,7 +2342,7 @@ class KEYTILL_REST {
 				$ov = wc_get_product( $o['id'] );
 				if ( $ov instanceof WC_Product_Variation ) {
 					$ov->delete( true );
-					$pruned++;
+					++$pruned;
 				}
 			}
 		}
@@ -2374,9 +2377,14 @@ class KEYTILL_REST {
 
 		// Tope de seguridad: no explotar el catálogo.
 		$max_total = 200;
-		if ( count( $existing_sigs ) + count( array_filter( $combos, function ( $c ) use ( $existing_sigs, $chosen ) {
-			return empty( $existing_sigs[ self::combo_signature( $c, array_keys( $chosen ) ) ] );
-		} ) ) > $max_total ) {
+		if ( count( $existing_sigs ) + count(
+			array_filter(
+				$combos,
+				function ( $c ) use ( $existing_sigs, $chosen ) {
+					return empty( $existing_sigs[ self::combo_signature( $c, array_keys( $chosen ) ) ] );
+				}
+			)
+		) > $max_total ) {
 			return new WP_Error(
 				'keytill_too_many',
 				/* translators: %d: tope de variaciones. */
@@ -2397,7 +2405,7 @@ class KEYTILL_REST {
 			$variation->set_status( 'publish' );
 			$variation->save();
 			$existing_sigs[ $sig ] = true;
-			$created++;
+			++$created;
 		}
 
 		// Recarga y sincroniza el padre (rango de precio/stock).
@@ -2838,6 +2846,7 @@ class KEYTILL_REST {
 					'type'         => 'devolucion',
 					'account'      => $acc,
 					'amount'       => round( $amt, 2 ),
+					/* translators: %s: order number. */
 					'detail'       => sprintf( __( 'Refund #%s', 'keytill' ), $o->get_order_number() ),
 					'order_id'     => 0,
 					'verification' => '',
@@ -2893,7 +2902,12 @@ class KEYTILL_REST {
 		);
 
 		// Orden por fecha, más reciente primero.
-		usort( $rows, function ( $a, $b ) { return $b['ts'] <=> $a['ts']; } );
+		usort(
+			$rows,
+			function ( $a, $b ) {
+				return $b['ts'] <=> $a['ts'];
+			}
+		);
 
 		// Totales por cuenta.
 		$totals = array(
@@ -3446,6 +3460,7 @@ class KEYTILL_REST {
 				// que el cajero haya confirmado vender igual (force → puede negativo).
 				$src = ! empty( $src_by_id[ $pid ] ) ? KEYTILL_Branches::valid_id( $src_by_id[ $pid ] ) : $caja_branch;
 				if ( '' === $src ) {
+					/* translators: %s: product name. */
 					$errors[] = sprintf( __( '%s: the source location is missing.', 'keytill' ), $product->get_name() );
 					continue;
 				}

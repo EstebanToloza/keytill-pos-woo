@@ -21,8 +21,15 @@ $keytill_biz        = KEYTILL_Settings::business();
 $keytill_brand      = $keytill_biz['name'];
 $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keytill_biz['logo'], 'medium' ) : '';
 ?>
-<?php if ( $keytill_tax_status ) : $keytill_fiscal = KEYTILL_Customers::fiscal_options(); ?>
-<datalist id="keytill-fiscal-opts"><?php foreach ( $keytill_fiscal as $o ) : ?><option value="<?php echo esc_attr( $o ); ?>"></option><?php endforeach; ?></datalist>
+<?php
+if ( $keytill_tax_status ) :
+	$keytill_fiscal = KEYTILL_Customers::fiscal_options();
+	?>
+<datalist id="keytill-fiscal-opts">
+	<?php
+	foreach ( $keytill_fiscal as $o ) :
+		?>
+	<option value="<?php echo esc_attr( $o ); ?>"></option><?php endforeach; ?></datalist>
 <?php endif; ?>
 <div class="keytill" id="keytill-app" x-data="keytillApp()" :class="{ 'is-cart-open': cartSheet }" x-cloak>
 
@@ -484,7 +491,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 		<div class="prod__err" x-show="error" x-cloak x-text="error"></div>
 
 		<!-- Modo de selección: etiquetas (por defecto) o sucursal. Solo con gestión y
-		     si hay sucursales cargadas. Nunca se ven dos columnas de checkboxes a la vez. -->
+			si hay sucursales cargadas. Nunca se ven dos columnas de checkboxes a la vez. -->
 		<div class="prod__modebar" x-show="canManage && branches.length" x-cloak>
 			<span class="mono muted"><?php esc_html_e( 'Select for:', 'keytill' ); ?></span>
 			<div class="prod__seg">
@@ -580,7 +587,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 								<!-- Stock -->
 								<td class="n">
 									<!-- Distribuido: no se edita raw acá (rompería el reparto por sucursal);
-									     se muestra el total y se edita en el producto. -->
+										se muestra el total y se edita en el producto. -->
 									<template x-if="r.editable && canManage && r.branch_managed">
 										<button type="button" class="prod__stockbtn mono" @click="openEditor(r)" x-text="r.stock_qty"
 											title="<?php esc_attr_e( 'Distributed by location — edit in the product', 'keytill' ); ?>"></button>
@@ -934,7 +941,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 															@keydown.enter="$event.target.blur()" @blur="saveField(v, 'regular_price')" /></td>
 														<td class="n">
 															<!-- Sin sucursales o variación "legacy": stock único (con opción de
-															     distribuir). Ya distribuida: total que abre el popover. -->
+																distribuir). Ya distribuida: total que abre el popover. -->
 															<template x-if="!branches.length">
 																<input type="text" inputmode="numeric" class="prod__inp prod__inp--stock mono" placeholder="—" x-model="v._stockStr"
 																	@keydown.enter="$event.target.blur()" @blur="saveField(v, 'stock_quantity')" />
@@ -952,8 +959,8 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 														</td>
 														<td x-show="branches.length" x-cloak>
 															<!-- Legacy: elegir sucursal = todo el stock ahí (pasa a distribuido).
-															     Ya distribuida: se muestra "Distribuido" y el reparto se edita
-															     en la casilla de stock (botón por sucursal). -->
+																Ya distribuida: se muestra "Distribuido" y el reparto se edita
+																en la casilla de stock (botón por sucursal). -->
 															<template x-if="!v.branch_managed">
 																<select class="prod__inp prod__inp--branch" x-model="v.branch_id" @change="saveField(v, 'branch_id')">
 																	<option value=""><?php esc_html_e( 'No location', 'keytill' ); ?></option>
@@ -1033,7 +1040,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					<span class="mono muted" x-text="stockPop.name"></span>
 				</div>
 				<!-- Variación aún no distribuida: se muestra su stock actual como
-				     referencia para repartirlo por sucursal. -->
+					referencia para repartirlo por sucursal. -->
 				<div class="note-inline mono muted" x-show="stockPop.legacy" x-cloak>
 					<?php esc_html_e( 'Current undistributed stock:', 'keytill' ); ?> <b x-text="stockPop.current"></b>.
 					<?php esc_html_e( 'Enter how many there are at each location.', 'keytill' ); ?>
