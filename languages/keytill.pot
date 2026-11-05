@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-05 17:56\n"
+"POT-Creation-Date: 2026-11-05 18:03\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,7 +24,22 @@ msgstr ""
 msgid "%s: the source location is missing."
 msgstr ""
 
+msgid "(no name)"
+msgstr ""
+
 msgid "(no salesperson)"
+msgstr ""
+
+msgid "(will be short)"
+msgstr ""
+
+msgid "+ add images"
+msgstr ""
+
+msgid "+ attribute"
+msgstr ""
+
+msgid "+ value"
 msgstr ""
 
 msgid "+30 days"
@@ -34,6 +49,9 @@ msgid "0 = never expires. Applies to new refund credits and gift cards."
 msgstr ""
 
 msgid "0 = no limit. Maximum amount a cashier can load on an open-amount gift card at the POS."
+msgstr ""
+
+msgid "12 digits"
 msgstr ""
 
 msgid "12 digits."
@@ -51,7 +69,19 @@ msgstr ""
 msgid "A product with that SKU already exists."
 msgstr ""
 
+msgid "A single item"
+msgstr ""
+
+msgid "A store credit will be issued for"
+msgstr ""
+
 msgid "AMOUNT"
+msgstr ""
+
+msgid "Account"
+msgstr ""
+
+msgid "Account: all"
 msgstr ""
 
 msgid "Actions"
@@ -60,10 +90,34 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
+msgid "Active (for sale)"
+msgstr ""
+
 msgid "Active balance in circulation: %s"
 msgstr ""
 
+msgid "Add"
+msgstr ""
+
+msgid "Add existing attribute…"
+msgstr ""
+
+msgid "Add this product to the cart?"
+msgstr ""
+
+msgid "Add to cart"
+msgstr ""
+
+msgid "Added to cart"
+msgstr ""
+
 msgid "Address"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "All stock will be placed at this location."
 msgstr ""
 
 msgid "Allow custom amount (web)"
@@ -72,13 +126,31 @@ msgstr ""
 msgid "Amount"
 msgstr ""
 
+msgid "Amount (or type it)"
+msgstr ""
+
+msgid "Amount and reason · TAB between fields · ENTER confirm · ESC cancel"
+msgstr ""
+
 msgid "Another product already uses that SKU."
 msgstr ""
 
 msgid "Another product already uses that barcode."
 msgstr ""
 
+msgid "Apply"
+msgstr ""
+
+msgid "Assign"
+msgstr ""
+
+msgid "At least an email or tax ID · no email is sent"
+msgstr ""
+
 msgid "Attribute not found."
+msgstr ""
+
+msgid "Attributes and variations"
 msgstr ""
 
 msgid "Attributes printed on variation labels, as «Property: Value» (e.g. «Size: XL»). If you select none, all variation attributes are shown."
@@ -87,7 +159,19 @@ msgstr ""
 msgid "Attributes to show"
 msgstr ""
 
+msgid "BREAKDOWN BY METHOD"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Back to opening"
+msgstr ""
+
 msgid "Balance"
+msgstr ""
+
+msgid "Bank transfer"
 msgstr ""
 
 msgid "Barcode"
@@ -102,6 +186,9 @@ msgstr ""
 msgid "Below the business name, in the header."
 msgstr ""
 
+msgid "Bold"
+msgstr ""
+
 msgid "Business details (receipt)"
 msgstr ""
 
@@ -114,7 +201,16 @@ msgstr ""
 msgid "By payment method"
 msgstr ""
 
+msgid "CASH TO RETURN"
+msgstr ""
+
 msgid "CODE"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Cart"
 msgstr ""
 
 msgid "Cash"
@@ -123,10 +219,25 @@ msgstr ""
 msgid "Cash refunds"
 msgstr ""
 
+msgid "Cash register (cash)"
+msgstr ""
+
 msgid "Cash sales"
 msgstr ""
 
+msgid "Cash to return from the drawer"
+msgstr ""
+
 msgid "Cashier"
+msgstr ""
+
+msgid "Cashier: all"
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Category: all"
 msgstr ""
 
 msgid "Change"
@@ -144,7 +255,13 @@ msgstr ""
 msgid "Choose at least one attribute with values."
 msgstr ""
 
+msgid "Choose attributes and their values, then «Generate variations»."
+msgstr ""
+
 msgid "Choose different locations."
+msgstr ""
+
+msgid "Choose location…"
 msgstr ""
 
 msgid "Choose logo"
@@ -156,7 +273,25 @@ msgstr ""
 msgid "Choose the gift card amount"
 msgstr ""
 
+msgid "Choose the item · number or tap · ESC back"
+msgstr ""
+
 msgid "Choose the register's location."
+msgstr ""
+
+msgid "Choose where each item comes from · ENTER confirm · ESC cancel"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Clear formatting"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Close register"
 msgstr ""
 
 msgid "Closed"
@@ -168,13 +303,34 @@ msgstr ""
 msgid "Code"
 msgstr ""
 
+msgid "Code not recognized"
+msgstr ""
+
 msgid "Code or email…"
+msgstr ""
+
+msgid "Command field: scan or search"
 msgstr ""
 
 msgid "Comped (100%)"
 msgstr ""
 
+msgid "Confirm and charge"
+msgstr ""
+
+msgid "Confirm sale"
+msgstr ""
+
+msgid "Continue"
+msgstr ""
+
+msgid "Continue without opening the register"
+msgstr ""
+
 msgid "Counted"
+msgstr ""
+
+msgid "Counted cash"
 msgstr ""
 
 msgid "Counter manual"
@@ -186,10 +342,28 @@ msgstr ""
 msgid "Counter sale (POS)."
 msgstr ""
 
+msgid "Create attribute (e.g. Size)"
+msgstr ""
+
+msgid "Create customer"
+msgstr ""
+
+msgid "Creating…"
+msgstr ""
+
+msgid "Credit"
+msgstr ""
+
 msgid "Credit code does not exist."
 msgstr ""
 
 msgid "Credits"
+msgstr ""
+
+msgid "Current undistributed stock:"
+msgstr ""
+
+msgid "Current:"
 msgstr ""
 
 msgid "Customer"
@@ -204,13 +378,40 @@ msgstr ""
 msgid "Customers can enter a custom amount on the web in addition to the denominations. At the POS the cashier can always type an amount."
 msgstr ""
 
+msgid "DEL removes"
+msgstr ""
+
+msgid "DISCOUNT"
+msgstr ""
+
+msgid "DISCOUNT (WHOLE SALE)"
+msgstr ""
+
+msgid "DISCOUNT PER ITEM"
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
 msgid "Date"
+msgstr ""
+
+msgid "Date of birth"
+msgstr ""
+
+msgid "Deduct from"
 msgstr ""
 
 msgid "Default validity (days)"
 msgstr ""
 
 msgid "Default validity: %d days"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Delete variation"
 msgstr ""
 
 msgid "Deposit"
@@ -222,13 +423,25 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
+msgid "Details"
+msgstr ""
+
 msgid "Difference"
+msgstr ""
+
+msgid "Digital"
 msgstr ""
 
 msgid "Digital register"
 msgstr ""
 
 msgid "Digital register %s"
+msgstr ""
+
+msgid "Digital register (bank account)"
+msgstr ""
+
+msgid "Digital register closed. Last balance:"
 msgstr ""
 
 msgid "Digital register period"
@@ -240,7 +453,31 @@ msgstr ""
 msgid "Discount"
 msgstr ""
 
+msgid "Distribute by location"
+msgstr ""
+
+msgid "Distribute by location…"
+msgstr ""
+
+msgid "Distributed"
+msgstr ""
+
+msgid "Distributed by location — edit in the product"
+msgstr ""
+
+msgid "Done"
+msgstr ""
+
+msgid "Download CSV for Excel"
+msgstr ""
+
 msgid "E.g. birthday gift"
+msgstr ""
+
+msgid "Edit product"
+msgstr ""
+
+msgid "Email"
 msgstr ""
 
 msgid "Email (optional)"
@@ -249,10 +486,22 @@ msgstr ""
 msgid "Enabled"
 msgstr ""
 
+msgid "Enter how many there are at each location."
+msgstr ""
+
+msgid "Enter the code · ENTER validate · ESC back"
+msgstr ""
+
 msgid "Enter the opening balance of the digital register (first time only)."
 msgstr ""
 
+msgid "Enter the opening cash float · ENTER opens the register"
+msgstr ""
+
 msgid "Expected"
+msgstr ""
+
+msgid "Expected cash"
 msgstr ""
 
 msgid "Expected in drawer"
@@ -264,7 +513,16 @@ msgstr ""
 msgid "Expires"
 msgstr ""
 
+msgid "Export CSV"
+msgstr ""
+
 msgid "Filter"
+msgstr ""
+
+msgid "Find sale"
+msgstr ""
+
+msgid "Fixed amount"
 msgstr ""
 
 msgid "Fixed denominations"
@@ -279,10 +537,28 @@ msgstr ""
 msgid "From"
 msgstr ""
 
+msgid "GENERATE LABELS"
+msgstr ""
+
 msgid "GIFT RECEIPT"
 msgstr ""
 
+msgid "Gallery"
+msgstr ""
+
 msgid "General"
+msgstr ""
+
+msgid "Generate"
+msgstr ""
+
+msgid "Generate labels"
+msgstr ""
+
+msgid "Generate variations"
+msgstr ""
+
+msgid "Generating…"
 msgstr ""
 
 msgid "Gift card"
@@ -303,6 +579,12 @@ msgstr ""
 msgid "Gift cards issued"
 msgstr ""
 
+msgid "Gift cards issued — hand over the codes"
+msgstr ""
+
+msgid "Gift receipt"
+msgstr ""
+
 msgid "Gift receipt #%s"
 msgstr ""
 
@@ -310,6 +592,18 @@ msgid "Header and footer of the internal receipt. If the name is empty, the site
 msgstr ""
 
 msgid "Hi %s,"
+msgstr ""
+
+msgid "How much is in the bank account today (first time only)."
+msgstr ""
+
+msgid "In stock"
+msgstr ""
+
+msgid "Inactive"
+msgstr ""
+
+msgid "Increase"
 msgstr ""
 
 msgid "Invalid amount."
@@ -363,6 +657,9 @@ msgstr ""
 msgid "It just ran out of stock at this location: %s (another register sold it)."
 msgstr ""
 
+msgid "Italic"
+msgstr ""
+
 msgid "Keytill"
 msgstr ""
 
@@ -378,13 +675,40 @@ msgstr ""
 msgid "Labels %1$s (%2$d)"
 msgstr ""
 
+msgid "Link"
+msgstr ""
+
+msgid "List"
+msgstr ""
+
+msgid "Loading variations…"
+msgstr ""
+
+msgid "Loading…"
+msgstr ""
+
+msgid "Local"
+msgstr ""
+
+msgid "Location"
+msgstr ""
+
+msgid "Location: per variation"
+msgstr ""
+
 msgid "Locations"
 msgstr ""
 
 msgid "Log in"
 msgstr ""
 
+msgid "Log out"
+msgstr ""
+
 msgid "Logo"
+msgstr ""
+
+msgid "Main image"
 msgstr ""
 
 msgid "Manager"
@@ -396,10 +720,43 @@ msgstr ""
 msgid "Manual movements"
 msgstr ""
 
+msgid "Method"
+msgstr ""
+
+msgid "Method: all"
+msgstr ""
+
 msgid "Methods (non-cash)"
 msgstr ""
 
+msgid "Money out"
+msgstr ""
+
+msgid "Mov."
+msgstr ""
+
+msgid "Move"
+msgstr ""
+
+msgid "Move stock"
+msgstr ""
+
+msgid "Move stock between locations"
+msgstr ""
+
+msgid "Movement log"
+msgstr ""
+
+msgid "Movement: all"
+msgstr ""
+
+msgid "NEW CUSTOMER"
+msgstr ""
+
 msgid "Name"
+msgstr ""
+
+msgid "Name / email / tax ID"
 msgstr ""
 
 msgid "Net total"
@@ -408,13 +765,40 @@ msgstr ""
 msgid "Net total = POS sales (completed) minus refunds, in the range. Sales with no salesperson assigned are grouped as «(no salesperson)»."
 msgstr ""
 
+msgid "New customer"
+msgstr ""
+
+msgid "New customer · at least an email or tax ID · TAB between fields · ENTER save · ESC back"
+msgstr ""
+
+msgid "New item subtotal"
+msgstr ""
+
 msgid "New location…"
+msgstr ""
+
+msgid "New product"
 msgstr ""
 
 msgid "New salesperson…"
 msgstr ""
 
+msgid "New total"
+msgstr ""
+
+msgid "New value (e.g. M)"
+msgstr ""
+
+msgid "No additional images."
+msgstr ""
+
+msgid "No category"
+msgstr ""
+
 msgid "No credits yet."
+msgstr ""
+
+msgid "No customers."
 msgstr ""
 
 msgid "No global product attributes are defined."
@@ -423,10 +807,22 @@ msgstr ""
 msgid "No image was received."
 msgstr ""
 
+msgid "No location"
+msgstr ""
+
+msgid "No location (remove)"
+msgstr ""
+
 msgid "No manual movements in this period."
 msgstr ""
 
+msgid "No movements in this range."
+msgstr ""
+
 msgid "No movements."
+msgstr ""
+
+msgid "No orders."
 msgstr ""
 
 msgid "No permission"
@@ -435,7 +831,22 @@ msgstr ""
 msgid "No permission."
 msgstr ""
 
+msgid "No product has that barcode."
+msgstr ""
+
+msgid "No products."
+msgstr ""
+
+msgid "No recorded purchases."
+msgstr ""
+
+msgid "No results · TAB to create a new one"
+msgstr ""
+
 msgid "No sales in the selected range."
+msgstr ""
+
+msgid "No sales in this session"
 msgstr ""
 
 msgid "No transfers in this period."
@@ -462,7 +873,19 @@ msgstr ""
 msgid "Note (optional)"
 msgstr ""
 
+msgid "Number of labels per product"
+msgstr ""
+
+msgid "Numbered list"
+msgstr ""
+
 msgid "OK"
+msgstr ""
+
+msgid "OPENING BALANCE · DIGITAL REGISTER"
+msgstr ""
+
+msgid "OUT OF STOCK AT YOUR LOCATION"
 msgstr ""
 
 msgid "OVER"
@@ -480,7 +903,13 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
+msgid "Open digital register"
+msgstr ""
+
 msgid "Open in a new tab"
+msgstr ""
+
+msgid "Open register"
 msgstr ""
 
 msgid "Open sales screen"
@@ -498,6 +927,9 @@ msgstr ""
 msgid "Opening balance"
 msgstr ""
 
+msgid "Opening camera…"
+msgstr ""
+
 msgid "Opening float"
 msgstr ""
 
@@ -511,6 +943,12 @@ msgid "Order not found."
 msgstr ""
 
 msgid "Order total"
+msgstr ""
+
+msgid "Orders"
+msgstr ""
+
+msgid "Out of stock"
 msgstr ""
 
 msgid "POS operating guide. You can print it (Ctrl/Cmd + P) to keep a copy at the register."
@@ -531,7 +969,13 @@ msgstr ""
 msgid "Payments in (non-cash)"
 msgstr ""
 
+msgid "Payments in (transfer/QR/card)"
+msgstr ""
+
 msgid "Pending"
+msgstr ""
+
+msgid "Percentage %"
 msgstr ""
 
 msgid "Period details"
@@ -540,10 +984,19 @@ msgstr ""
 msgid "Phone"
 msgstr ""
 
+msgid "Point the camera at the barcode"
+msgstr ""
+
 msgid "Present this receipt to make an exchange."
 msgstr ""
 
 msgid "Present this voucher to use your credit. It is not cash."
+msgstr ""
+
+msgid "Price"
+msgstr ""
+
+msgid "Print"
 msgstr ""
 
 msgid "Print / Save PDF"
@@ -555,7 +1008,19 @@ msgstr ""
 msgid "Print labels"
 msgstr ""
 
+msgid "Print order"
+msgstr ""
+
+msgid "Print voucher"
+msgstr ""
+
+msgid "Process refund"
+msgstr ""
+
 msgid "Product"
+msgstr ""
+
+msgid "Product details (optional)"
 msgstr ""
 
 msgid "Product labels"
@@ -565,6 +1030,9 @@ msgid "Product not found (id %d)."
 msgstr ""
 
 msgid "Product not found."
+msgstr ""
+
+msgid "Purchase history"
 msgstr ""
 
 msgid "Purchase summary"
@@ -579,7 +1047,22 @@ msgstr ""
 msgid "Quantity: %d"
 msgstr ""
 
+msgid "REFUND DONE"
+msgstr ""
+
+msgid "REFUND METHOD"
+msgstr ""
+
 msgid "REGISTER 01"
+msgstr ""
+
+msgid "REGISTER CLOSED"
+msgstr ""
+
+msgid "Read only — editing requires management permission."
+msgstr ""
+
+msgid "Reason"
 msgstr ""
 
 msgid "Receipt subtitle"
@@ -588,16 +1071,34 @@ msgstr ""
 msgid "Reconciliation"
 msgstr ""
 
+msgid "Record"
+msgstr ""
+
+msgid "Record withdrawal"
+msgstr ""
+
 msgid "Redeem it in store or at web checkout by entering the code."
 msgstr ""
 
 msgid "Refresh"
 msgstr ""
 
+msgid "Refund"
+msgstr ""
+
 msgid "Refund for sale #%s"
 msgstr ""
 
+msgid "Refund item"
+msgstr ""
+
 msgid "Refund voucher"
+msgstr ""
+
+msgid "Refunded"
+msgstr ""
+
+msgid "Refunded by bank transfer (deducted from the digital register)"
 msgstr ""
 
 msgid "Refunds"
@@ -606,10 +1107,16 @@ msgstr ""
 msgid "Register %1$s · %2$s"
 msgstr ""
 
+msgid "Register / Bank"
+msgstr ""
+
 msgid "Register details"
 msgstr ""
 
 msgid "Register label"
+msgstr ""
+
+msgid "Register location"
 msgstr ""
 
 msgid "Register session"
@@ -627,10 +1134,40 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
+msgid "Remove customer"
+msgstr ""
+
+msgid "Remove from gallery"
+msgstr ""
+
+msgid "Reprint"
+msgstr ""
+
 msgid "Restricted access"
 msgstr ""
 
+msgid "Retry"
+msgstr ""
+
+msgid "SALE COMPLETED"
+msgstr ""
+
+msgid "SALES BY CASHIER"
+msgstr ""
+
+msgid "SALESPERSON"
+msgstr ""
+
+msgid "SCAN CODE"
+msgstr ""
+
 msgid "SHORT"
+msgstr ""
+
+msgid "SKU"
+msgstr ""
+
+msgid "SKU / code"
 msgstr ""
 
 msgid "STORE CREDIT"
@@ -642,10 +1179,22 @@ msgstr ""
 msgid "Sale #%s"
 msgstr ""
 
+msgid "Sale (order) number · ENTER searches"
+msgstr ""
+
 msgid "Sale not found."
 msgstr ""
 
+msgid "Sale number"
+msgstr ""
+
+msgid "Sale price (optional)"
+msgstr ""
+
 msgid "Sale receipt #%s"
+msgstr ""
+
+msgid "Sales"
 msgstr ""
 
 msgid "Sales / salesperson"
@@ -666,7 +1215,67 @@ msgstr ""
 msgid "Salesperson"
 msgstr ""
 
+msgid "Save"
+msgstr ""
+
+msgid "Save and assign"
+msgstr ""
+
+msgid "Save changes"
+msgstr ""
+
+msgid "Save the product first to define attributes and generate variations."
+msgstr ""
+
+msgid "Saving…"
+msgstr ""
+
+msgid "Scan"
+msgstr ""
+
+msgid "Scan a product to start the sale"
+msgstr ""
+
+msgid "Scan another"
+msgstr ""
+
 msgid "Search"
+msgstr ""
+
+msgid "Search by name, SKU or barcode…"
+msgstr ""
+
+msgid "Search by name, email or tax ID · ↑↓ select · ENTER assign · TAB new · ESC close"
+msgstr ""
+
+msgid "Search by name, email or tax ID…"
+msgstr ""
+
+msgid "Search by number or customer…"
+msgstr ""
+
+msgid "Select all"
+msgstr ""
+
+msgid "Select all (with barcode) for labels"
+msgstr ""
+
+msgid "Select all items"
+msgstr ""
+
+msgid "Select all to assign a location"
+msgstr ""
+
+msgid "Select for labels"
+msgstr ""
+
+msgid "Select for location"
+msgstr ""
+
+msgid "Select for:"
+msgstr ""
+
+msgid "Sell anyway from"
 msgstr ""
 
 msgid "Settings"
@@ -675,16 +1284,43 @@ msgstr ""
 msgid "Sheet"
 msgstr ""
 
+msgid "Short description"
+msgstr ""
+
+msgid "Short summary (optional)"
+msgstr ""
+
 msgid "Show the «Tax status» field on the customer record"
 msgstr ""
 
 msgid "Shown in the receipt header. Recommended: horizontal PNG/JPG."
 msgstr ""
 
+msgid "Simple"
+msgstr ""
+
 msgid "Source"
 msgstr ""
 
+msgid "Source: all"
+msgstr ""
+
 msgid "Status"
+msgstr ""
+
+msgid "Status: all"
+msgstr ""
+
+msgid "Stock"
+msgstr ""
+
+msgid "Stock by location"
+msgstr ""
+
+msgid "Stock restored ✓"
+msgstr ""
+
+msgid "Stock: all"
 msgstr ""
 
 msgid "Store credit"
@@ -708,13 +1344,25 @@ msgstr ""
 msgid "Subtotal"
 msgstr ""
 
+msgid "Subtract"
+msgstr ""
+
 msgid "Suggested amounts separated by commas. They are offered as quick options at the POS and on the web."
+msgstr ""
+
+msgid "TAB switches % / amount · ENTER apply · ESC cancel"
 msgstr ""
 
 msgid "TOTAL"
 msgstr ""
 
+msgid "Take payment"
+msgstr ""
+
 msgid "Tax ID"
+msgstr ""
+
+msgid "Tax status"
 msgstr ""
 
 msgid "Tendered"
@@ -757,6 +1405,9 @@ msgid "The credit was voided."
 msgstr ""
 
 msgid "The customer needs at least an email or a tax ID."
+msgstr ""
+
+msgid "The digital register has never been opened. When you open it, you set the opening balance."
 msgstr ""
 
 msgid "The digital register is already open."
@@ -834,6 +1485,9 @@ msgstr ""
 msgid "There are no items to refund."
 msgstr ""
 
+msgid "There is no open cash register. Open it from the Sale screen."
+msgstr ""
+
 msgid "There is no open register to close."
 msgstr ""
 
@@ -867,16 +1521,34 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
+msgid "Total spent"
+msgstr ""
+
 msgid "Transfers in this period"
 msgstr ""
 
 msgid "Type"
 msgstr ""
 
+msgid "Type: all"
+msgstr ""
+
+msgid "Underline"
+msgstr ""
+
 msgid "Unit price"
 msgstr ""
 
+msgid "Upload image"
+msgstr ""
+
+msgid "Uploading…"
+msgstr ""
+
 msgid "Use as logo"
+msgstr ""
+
+msgid "Use this customer"
 msgstr ""
 
 msgid "Used"
@@ -891,7 +1563,16 @@ msgstr ""
 msgid "Valid until"
 msgstr ""
 
+msgid "Validate credit"
+msgstr ""
+
 msgid "Validity (days)"
+msgstr ""
+
+msgid "Variable (sizes / colors)"
+msgstr ""
+
+msgid "Variable product"
 msgstr ""
 
 msgid "Variation"
@@ -900,10 +1581,19 @@ msgstr ""
 msgid "Verified"
 msgstr ""
 
+msgid "Verified (received in the bank)"
+msgstr ""
+
 msgid "Version:"
 msgstr ""
 
 msgid "View details"
+msgstr ""
+
+msgid "View existing customer"
+msgstr ""
+
+msgid "View variations"
 msgstr ""
 
 msgid "Void"
@@ -921,6 +1611,9 @@ msgstr ""
 msgid "WARNING: the credit %2$s could not be re-debited for %1$s when the order was paid (insufficient balance). Please review manually."
 msgstr ""
 
+msgid "WHICH ITEM?"
+msgstr ""
+
 msgid "Walk-in customer"
 msgstr ""
 
@@ -930,7 +1623,13 @@ msgstr ""
 msgid "Web priority"
 msgstr ""
 
+msgid "What does it apply to? · 1 whole sale · 2 a single item · ESC cancel"
+msgstr ""
+
 msgid "When the order is paid, issues a bearer credit for the chosen amount and provides the code."
+msgstr ""
+
+msgid "Whole sale"
 msgstr ""
 
 msgid "Withdrawal"
@@ -943,6 +1642,9 @@ msgid "WooCommerce is not available."
 msgstr ""
 
 msgid "WooCommerce is unavailable."
+msgstr ""
+
+msgid "WooCommerce refund · stock restored"
 msgstr ""
 
 msgid "Write it down or hand it to the customer."
@@ -984,31 +1686,115 @@ msgstr ""
 msgid "You do not have permission to view the manual."
 msgstr ""
 
+msgid "You need an open register to process a refund. Enter the opening float · ENTER opens the register"
+msgstr ""
+
+msgid "You need an open register to take payment. Enter the opening float · ENTER opens the register"
+msgstr ""
+
 msgid "Your %s gift card"
 msgstr ""
 
 msgid "Your business locations. Stock is tracked per location (set it in the product editor). «Web priority»: the order in which online sales deduct stock (lower number first; when it runs out, the next one is used). To remove a location, clear its name and save."
 msgstr ""
 
+msgid "add to the ticket · ESC cancel"
+msgstr ""
+
 msgid "admin"
+msgstr ""
+
+msgid "back"
+msgstr ""
+
+msgid "back to opening"
+msgstr ""
+
+msgid "cash count"
+msgstr ""
+
+msgid "close"
+msgstr ""
+
+msgid "close register"
 msgstr ""
 
 msgid "closed"
 msgstr ""
 
+msgid "continue"
+msgstr ""
+
+msgid "continue to payment method"
+msgstr ""
+
+msgid "continue without opening"
+msgstr ""
+
+msgid "create new"
+msgstr ""
+
+msgid "credit"
+msgstr ""
+
+msgid "customers"
+msgstr ""
+
+msgid "done · for an exchange, scan the new products"
+msgstr ""
+
+msgid "e.g. supplier payment"
+msgstr ""
+
+msgid "expires"
+msgstr ""
+
+msgid "find sale"
+msgstr ""
+
+msgid "labels in total"
+msgstr ""
+
+msgid "movements"
+msgstr ""
+
+msgid "net"
+msgstr ""
+
 msgid "no expiry"
+msgstr ""
+
+msgid "no image"
 msgstr ""
 
 msgid "no price set"
 msgstr ""
 
+msgid "no values yet"
+msgstr ""
+
 msgid "not available for sale"
+msgstr ""
+
+msgid "not managed"
+msgstr ""
+
+msgid "of the filter"
 msgstr ""
 
 msgid "open (#%d)"
 msgstr ""
 
+msgid "open register"
+msgstr ""
+
 msgid "opening"
+msgstr ""
+
+msgid "or"
+msgstr ""
+
+msgid "orders"
 msgstr ""
 
 msgid "out of stock"
@@ -1017,11 +1803,56 @@ msgstr ""
 msgid "per variation"
 msgstr ""
 
+msgid "process refund"
+msgstr ""
+
+msgid "products"
+msgstr ""
+
+msgid "record withdrawal"
+msgstr ""
+
 msgid "refund #%d"
+msgstr ""
+
+msgid "refundable"
+msgstr ""
+
+msgid "remove"
 msgstr ""
 
 msgid "sale #%d"
 msgstr ""
 
+msgid "save and assign"
+msgstr ""
+
+msgid "selected"
+msgstr ""
+
+msgid "selected for labels"
+msgstr ""
+
 msgid "since %s"
+msgstr ""
+
+msgid "to take payment"
+msgstr ""
+
+msgid "total"
+msgstr ""
+
+msgid "total spent"
+msgstr ""
+
+msgid "use this customer"
+msgstr ""
+
+msgid "validate credit"
+msgstr ""
+
+msgid "withdrawal"
+msgstr ""
+
+msgid "↑↓ select line · + − quantity · C/E/T refund method · ENTER process"
 msgstr ""

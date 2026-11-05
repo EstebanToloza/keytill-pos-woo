@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-05 17:56\n"
+"POT-Creation-Date: 2026-11-05 18:03\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,8 +24,23 @@ msgstr "%1$s: sin stock en %2$s (hay %3$d, pedís %4$d)."
 msgid "%s: the source location is missing."
 msgstr "%s: falta indicar la sucursal de origen."
 
+msgid "(no name)"
+msgstr "(sin nombre)"
+
 msgid "(no salesperson)"
 msgstr "(sin vendedor)"
+
+msgid "(will be short)"
+msgstr "(queda faltante)"
+
+msgid "+ add images"
+msgstr "+ agregar imágenes"
+
+msgid "+ attribute"
+msgstr "+ atributo"
+
+msgid "+ value"
+msgstr "+ valor"
 
 msgid "+30 days"
 msgstr "+30 días"
@@ -35,6 +50,9 @@ msgstr "0 = sin vencimiento. Se aplica a los créditos de devolución y gift car
 
 msgid "0 = no limit. Maximum amount a cashier can load on an open-amount gift card at the POS."
 msgstr "0 = sin tope. Monto máximo que un cajero puede cargar en una gift card de monto libre en el POS."
+
+msgid "12 digits"
+msgstr "12 dígitos"
 
 msgid "12 digits."
 msgstr "12 dígitos."
@@ -51,20 +69,56 @@ msgstr "Ya existe un cliente con ese documento."
 msgid "A product with that SKU already exists."
 msgstr "Ya existe un producto con ese SKU."
 
+msgid "A single item"
+msgstr "Una prenda"
+
+msgid "A store credit will be issued for"
+msgstr "Se emitirá un crédito en tienda por"
+
 msgid "AMOUNT"
 msgstr "MONTO"
+
+msgid "Account"
+msgstr "Cuenta"
+
+msgid "Account: all"
+msgstr "Cuenta: todas"
 
 msgid "Actions"
 msgstr "Acciones"
 
 msgid "Active"
-msgstr "Activa"
+msgstr "Activos"
+
+msgid "Active (for sale)"
+msgstr "Activo (a la venta)"
 
 msgid "Active balance in circulation: %s"
 msgstr "Saldo activo en circulación: %s"
 
+msgid "Add"
+msgstr "Agregar"
+
+msgid "Add existing attribute…"
+msgstr "Agregar atributo existente…"
+
+msgid "Add this product to the cart?"
+msgstr "¿Agregar este producto al carrito?"
+
+msgid "Add to cart"
+msgstr "Agregar al carrito"
+
+msgid "Added to cart"
+msgstr "Agregado al carrito"
+
 msgid "Address"
 msgstr "Dirección"
+
+msgid "All"
+msgstr "Todos"
+
+msgid "All stock will be placed at this location."
+msgstr "Todo el stock quedará en esta sucursal."
 
 msgid "Allow custom amount (web)"
 msgstr "Permitir monto a elección (web)"
@@ -72,14 +126,32 @@ msgstr "Permitir monto a elección (web)"
 msgid "Amount"
 msgstr "Monto"
 
+msgid "Amount (or type it)"
+msgstr "Monto (o escribilo)"
+
+msgid "Amount and reason · TAB between fields · ENTER confirm · ESC cancel"
+msgstr "Monto y motivo · TAB entre campos · ENTER confirma · ESC cancela"
+
 msgid "Another product already uses that SKU."
 msgstr "Ya existe otro producto con ese SKU."
 
 msgid "Another product already uses that barcode."
 msgstr "Ya hay otro producto con ese código de barras."
 
+msgid "Apply"
+msgstr "Aplicar"
+
+msgid "Assign"
+msgstr "Asignar"
+
+msgid "At least an email or tax ID · no email is sent"
+msgstr "Al menos email o documento · no se envía ningún email"
+
 msgid "Attribute not found."
 msgstr "Atributo no encontrado."
+
+msgid "Attributes and variations"
+msgstr "Atributos y variaciones"
 
 msgid "Attributes printed on variation labels, as «Property: Value» (e.g. «Size: XL»). If you select none, all variation attributes are shown."
 msgstr "Atributos que se imprimen en las etiquetas de las variaciones, en formato «Propiedad: Valor» (ej. «Talle: XL»). Si no marcás ninguno se muestran todos los atributos de la variación."
@@ -87,11 +159,23 @@ msgstr "Atributos que se imprimen en las etiquetas de las variaciones, en format
 msgid "Attributes to show"
 msgstr "Atributos a mostrar"
 
+msgid "BREAKDOWN BY METHOD"
+msgstr "DESGLOSE POR MEDIO"
+
+msgid "Back"
+msgstr "Volver"
+
+msgid "Back to opening"
+msgstr "Volver a apertura"
+
 msgid "Balance"
 msgstr "Saldo"
 
+msgid "Bank transfer"
+msgstr "Transferencia"
+
 msgid "Barcode"
-msgstr "Cód. barras"
+msgstr "Código de barras"
 
 msgid "Barcode %s is already used by another product: not saved."
 msgstr "El código de barras %s ya está en uso por otro producto: no se guardó."
@@ -101,6 +185,9 @@ msgstr "Código de barras (POS)"
 
 msgid "Below the business name, in the header."
 msgstr "Bajo el nombre del negocio, en el encabezado."
+
+msgid "Bold"
+msgstr "Negrita"
 
 msgid "Business details (receipt)"
 msgstr "Datos del negocio (comprobante)"
@@ -114,8 +201,17 @@ msgstr "ID fiscal"
 msgid "By payment method"
 msgstr "Por medio de pago"
 
+msgid "CASH TO RETURN"
+msgstr "EFECTIVO A DEVOLVER"
+
 msgid "CODE"
 msgstr "CÓDIGO"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Cart"
+msgstr "Carrito"
 
 msgid "Cash"
 msgstr "Efectivo"
@@ -123,11 +219,26 @@ msgstr "Efectivo"
 msgid "Cash refunds"
 msgstr "Devoluciones efectivo"
 
+msgid "Cash register (cash)"
+msgstr "Caja física (efectivo)"
+
 msgid "Cash sales"
-msgstr "Ventas efectivo"
+msgstr "Ventas en efectivo"
+
+msgid "Cash to return from the drawer"
+msgstr "Efectivo a devolver del cajón"
 
 msgid "Cashier"
 msgstr "Cajero"
+
+msgid "Cashier: all"
+msgstr "Cajero: todos"
+
+msgid "Category"
+msgstr "Categoría"
+
+msgid "Category: all"
+msgstr "Categoría: todas"
 
 msgid "Change"
 msgstr "Vuelto"
@@ -144,8 +255,14 @@ msgstr "Elegí un monto para la gift card."
 msgid "Choose at least one attribute with values."
 msgstr "Elegí al menos un atributo con valores."
 
+msgid "Choose attributes and their values, then «Generate variations»."
+msgstr "Elegí atributos y sus valores, después «Generar variaciones»."
+
 msgid "Choose different locations."
 msgstr "Elegí sucursales distintas."
+
+msgid "Choose location…"
+msgstr "Elegí sucursal…"
 
 msgid "Choose logo"
 msgstr "Elegir logo"
@@ -156,8 +273,26 @@ msgstr "Elegí una de las denominaciones disponibles."
 msgid "Choose the gift card amount"
 msgstr "Elegí el monto de la gift card"
 
+msgid "Choose the item · number or tap · ESC back"
+msgstr "Elegí la prenda · número o toque · ESC vuelve"
+
 msgid "Choose the register's location."
 msgstr "Elegí la sucursal de la caja."
+
+msgid "Choose where each item comes from · ENTER confirm · ESC cancel"
+msgstr "Elegí de dónde sale cada prenda · ENTER confirma · ESC cancela"
+
+msgid "Clear"
+msgstr "Limpiar"
+
+msgid "Clear formatting"
+msgstr "Quitar formato"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Close register"
+msgstr "Cerrar caja"
 
 msgid "Closed"
 msgstr "Cerrada"
@@ -168,14 +303,35 @@ msgstr "Cierre"
 msgid "Code"
 msgstr "Código"
 
+msgid "Code not recognized"
+msgstr "Código no reconocido"
+
 msgid "Code or email…"
 msgstr "Código o email…"
+
+msgid "Command field: scan or search"
+msgstr "Campo de comando: escaneá o buscá"
 
 msgid "Comped (100%)"
 msgstr "Bonificado (100%)"
 
+msgid "Confirm and charge"
+msgstr "Confirmar y cobrar"
+
+msgid "Confirm sale"
+msgstr "Confirmar venta"
+
+msgid "Continue"
+msgstr "Continuar"
+
+msgid "Continue without opening the register"
+msgstr "Seguir sin abrir caja"
+
 msgid "Counted"
 msgstr "Contado"
+
+msgid "Counted cash"
+msgstr "Efectivo contado"
 
 msgid "Counter manual"
 msgstr "Manual de mostrador"
@@ -186,11 +342,29 @@ msgstr "Punto de venta de mostrador sobre WooCommerce."
 msgid "Counter sale (POS)."
 msgstr "Venta de mostrador (POS)."
 
+msgid "Create attribute (e.g. Size)"
+msgstr "Crear atributo (ej. Talle)"
+
+msgid "Create customer"
+msgstr "Crear cliente"
+
+msgid "Creating…"
+msgstr "Creando…"
+
+msgid "Credit"
+msgstr "Crédito"
+
 msgid "Credit code does not exist."
 msgstr "Código de crédito inexistente."
 
 msgid "Credits"
 msgstr "Créditos"
+
+msgid "Current undistributed stock:"
+msgstr "Stock actual sin distribuir:"
+
+msgid "Current:"
+msgstr "Actual:"
 
 msgid "Customer"
 msgstr "Cliente"
@@ -199,19 +373,46 @@ msgid "Customer not found."
 msgstr "Cliente no encontrado."
 
 msgid "Customer tax status"
-msgstr "Condición fiscal del cliente"
+msgstr "Condición fiscal"
 
 msgid "Customers can enter a custom amount on the web in addition to the denominations. At the POS the cashier can always type an amount."
 msgstr "El cliente puede escribir un importe libre en la web además de las denominaciones. En el POS el cajero siempre puede tipear un monto."
 
+msgid "DEL removes"
+msgstr "SUPR quita"
+
+msgid "DISCOUNT"
+msgstr "DESCUENTO"
+
+msgid "DISCOUNT (WHOLE SALE)"
+msgstr "DESCUENTO (TODA LA VENTA)"
+
+msgid "DISCOUNT PER ITEM"
+msgstr "DESCUENTO POR PRENDA"
+
+msgid "Dashboard"
+msgstr "Panel"
+
 msgid "Date"
 msgstr "Fecha"
+
+msgid "Date of birth"
+msgstr "Fecha de nacimiento"
+
+msgid "Deduct from"
+msgstr "Descontar de"
 
 msgid "Default validity (days)"
 msgstr "Vigencia por defecto (días)"
 
 msgid "Default validity: %d days"
 msgstr "Vigencia por defecto: %d días"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "Delete variation"
+msgstr "Borrar variación"
 
 msgid "Deposit"
 msgstr "Ingreso"
@@ -220,16 +421,28 @@ msgid "Deposits"
 msgstr "Ingresos"
 
 msgid "Description"
-msgstr "Concepto"
+msgstr "Descripción"
+
+msgid "Details"
+msgstr "Detalle"
 
 msgid "Difference"
 msgstr "Diferencia"
+
+msgid "Digital"
+msgstr "Digital"
 
 msgid "Digital register"
 msgstr "Caja digital"
 
 msgid "Digital register %s"
 msgstr "Caja digital %s"
+
+msgid "Digital register (bank account)"
+msgstr "Caja digital (cuenta bancaria)"
+
+msgid "Digital register closed. Last balance:"
+msgstr "Caja digital cerrada. Último saldo:"
 
 msgid "Digital register period"
 msgstr "Período de caja digital"
@@ -240,8 +453,32 @@ msgstr "Desactivado por defecto. Actívalo si tu país lo requiere (ej. Responsa
 msgid "Discount"
 msgstr "Descuento"
 
+msgid "Distribute by location"
+msgstr "Distribuir por sucursal"
+
+msgid "Distribute by location…"
+msgstr "Distribuir por sucursal…"
+
+msgid "Distributed"
+msgstr "Distribuido"
+
+msgid "Distributed by location — edit in the product"
+msgstr "Distribuido por sucursal — editar en el producto"
+
+msgid "Done"
+msgstr "Listo"
+
+msgid "Download CSV for Excel"
+msgstr "Descargar CSV para Excel"
+
 msgid "E.g. birthday gift"
 msgstr "Ej: regalo cumpleaños"
+
+msgid "Edit product"
+msgstr "Editar producto"
+
+msgid "Email"
+msgstr "Email"
 
 msgid "Email (optional)"
 msgstr "Email (opcional)"
@@ -249,11 +486,23 @@ msgstr "Email (opcional)"
 msgid "Enabled"
 msgstr "Activo"
 
+msgid "Enter how many there are at each location."
+msgstr "Cargá cuántas hay en cada sucursal."
+
+msgid "Enter the code · ENTER validate · ESC back"
+msgstr "Ingresá el código · ENTER valida · ESC vuelve"
+
 msgid "Enter the opening balance of the digital register (first time only)."
 msgstr "Cargá el saldo inicial de la caja digital (solo la primera vez)."
 
+msgid "Enter the opening cash float · ENTER opens the register"
+msgstr "Ingresá el fondo inicial de efectivo · ENTER abre la caja"
+
 msgid "Expected"
 msgstr "Esperado"
+
+msgid "Expected cash"
+msgstr "Efectivo esperado"
 
 msgid "Expected in drawer"
 msgstr "Esperado en cajón"
@@ -264,8 +513,17 @@ msgstr "Vencido"
 msgid "Expires"
 msgstr "Vence"
 
+msgid "Export CSV"
+msgstr "Exportar CSV"
+
 msgid "Filter"
 msgstr "Filtrar"
+
+msgid "Find sale"
+msgstr "Buscar venta"
+
+msgid "Fixed amount"
+msgstr "Monto fijo $"
 
 msgid "Fixed denominations"
 msgstr "Denominaciones fijas"
@@ -279,11 +537,29 @@ msgstr "Leyenda al pie"
 msgid "From"
 msgstr "Desde"
 
+msgid "GENERATE LABELS"
+msgstr "GENERAR ETIQUETAS"
+
 msgid "GIFT RECEIPT"
 msgstr "TICKET DE CAMBIO"
 
+msgid "Gallery"
+msgstr "Galería"
+
 msgid "General"
 msgstr "General"
+
+msgid "Generate"
+msgstr "Generar"
+
+msgid "Generate labels"
+msgstr "Generar etiquetas"
+
+msgid "Generate variations"
+msgstr "Generar variaciones"
+
+msgid "Generating…"
+msgstr "Generando…"
 
 msgid "Gift card"
 msgstr "Gift card"
@@ -303,6 +579,12 @@ msgstr "Gift card(s) emitida(s):"
 msgid "Gift cards issued"
 msgstr "Gift cards emitidas"
 
+msgid "Gift cards issued — hand over the codes"
+msgstr "Gift cards emitidas — entregá los códigos"
+
+msgid "Gift receipt"
+msgstr "Ticket de cambio"
+
 msgid "Gift receipt #%s"
 msgstr "Ticket de cambio #%s"
 
@@ -311,6 +593,18 @@ msgstr "Encabezado y pie del comprobante interno. Si el nombre queda vacío se u
 
 msgid "Hi %s,"
 msgstr "Hola %s,"
+
+msgid "How much is in the bank account today (first time only)."
+msgstr "Cuánto hay hoy en la cuenta bancaria (solo la primera vez)."
+
+msgid "In stock"
+msgstr "En stock"
+
+msgid "Inactive"
+msgstr "Inactivos"
+
+msgid "Increase"
+msgstr "Sumar"
 
 msgid "Invalid amount."
 msgstr "Monto inválido."
@@ -363,6 +657,9 @@ msgstr "Genera un crédito al portador (0 días = sin vencimiento). El código s
 msgid "It just ran out of stock at this location: %s (another register sold it)."
 msgstr "Se quedó sin stock en la sucursal: %s (lo vendió otra caja recién)."
 
+msgid "Italic"
+msgstr "Itálica"
+
 msgid "Keytill"
 msgstr "Keytill"
 
@@ -378,14 +675,41 @@ msgstr "Etiquetas"
 msgid "Labels %1$s (%2$d)"
 msgstr "Etiquetas %1$s (%2$d)"
 
+msgid "Link"
+msgstr "Enlace"
+
+msgid "List"
+msgstr "Lista"
+
+msgid "Loading variations…"
+msgstr "Cargando variaciones…"
+
+msgid "Loading…"
+msgstr "Cargando…"
+
+msgid "Local"
+msgstr "Local"
+
+msgid "Location"
+msgstr "Sucursal"
+
+msgid "Location: per variation"
+msgstr "Sucursal: por variación"
+
 msgid "Locations"
 msgstr "Sucursales"
 
 msgid "Log in"
 msgstr "Iniciar sesión"
 
+msgid "Log out"
+msgstr "Cerrar sesión"
+
 msgid "Logo"
 msgstr "Logo"
+
+msgid "Main image"
+msgstr "Imagen principal"
 
 msgid "Manager"
 msgstr "Encargado"
@@ -396,11 +720,44 @@ msgstr "Manual"
 msgid "Manual movements"
 msgstr "Movimientos manuales"
 
+msgid "Method"
+msgstr "Medio"
+
+msgid "Method: all"
+msgstr "Medio: todos"
+
 msgid "Methods (non-cash)"
 msgstr "Medios (no-efectivo)"
 
+msgid "Money out"
+msgstr "Egreso"
+
+msgid "Mov."
+msgstr "Mov."
+
+msgid "Move"
+msgstr "Mover"
+
+msgid "Move stock"
+msgstr "Mover stock"
+
+msgid "Move stock between locations"
+msgstr "Mover stock entre sucursales"
+
+msgid "Movement log"
+msgstr "Libro de movimientos"
+
+msgid "Movement: all"
+msgstr "Movimiento: todos"
+
+msgid "NEW CUSTOMER"
+msgstr "NUEVO CLIENTE"
+
 msgid "Name"
 msgstr "Nombre"
+
+msgid "Name / email / tax ID"
+msgstr "Nombre / email / documento"
 
 msgid "Net total"
 msgstr "Total neto"
@@ -408,14 +765,41 @@ msgstr "Total neto"
 msgid "Net total = POS sales (completed) minus refunds, in the range. Sales with no salesperson assigned are grouped as «(no salesperson)»."
 msgstr "Total neto = ventas del POS (completadas) menos devoluciones, en el rango. Las ventas sin vendedor asignado se agrupan como «(sin vendedor)»."
 
+msgid "New customer"
+msgstr "Nuevo cliente"
+
+msgid "New customer · at least an email or tax ID · TAB between fields · ENTER save · ESC back"
+msgstr "Nuevo cliente · al menos email o documento · TAB entre campos · ENTER guarda · ESC vuelve"
+
+msgid "New item subtotal"
+msgstr "Nuevo subtotal de la prenda"
+
 msgid "New location…"
 msgstr "Nueva sucursal…"
+
+msgid "New product"
+msgstr "Nuevo producto"
 
 msgid "New salesperson…"
 msgstr "Nuevo vendedor…"
 
+msgid "New total"
+msgstr "Nuevo total"
+
+msgid "New value (e.g. M)"
+msgstr "Nuevo valor (ej. M)"
+
+msgid "No additional images."
+msgstr "Sin imágenes adicionales."
+
+msgid "No category"
+msgstr "Sin categoría"
+
 msgid "No credits yet."
 msgstr "Sin créditos todavía."
+
+msgid "No customers."
+msgstr "Sin clientes."
 
 msgid "No global product attributes are defined."
 msgstr "No hay atributos globales de producto definidos."
@@ -423,11 +807,23 @@ msgstr "No hay atributos globales de producto definidos."
 msgid "No image was received."
 msgstr "No se recibió ninguna imagen."
 
+msgid "No location"
+msgstr "Sin sucursal"
+
+msgid "No location (remove)"
+msgstr "Sin sucursal (quitar)"
+
 msgid "No manual movements in this period."
 msgstr "Sin movimientos manuales en el período."
 
+msgid "No movements in this range."
+msgstr "Sin movimientos en el rango."
+
 msgid "No movements."
 msgstr "Sin movimientos."
+
+msgid "No orders."
+msgstr "Sin pedidos."
 
 msgid "No permission"
 msgstr "Sin permiso"
@@ -435,8 +831,23 @@ msgstr "Sin permiso"
 msgid "No permission."
 msgstr "Sin permiso."
 
+msgid "No product has that barcode."
+msgstr "No hay ningún producto con ese código de barras."
+
+msgid "No products."
+msgstr "Sin productos."
+
+msgid "No recorded purchases."
+msgstr "Sin compras registradas."
+
+msgid "No results · TAB to create a new one"
+msgstr "Sin resultados · TAB para crear nuevo"
+
 msgid "No sales in the selected range."
 msgstr "Sin ventas en el rango elegido."
+
+msgid "No sales in this session"
+msgstr "Sin ventas en esta sesión"
 
 msgid "No transfers in this period."
 msgstr "Sin transferencias en el período."
@@ -462,8 +873,20 @@ msgstr "Documento no válido como factura. ¡Gracias por su compra!"
 msgid "Note (optional)"
 msgstr "Nota (opcional)"
 
+msgid "Number of labels per product"
+msgstr "Cantidad de etiquetas por producto"
+
+msgid "Numbered list"
+msgstr "Lista numerada"
+
 msgid "OK"
 msgstr "OK"
+
+msgid "OPENING BALANCE · DIGITAL REGISTER"
+msgstr "SALDO INICIAL · CAJA DIGITAL"
+
+msgid "OUT OF STOCK AT YOUR LOCATION"
+msgstr "SIN STOCK EN TU SUCURSAL"
 
 msgid "OVER"
 msgstr "SOBRA"
@@ -478,10 +901,16 @@ msgid "Only a manager or administrator can move the digital register."
 msgstr "Solo un encargado o administrador puede mover la caja digital."
 
 msgid "Open"
-msgstr "Abierta"
+msgstr "Abrir"
+
+msgid "Open digital register"
+msgstr "Abrir caja digital"
 
 msgid "Open in a new tab"
 msgstr "Abrir en pestaña nueva"
+
+msgid "Open register"
+msgstr "Abrir caja"
 
 msgid "Open sales screen"
 msgstr "Abrir pantalla de venta"
@@ -490,13 +919,16 @@ msgid "Open the POS"
 msgstr "Abrir el POS"
 
 msgid "Opened by"
-msgstr "Abrió"
+msgstr "Abierta por"
 
 msgid "Opening"
 msgstr "Apertura"
 
 msgid "Opening balance"
 msgstr "Saldo inicial"
+
+msgid "Opening camera…"
+msgstr "Abriendo cámara…"
 
 msgid "Opening float"
 msgstr "Fondo inicial"
@@ -512,6 +944,12 @@ msgstr "Orden no encontrada."
 
 msgid "Order total"
 msgstr "Total pedido"
+
+msgid "Orders"
+msgstr "Pedidos"
+
+msgid "Out of stock"
+msgstr "Sin stock"
 
 msgid "POS operating guide. You can print it (Ctrl/Cmd + P) to keep a copy at the register."
 msgstr "Guía de operatoria del POS. Se puede imprimir (Ctrl/Cmd + P) para dejar una copia en la caja."
@@ -531,8 +969,14 @@ msgstr "Cobros"
 msgid "Payments in (non-cash)"
 msgstr "Cobros (no-efectivo)"
 
+msgid "Payments in (transfer/QR/card)"
+msgstr "Cobros (transf./QR/tarjeta)"
+
 msgid "Pending"
 msgstr "Pendiente"
+
+msgid "Percentage %"
+msgstr "Porcentaje %"
 
 msgid "Period details"
 msgstr "Detalle del período"
@@ -540,11 +984,20 @@ msgstr "Detalle del período"
 msgid "Phone"
 msgstr "Teléfono"
 
+msgid "Point the camera at the barcode"
+msgstr "Apuntá la cámara al código de barras"
+
 msgid "Present this receipt to make an exchange."
 msgstr "Presentá este ticket para realizar cambios."
 
 msgid "Present this voucher to use your credit. It is not cash."
 msgstr "Presentá este voucher para usar tu crédito. No es dinero en efectivo."
+
+msgid "Price"
+msgstr "Precio"
+
+msgid "Print"
+msgstr "Imprimir"
 
 msgid "Print / Save PDF"
 msgstr "Imprimir / Guardar PDF"
@@ -555,8 +1008,20 @@ msgstr "Imprimir comprobante POS"
 msgid "Print labels"
 msgstr "Imprimir etiquetas"
 
+msgid "Print order"
+msgstr "Imprimir pedido"
+
+msgid "Print voucher"
+msgstr "Imprimir voucher"
+
+msgid "Process refund"
+msgstr "Procesar devolución"
+
 msgid "Product"
 msgstr "Producto"
+
+msgid "Product details (optional)"
+msgstr "Detalle del producto (opcional)"
 
 msgid "Product labels"
 msgstr "Etiquetas de producto"
@@ -566,6 +1031,9 @@ msgstr "Producto no encontrado (id %d)."
 
 msgid "Product not found."
 msgstr "Producto no encontrado."
+
+msgid "Purchase history"
+msgstr "Historial de compras"
 
 msgid "Purchase summary"
 msgstr "Resumen de compra"
@@ -579,14 +1047,35 @@ msgstr "Cantidad a devolver mayor a la disponible: %s."
 msgid "Quantity: %d"
 msgstr "Cantidad: %d"
 
+msgid "REFUND DONE"
+msgstr "DEVOLUCIÓN OK"
+
+msgid "REFUND METHOD"
+msgstr "REINTEGRO"
+
 msgid "REGISTER 01"
 msgstr "CAJA 01"
+
+msgid "REGISTER CLOSED"
+msgstr "CAJA CERRADA"
+
+msgid "Read only — editing requires management permission."
+msgstr "Solo lectura — la edición requiere permiso de gestión."
+
+msgid "Reason"
+msgstr "Motivo"
 
 msgid "Receipt subtitle"
 msgstr "Subtítulo del comprobante"
 
 msgid "Reconciliation"
-msgstr "Verificación"
+msgstr "Conciliación"
+
+msgid "Record"
+msgstr "Registrar"
+
+msgid "Record withdrawal"
+msgstr "Registrar retiro"
 
 msgid "Redeem it in store or at web checkout by entering the code."
 msgstr "Canjealo en la tienda o en el checkout web ingresando el código."
@@ -594,11 +1083,23 @@ msgstr "Canjealo en la tienda o en el checkout web ingresando el código."
 msgid "Refresh"
 msgstr "Actualizar"
 
+msgid "Refund"
+msgstr "Devolución"
+
 msgid "Refund for sale #%s"
 msgstr "Devolución de la venta #%s"
 
+msgid "Refund item"
+msgstr "Devolver"
+
 msgid "Refund voucher"
 msgstr "Voucher de devolución"
+
+msgid "Refunded"
+msgstr "Devuelto"
+
+msgid "Refunded by bank transfer (deducted from the digital register)"
+msgstr "Se devuelve por transferencia (resta de la caja digital)"
 
 msgid "Refunds"
 msgstr "Devoluciones"
@@ -606,11 +1107,17 @@ msgstr "Devoluciones"
 msgid "Register %1$s · %2$s"
 msgstr "Caja %1$s · %2$s"
 
+msgid "Register / Bank"
+msgstr "Caja / Banco"
+
 msgid "Register details"
 msgstr "Detalle de la caja"
 
 msgid "Register label"
 msgstr "Etiqueta de la caja"
+
+msgid "Register location"
+msgstr "Sucursal de la caja"
 
 msgid "Register session"
 msgstr "Sesión de caja"
@@ -627,11 +1134,41 @@ msgstr "Cajas (POS)"
 msgid "Remove"
 msgstr "Quitar"
 
+msgid "Remove customer"
+msgstr "Quitar cliente"
+
+msgid "Remove from gallery"
+msgstr "Quitar de la galería"
+
+msgid "Reprint"
+msgstr "Reimprimir"
+
 msgid "Restricted access"
 msgstr "Acceso restringido"
 
+msgid "Retry"
+msgstr "Reintentar"
+
+msgid "SALE COMPLETED"
+msgstr "VENTA REALIZADA"
+
+msgid "SALES BY CASHIER"
+msgstr "VENTAS POR CAJERO"
+
+msgid "SALESPERSON"
+msgstr "VENDEDOR"
+
+msgid "SCAN CODE"
+msgstr "ESCANEAR CÓDIGO"
+
 msgid "SHORT"
 msgstr "FALTA"
+
+msgid "SKU"
+msgstr "SKU"
+
+msgid "SKU / code"
+msgstr "SKU / código"
 
 msgid "STORE CREDIT"
 msgstr "CRÉDITO EN TIENDA"
@@ -642,11 +1179,23 @@ msgstr "Venta"
 msgid "Sale #%s"
 msgstr "Venta #%s"
 
+msgid "Sale (order) number · ENTER searches"
+msgstr "Número de venta (pedido) · ENTER busca"
+
 msgid "Sale not found."
 msgstr "Venta no encontrada."
 
+msgid "Sale number"
+msgstr "N° de venta"
+
+msgid "Sale price (optional)"
+msgstr "Precio oferta (opcional)"
+
 msgid "Sale receipt #%s"
 msgstr "Comprobante venta #%s"
+
+msgid "Sales"
+msgstr "Ventas"
 
 msgid "Sales / salesperson"
 msgstr "Ventas x vendedor"
@@ -666,8 +1215,68 @@ msgstr "Vendedores que atienden en el mostrador. Se eligen al confirmar la venta
 msgid "Salesperson"
 msgstr "Vendedor"
 
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Save and assign"
+msgstr "Guardar y asignar"
+
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+msgid "Save the product first to define attributes and generate variations."
+msgstr "Guardá primero el producto para definir los atributos y generar las variaciones."
+
+msgid "Saving…"
+msgstr "Guardando…"
+
+msgid "Scan"
+msgstr "Escanear"
+
+msgid "Scan a product to start the sale"
+msgstr "Escaneá un producto para empezar la venta"
+
+msgid "Scan another"
+msgstr "Escanear otro"
+
 msgid "Search"
 msgstr "Buscar"
+
+msgid "Search by name, SKU or barcode…"
+msgstr "Buscar por nombre, SKU o código de barras…"
+
+msgid "Search by name, email or tax ID · ↑↓ select · ENTER assign · TAB new · ESC close"
+msgstr "Buscá por nombre, email o documento · ↑↓ elegí · ENTER asigna · TAB crear nuevo · ESC cierra"
+
+msgid "Search by name, email or tax ID…"
+msgstr "Buscar por nombre, email o documento…"
+
+msgid "Search by number or customer…"
+msgstr "Buscar por N° o cliente…"
+
+msgid "Select all"
+msgstr "Seleccionar todas"
+
+msgid "Select all (with barcode) for labels"
+msgstr "Seleccionar todas (con código de barras) para etiquetas"
+
+msgid "Select all items"
+msgstr "Seleccionar todos"
+
+msgid "Select all to assign a location"
+msgstr "Seleccionar todas para asignar sucursal"
+
+msgid "Select for labels"
+msgstr "Seleccionar para etiquetas"
+
+msgid "Select for location"
+msgstr "Seleccionar para sucursal"
+
+msgid "Select for:"
+msgstr "Seleccionar para:"
+
+msgid "Sell anyway from"
+msgstr "Vender igual desde"
 
 msgid "Settings"
 msgstr "Ajustes"
@@ -675,17 +1284,44 @@ msgstr "Ajustes"
 msgid "Sheet"
 msgstr "Hoja"
 
+msgid "Short description"
+msgstr "Descripción corta"
+
+msgid "Short summary (optional)"
+msgstr "Resumen breve (opcional)"
+
 msgid "Show the «Tax status» field on the customer record"
 msgstr "Mostrar el campo \"Condición fiscal\" en la ficha del cliente"
 
 msgid "Shown in the receipt header. Recommended: horizontal PNG/JPG."
 msgstr "Aparece en el encabezado del comprobante. Recomendado: PNG/JPG horizontal."
 
+msgid "Simple"
+msgstr "Simple"
+
 msgid "Source"
 msgstr "Origen"
 
+msgid "Source: all"
+msgstr "Origen: todos"
+
 msgid "Status"
 msgstr "Estado"
+
+msgid "Status: all"
+msgstr "Estado: todos"
+
+msgid "Stock"
+msgstr "Stock"
+
+msgid "Stock by location"
+msgstr "Stock por sucursal"
+
+msgid "Stock restored ✓"
+msgstr "Stock reingresado ✓"
+
+msgid "Stock: all"
+msgstr "Stock: todos"
 
 msgid "Store credit"
 msgstr "Crédito en tienda"
@@ -708,14 +1344,26 @@ msgstr "Créditos en tienda"
 msgid "Subtotal"
 msgstr "Subtotal"
 
+msgid "Subtract"
+msgstr "Restar"
+
 msgid "Suggested amounts separated by commas. They are offered as quick options at the POS and on the web."
 msgstr "Montos sugeridos separados por coma. Se ofrecen como opciones rápidas en el POS y en la web."
+
+msgid "TAB switches % / amount · ENTER apply · ESC cancel"
+msgstr "TAB cambia % / monto · ENTER aplica · ESC cancela"
 
 msgid "TOTAL"
 msgstr "TOTAL"
 
+msgid "Take payment"
+msgstr "Cobrar"
+
 msgid "Tax ID"
 msgstr "Documento"
+
+msgid "Tax status"
+msgstr "Cond. fiscal"
 
 msgid "Tendered"
 msgstr "Recibido"
@@ -758,6 +1406,9 @@ msgstr "El crédito fue anulado."
 
 msgid "The customer needs at least an email or a tax ID."
 msgstr "El cliente necesita al menos email o documento."
+
+msgid "The digital register has never been opened. When you open it, you set the opening balance."
+msgstr "La caja digital nunca se abrió. Al abrirla, cargás el saldo inicial."
 
 msgid "The digital register is already open."
 msgstr "La caja digital ya está abierta."
@@ -834,6 +1485,9 @@ msgstr "El enlace del voucher venció. Volvé a generarlo desde el POS."
 msgid "There are no items to refund."
 msgstr "No hay ítems para devolver."
 
+msgid "There is no open cash register. Open it from the Sale screen."
+msgstr "No hay caja física abierta. Se abre desde Venta."
+
 msgid "There is no open register to close."
 msgstr "No hay una caja abierta para cerrar."
 
@@ -856,7 +1510,7 @@ msgid "This product has no barcode set."
 msgstr "Este producto no tiene código de barras cargado."
 
 msgid "To"
-msgstr "Hasta"
+msgstr "Hacia"
 
 msgid "To save a customer, enter at least an email or a tax ID."
 msgstr "Para guardar un cliente cargá al menos email o documento."
@@ -867,17 +1521,35 @@ msgstr "Demasiadas variaciones (máx %d). Reducí valores o cargalas en Woo."
 msgid "Total"
 msgstr "Total"
 
+msgid "Total spent"
+msgstr "Total gastado"
+
 msgid "Transfers in this period"
 msgstr "Transferencias del período"
 
 msgid "Type"
 msgstr "Tipo"
 
+msgid "Type: all"
+msgstr "Tipo: todos"
+
+msgid "Underline"
+msgstr "Subrayado"
+
 msgid "Unit price"
 msgstr "Precio unit."
 
+msgid "Upload image"
+msgstr "Subir imagen"
+
+msgid "Uploading…"
+msgstr "Subiendo…"
+
 msgid "Use as logo"
 msgstr "Usar como logo"
+
+msgid "Use this customer"
+msgstr "Usar este cliente"
 
 msgid "Used"
 msgstr "Usado"
@@ -891,8 +1563,17 @@ msgstr "Válido para cambios hasta el %1$s (%2$d días)."
 msgid "Valid until"
 msgstr "Válido hasta"
 
+msgid "Validate credit"
+msgstr "Validar crédito"
+
 msgid "Validity (days)"
 msgstr "Vigencia (días)"
+
+msgid "Variable (sizes / colors)"
+msgstr "Variable (talles / colores)"
+
+msgid "Variable product"
+msgstr "Producto variable"
 
 msgid "Variation"
 msgstr "Variación"
@@ -900,11 +1581,20 @@ msgstr "Variación"
 msgid "Verified"
 msgstr "Verificada"
 
+msgid "Verified (received in the bank)"
+msgstr "Verificada (entró al banco)"
+
 msgid "Version:"
 msgstr "Versión:"
 
 msgid "View details"
 msgstr "Ver detalle"
+
+msgid "View existing customer"
+msgstr "Ver cliente existente"
+
+msgid "View variations"
+msgstr "Ver variaciones"
 
 msgid "Void"
 msgstr "Anular"
@@ -921,6 +1611,9 @@ msgstr "Voucher %s"
 msgid "WARNING: the credit %2$s could not be re-debited for %1$s when the order was paid (insufficient balance). Please review manually."
 msgstr "ATENCIÓN: no se pudo re-debitar el crédito %2$s por %1$s al pagarse la orden (saldo insuficiente). Revisar manualmente."
 
+msgid "WHICH ITEM?"
+msgstr "¿QUÉ PRENDA?"
+
 msgid "Walk-in customer"
 msgstr "Consumidor final"
 
@@ -930,8 +1623,14 @@ msgstr "Web"
 msgid "Web priority"
 msgstr "Prioridad web"
 
+msgid "What does it apply to? · 1 whole sale · 2 a single item · ESC cancel"
+msgstr "¿A qué se aplica? · 1 toda la venta · 2 una prenda · ESC cancela"
+
 msgid "When the order is paid, issues a bearer credit for the chosen amount and provides the code."
 msgstr "Al pagarse la orden, emite un crédito al portador por el monto elegido y entrega el código."
+
+msgid "Whole sale"
+msgstr "Toda la venta"
 
 msgid "Withdrawal"
 msgstr "Retiro"
@@ -944,6 +1643,9 @@ msgstr "WooCommerce no disponible."
 
 msgid "WooCommerce is unavailable."
 msgstr "WooCommerce no está disponible."
+
+msgid "WooCommerce refund · stock restored"
+msgstr "refund de Woo · reingreso de stock"
 
 msgid "Write it down or hand it to the customer."
 msgstr "Anotalo/entregáselo al cliente."
@@ -984,32 +1686,116 @@ msgstr "No tenés permiso para subir imágenes."
 msgid "You do not have permission to view the manual."
 msgstr "No tenés permiso para ver el manual."
 
+msgid "You need an open register to process a refund. Enter the opening float · ENTER opens the register"
+msgstr "Para hacer una devolución necesitás una caja abierta. Ingresá el fondo inicial · ENTER abre la caja"
+
+msgid "You need an open register to take payment. Enter the opening float · ENTER opens the register"
+msgstr "Para cobrar necesitás una caja abierta. Ingresá el fondo inicial · ENTER abre la caja"
+
 msgid "Your %s gift card"
 msgstr "Tu gift card de %s"
 
 msgid "Your business locations. Stock is tracked per location (set it in the product editor). «Web priority»: the order in which online sales deduct stock (lower number first; when it runs out, the next one is used). To remove a location, clear its name and save."
 msgstr "Locales del negocio. El stock se lleva por sucursal (se carga en el editor de productos). \"Prioridad web\": orden en que las ventas de la tienda online descuentan stock (menor número = primero; si se agota, pasa a la siguiente). Para quitar una sucursal, vaciá su nombre y guardá."
 
+msgid "add to the ticket · ESC cancel"
+msgstr "agregar al ticket · ESC cancela"
+
 msgid "admin"
 msgstr "admin"
+
+msgid "back"
+msgstr "volver"
+
+msgid "back to opening"
+msgstr "volver a apertura"
+
+msgid "cash count"
+msgstr "arqueo de efectivo"
+
+msgid "close"
+msgstr "cerrar"
+
+msgid "close register"
+msgstr "cerrar caja"
 
 msgid "closed"
 msgstr "cerrada"
 
+msgid "continue"
+msgstr "continuar"
+
+msgid "continue to payment method"
+msgstr "continuar al medio de pago"
+
+msgid "continue without opening"
+msgstr "seguir sin abrir"
+
+msgid "create new"
+msgstr "crear nuevo"
+
+msgid "credit"
+msgstr "crédito"
+
+msgid "customers"
+msgstr "clientes"
+
+msgid "done · for an exchange, scan the new products"
+msgstr "listo · para un cambio, escaneá los productos nuevos"
+
+msgid "e.g. supplier payment"
+msgstr "ej. pago a proveedor"
+
+msgid "expires"
+msgstr "vence"
+
+msgid "find sale"
+msgstr "buscar venta"
+
+msgid "labels in total"
+msgstr "etiquetas en total"
+
+msgid "movements"
+msgstr "movimientos"
+
+msgid "net"
+msgstr "neto"
+
 msgid "no expiry"
 msgstr "sin venc."
+
+msgid "no image"
+msgstr "sin imagen"
 
 msgid "no price set"
 msgstr "sin precio cargado"
 
+msgid "no values yet"
+msgstr "sin valores aún"
+
 msgid "not available for sale"
 msgstr "no disponible para la venta"
+
+msgid "not managed"
+msgstr "sin gestionar"
+
+msgid "of the filter"
+msgstr "del filtro"
 
 msgid "open (#%d)"
 msgstr "abierta (#%d)"
 
+msgid "open register"
+msgstr "abrir caja"
+
 msgid "opening"
 msgstr "inicial"
+
+msgid "or"
+msgstr "o"
+
+msgid "orders"
+msgstr "pedidos"
 
 msgid "out of stock"
 msgstr "sin stock"
@@ -1017,11 +1803,56 @@ msgstr "sin stock"
 msgid "per variation"
 msgstr "por variación"
 
+msgid "process refund"
+msgstr "procesar devolución"
+
+msgid "products"
+msgstr "productos"
+
+msgid "record withdrawal"
+msgstr "registrar retiro"
+
 msgid "refund #%d"
 msgstr "devolución #%d"
+
+msgid "refundable"
+msgstr "devolvibles"
+
+msgid "remove"
+msgstr "quitar"
 
 msgid "sale #%d"
 msgstr "venta #%d"
 
+msgid "save and assign"
+msgstr "guardar y asignar"
+
+msgid "selected"
+msgstr "seleccionado(s)"
+
+msgid "selected for labels"
+msgstr "seleccionado(s) para etiquetas"
+
 msgid "since %s"
 msgstr "desde %s"
+
+msgid "to take payment"
+msgstr "para cobrar"
+
+msgid "total"
+msgstr "total"
+
+msgid "total spent"
+msgstr "total gastado"
+
+msgid "use this customer"
+msgstr "usar este cliente"
+
+msgid "validate credit"
+msgstr "validar crédito"
+
+msgid "withdrawal"
+msgstr "retiro"
+
+msgid "↑↓ select line · + − quantity · C/E/T refund method · ENTER process"
+msgstr "↑↓ elegir línea · + − cantidad · C/E/T medio de reintegro · ENTER procesa"
