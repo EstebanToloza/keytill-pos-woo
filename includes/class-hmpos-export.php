@@ -1,0 +1,277 @@
+<?php
+/**
+ * Exportación de pedidos a CSV (para análisis en Excel).
+ *
+ * Descarga vía GET al front: ?hmpos_export=orders&<filtros>&_wpnonce=…
+ * Requiere la capability del POS + un nonce. Genera UNA FILA POR PRODUCTO
+ * VENDIDO (línea de pedido), con vendedor, cajero, medio de pago, etc., para
+ * poder pivotear (qué vendedor vendió más, qué producto se vendió más, …).
+ *
+ * Formato pensado para Excel en español: separador «;», decimales con coma y
+ * BOM UTF-8 (para que respete los acentos).
+ *
+ * @package HM_POS
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+class HMPOS_Export {
+
+	/** Query var que dispara la descarga. */
+	const QV = 'hmpos_export';
+
+	/** Acción del nonce. */
+	const NONCE = 'hmpos_export_orders';
+
+	public static function init() {
+		add_action( 'template_redirect', array( __CLASS__, 'maybe_render' ) );
+	}
+
+	/** URL base de descarga (con nonce). El front le agrega los filtros. */
+	public static function url() {
+		return add_query_arg(
+			array(
+				self::QV   => 'orders',
+				'_wpnonce' => wp_create_nonce( self::NONCE ),
+			),
+			home_url( '/' )
+		);
+	}
+
+	/** ¿Puede exportar? Misma barrera que operar el POS o gestionar pedidos. */
+	private static function can_export() {
+		return current_user_can( HMPOS_CAP ) || current_user_can( 'edit_shop_orders' );
+	}
+
+	/**
+	 * Si la request pide exportar, valida y streamea el CSV; corta.
+	 */
+	public static function maybe_render() {
+		if ( ! isset( $_GET[ self::QV ] ) || 'orders' !== $_GET[ self::QV ] ) {
+			return;
+		}
+		if ( ! self::can_export() ) {
+			wp_die( esc_html__( 'No tenés permiso para exportar.', 'hm-pos' ), 403 );
+		}
+		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, self::NONCE ) ) {
+			wp_die( esc_html__( 'El enlace de exportación venció. Volvé a generarlo desde el POS.', 'hm-pos' ), 403 );
+		}
+		if ( ! function_exists( 'wc_get_orders' ) ) {
+			wp_die( esc_html__( 'WooCommerce no está disponible.', 'hm-pos' ), 500 );
+		}
+
+		self::stream_csv();
+		exit;
+	}
+
+	/**
+	 * Arma la consulta de pedidos con los mismos filtros del listado y streamea
+	 * el CSV (una fila por línea de pedido).
+	 */
+	private static function stream_csv() {
+		$g = function ( $k ) {
+			return isset( $_GET[ $k ] ) ? sanitize_text_field( wp_unslash( $_GET[ $k ] ) ) : '';
+		};
+
+		// Estado.
+		$status       = sanitize_key( $g( 'status' ) );
+		$all_statuses = array_map(
+			function ( $s ) {
+				return 'wc-' === substr( $s, 0, 3 ) ? substr( $s, 3 ) : $s;
+			},
+			array_keys( wc_get_order_statuses() )
+		);
+		$args = array(
+			'type'    => 'shop_order',
+			'orderby' => 'date',
+			'order'   => 'DESC',
+			'status'  => ( $status && 'any' !== $status && in_array( $status, $all_statuses, true ) ) ? array( $status ) : $all_statuses,
+			// `limit`/`offset` se setean por lote más abajo (no se cargan todos juntos).
+		);
+
+		$pm = sanitize_key( $g( 'payment_method' ) );
+		if ( $pm ) {
+			$args['payment_method'] = $pm;
+		}
+
+		$meta_query = array();
+		$origin     = sanitize_key( $g( 'origin' ) );
+		if ( 'pos' === $origin ) {
+			$meta_query[] = array( 'key' => '_hmpos', 'compare' => 'EXISTS' );
+		} elseif ( 'web' === $origin ) {
+			$meta_query[] = array( 'key' => '_hmpos', 'compare' => 'NOT EXISTS' );
+		}
+		$cajero = (int) $g( 'cajero_id' );
+		if ( $cajero ) {
+			$meta_query[] = array( 'key' => '_hmpos_cajero_id', 'value' => $cajero );
+		}
+		if ( $meta_query ) {
+			$args['meta_query'] = $meta_query; // phpcs:ignore WordPress.DB.SlowDBQuery
+		}
+
+		// Se exige un rango de fechas (Desde y Hasta): no se exporta todo el histórico.
+		$from = $g( 'date_from' );
+		$to   = $g( 'date_to' );
+		if ( '' === $from || '' === $to ) {
+			wp_die( esc_html__( 'Elegí un rango de fechas (Desde y Hasta) para exportar.', 'hm-pos' ), 400 );
+		}
+		$args['date_created'] = strtotime( $from . ' 00:00:00' ) . '...' . strtotime( $to . ' 23:59:59' );
+		$search = trim( $g( 'search' ) );
+		if ( '' !== $search ) {
+			$args['s'] = $search;
+		}
+
+		// Salvaguardas para exportaciones extensas: sin tope de tiempo, sin acumular
+		// objetos en el object cache (se procesa de a lotes) y sin buffers que
+		// retengan todo en memoria. Evita agotar la memoria de PHP o cortar por
+		// timeout cuando el rango abarca miles de pedidos.
+		if ( function_exists( 'set_time_limit' ) ) {
+			@set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		}
+		if ( function_exists( 'wp_suspend_cache_addition' ) ) {
+			wp_suspend_cache_addition( true );
+		}
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
+
+		// Cabeceras HTTP de descarga.
+		$fname = 'pedidos-' . ( $from ? $from : 'inicio' ) . '_' . ( $to ? $to : gmdate( 'Y-m-d' ) ) . '.csv';
+		nocache_headers();
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="' . $fname . '"' );
+		header( 'X-Accel-Buffering: no' ); // no bufferear en proxies/Nginx
+
+		$out = fopen( 'php://output', 'w' );
+		fwrite( $out, "\xEF\xBB\xBF" ); // BOM UTF-8 para Excel.
+
+		$cols = array(
+			__( 'Pedido', 'hm-pos' ),
+			__( 'Fecha', 'hm-pos' ),
+			__( 'Estado', 'hm-pos' ),
+			__( 'Origen', 'hm-pos' ),
+			__( 'Cliente', 'hm-pos' ),
+			__( 'DNI/CUIT', 'hm-pos' ),
+			__( 'Vendedor', 'hm-pos' ),
+			__( 'Cajero', 'hm-pos' ),
+			__( 'Medio de pago', 'hm-pos' ),
+			__( 'Producto', 'hm-pos' ),
+			__( 'Variación', 'hm-pos' ),
+			__( 'Cantidad', 'hm-pos' ),
+			__( 'Precio unit.', 'hm-pos' ),
+			__( 'Importe', 'hm-pos' ),
+			__( 'Total pedido', 'hm-pos' ),
+		);
+		fputcsv( $out, $cols, ';' );
+
+		$statuses = wc_get_order_statuses();
+
+		// Recorre los pedidos DE A LOTES (no todos de una) para mantener la memoria
+		// acotada sin importar cuántos pedidos haya en el rango.
+		$batch  = 500;
+		$offset = 0;
+		do {
+			$args['limit']  = $batch;
+			$args['offset'] = $offset;
+			$orders = wc_get_orders( $args );
+			$count  = is_array( $orders ) ? count( $orders ) : 0;
+
+			foreach ( (array) $orders as $o ) {
+				if ( ! $o instanceof WC_Order ) {
+					continue;
+				}
+				$number    = $o->get_order_number();
+			$date      = $o->get_date_created() ? $o->get_date_created()->date_i18n( 'Y-m-d H:i' ) : '';
+			$st_key    = 'wc-' . $o->get_status();
+			$st        = isset( $statuses[ $st_key ] ) ? $statuses[ $st_key ] : $o->get_status();
+			$is_pos    = 'hmpos' === $o->get_created_via();
+			$origin_lb = $is_pos ? 'POS' : __( 'Web', 'hm-pos' );
+
+			$cust = (string) $o->get_meta( '_hmpos_customer_name' );
+			if ( '' === $cust ) {
+				$cust = trim( $o->get_billing_first_name() . ' ' . $o->get_billing_last_name() );
+			}
+			$doc = (string) $o->get_meta( '_hmpos_customer_doc' );
+
+			$seller = (string) $o->get_meta( '_hmpos_seller' );
+			if ( '' === $seller ) {
+				$sid    = (string) $o->get_meta( '_hmpos_seller_id' );
+				$seller = ( '' !== $sid && class_exists( 'HMPOS_Sellers' ) ) ? HMPOS_Sellers::name_of( $sid ) : '';
+			}
+
+			$cashier = self::cashier_name( (int) $o->get_meta( '_hmpos_cajero_id' ) );
+			$pay     = $o->get_payment_method_title();
+			$o_total = self::num( (float) $o->get_total() );
+
+			$items = $o->get_items( 'line_item' );
+			if ( empty( $items ) ) {
+				continue;
+			}
+			foreach ( $items as $item ) {
+				if ( ! $item instanceof WC_Order_Item_Product ) {
+					continue;
+				}
+				$qty   = (int) $item->get_quantity();
+				$total = (float) $item->get_total();
+				$unit  = $qty ? $total / $qty : $total;
+
+				// Variación: atributos de la línea, en una sola celda.
+				$attrs = wc_display_item_meta(
+					$item,
+					array( 'before' => '', 'after' => '', 'separator' => ' · ', 'echo' => false, 'autop' => false )
+				);
+
+				fputcsv(
+					$out,
+					array(
+						$number,
+						$date,
+						$st,
+						$origin_lb,
+						$cust,
+						$doc,
+						$seller,
+						$cashier,
+						$pay,
+						$item->get_name(),
+						wp_strip_all_tags( (string) $attrs ),
+						$qty,
+						self::num( $unit ),
+						self::num( $total ),
+						$o_total,
+					),
+					';'
+				);
+			}
+		}
+			$offset += $batch;
+			if ( function_exists( 'flush' ) ) {
+				flush();
+			}
+		} while ( $count === $batch );
+
+		fclose( $out );
+	}
+
+	/** Número con coma decimal, sin separador de miles (Excel es-AR). */
+	private static function num( $n ) {
+		return number_format( (float) $n, 2, ',', '' );
+	}
+
+	/** Nombre del cajero (usuario WP) sin exponer el email/login. */
+	private static function cashier_name( $uid ) {
+		if ( ! $uid ) {
+			return '';
+		}
+		$u = get_userdata( $uid );
+		if ( ! $u ) {
+			return '';
+		}
+		$full = trim( $u->first_name . ' ' . $u->last_name );
+		if ( '' !== $full ) {
+			return $full;
+		}
+		return ( $u->display_name && false === strpos( $u->display_name, '@' ) ) ? $u->display_name : '';
+	}
+}

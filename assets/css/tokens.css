@@ -1,0 +1,73 @@
+/* ============================================================
+   HM Sport — Design Tokens
+   Fuente de verdad de estilos para el POS y el theme.
+   Cambiá la marca o una fuente ACÁ y se propaga a todo.
+   ============================================================ */
+
+/* Fuentes: Roboto Mono (números, códigos, total) + Inter (UI).
+   En producción conviene auto-hostear en assets/fonts en vez del CDN. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap');
+
+:root{
+  /* --- MARCA (Site Kit de Elementor de HM Sport) --- */
+  --brand:#00255A;        /* navy — acción y estructura */
+  --brand-600:#001B44;
+  --brand-700:#00122F;
+  --brand-tint:#E3E9F3;
+  --brand-contrast:#FFFFFF;
+
+  --accent:#3CD39C;       /* mint — acento vivo (con moderación) */
+  --accent-600:#21B182;
+  --accent-700:#15805F;
+  --accent-tint:#E1F7EF;
+  --accent-ink:#063524;
+
+  /* --- TINTA Y SUPERFICIES --- */
+  --ink:#0A1A33;          /* navy casi negro — superficies oscuras */
+  --paper:#F2F4F7;        /* fondo de app */
+  --surface:#FFFFFF;
+  --surface-2:#F6F8FA;
+  --surface-sunken:#EBEEF3;
+
+  /* --- NEUTROS --- */
+  --n-50:#F7F8FA; --n-100:#EEF1F5; --n-200:#E1E5EC; --n-300:#CBD1DB; --n-400:#A6AEBD;
+  --n-500:#7E8798; --n-600:#5C6575; --n-700:#434B59; --n-800:#2B313C; --n-900:#171B22;
+
+  /* --- TEXTO --- */
+  --text:#24272E; --text-muted:#59606C; --text-subtle:#889099; --text-on-ink:#E9EDF3;
+
+  /* --- BORDES --- */
+  --border:#E4E7ED; --border-strong:#CBD1DB;
+
+  /* --- ESTADOS --- */
+  --ok:#15843B;     --ok-tint:#E4F4E9;
+  --warn:#B45309;   --warn-tint:#FBEEDD;
+  --danger:#C81E1E; --danger-tint:#FBE4E4;
+  --info:#1D4ED8;   --info-tint:#E4EBFC;
+
+  /* --- SEMÁNTICA POS --- */
+  --fiscal:#1D4ED8;    --fiscal-tint:#E4EBFC;   /* comprobante fiscal */
+  --nonfiscal:#5C6575; --nonfiscal-tint:#EDEFF3;/* venta no fiscal */
+  --discount:#6D28D9;  --discount-tint:#EDE6FB; /* descuentos */
+  --focus:#1D4ED8;                              /* anillo de foco */
+
+  /* --- TIPOGRAFÍA --- */
+  --font-ui:'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:'Roboto Mono', ui-monospace, 'SF Mono', monospace; /* números, códigos, total */
+  --tnum:'tnum' 1,'lnum' 1;   /* cifras tabulares */
+
+  --t-xs:0.75rem; --t-sm:0.8125rem; --t-base:0.9375rem; --t-md:1rem; --t-lg:1.125rem;
+  --t-xl:1.375rem; --t-2xl:1.75rem; --t-3xl:2.25rem; --t-display:3.25rem; --t-score:4.5rem;
+
+  /* --- ESPACIADO (base 4) --- */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px;
+  --s-6:24px; --s-8:32px; --s-10:40px; --s-12:48px; --s-16:64px;
+
+  /* --- RADIOS / SOMBRAS / MOVIMIENTO --- */
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-pill:999px;
+  --sh-1:0 1px 2px rgba(20,21,28,.06),0 1px 1px rgba(20,21,28,.04);
+  --sh-2:0 4px 16px rgba(20,21,28,.08);
+  --sh-3:0 16px 40px rgba(20,21,28,.14);
+  --t-fast:120ms cubic-bezier(.2,.6,.2,1);
+  --t-base-mo:200ms cubic-bezier(.2,.6,.2,1);
+}
