@@ -172,11 +172,11 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 							<span x-text="money(lineNet(l))"></span>
 						</span>
 						<div class="line__ctrl" x-show="$store.pos.touch" x-cloak>
-							<button type="button" class="line__btn line__btn--disc" @click.stop="openLineDiscount(i)" aria-label="<?php esc_attr_e( 'Descuento', 'keytill' ); ?>">%</button>
+							<button type="button" class="line__btn line__btn--disc" @click.stop="openLineDiscount(i)" aria-label="<?php esc_attr_e( 'Discount', 'keytill' ); ?>">%</button>
 							<button type="button" class="line__btn" @click.stop="lineDec(i)" aria-label="<?php esc_attr_e( 'Restar', 'keytill' ); ?>">−</button>
 							<span class="line__ctrl-qty mono" x-text="l.qty"></span>
 							<button type="button" class="line__btn" @click.stop="lineInc(i)" aria-label="<?php esc_attr_e( 'Sumar', 'keytill' ); ?>">+</button>
-							<button type="button" class="line__btn line__btn--rm" @click.stop="lineRemove(i)" aria-label="<?php esc_attr_e( 'Quitar', 'keytill' ); ?>">✕</button>
+							<button type="button" class="line__btn line__btn--rm" @click.stop="lineRemove(i)" aria-label="<?php esc_attr_e( 'Remove', 'keytill' ); ?>">✕</button>
 						</div>
 					</div>
 				</template>
@@ -255,7 +255,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 				<span class="mono" x-text="session ? session.branch_name : ''"></span>
 			</div>
 			<div class="caja__row">
-				<span><?php esc_html_e( 'Fondo inicial', 'keytill' ); ?></span>
+				<span><?php esc_html_e( 'Opening float', 'keytill' ); ?></span>
 				<span class="mono" x-text="session ? money(session.opening_float) : ''"></span>
 			</div>
 			<div class="caja__row" x-show="session && session.cajero_name" x-cloak>
@@ -281,10 +281,10 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					<span class="keytill-abtn__lbl"><?php esc_html_e( 'Carrito', 'keytill' ); ?></span>
 					<span class="mono keytill-abtn__badge" x-text="itemCount()"></span>
 				</button>
-				<button type="button" class="keytill-abtn" @click="openCustomer()"><?php esc_html_e( 'Cliente', 'keytill' ); ?></button>
-				<button type="button" class="keytill-abtn" @click="openDiscount()"><?php esc_html_e( 'Descuento', 'keytill' ); ?></button>
+				<button type="button" class="keytill-abtn" @click="openCustomer()"><?php esc_html_e( 'Customer', 'keytill' ); ?></button>
+				<button type="button" class="keytill-abtn" @click="openDiscount()"><?php esc_html_e( 'Discount', 'keytill' ); ?></button>
 				<button type="button" class="keytill-abtn" @click="openReturn()"><?php esc_html_e( 'Devolución', 'keytill' ); ?></button>
-				<button type="button" class="keytill-abtn" @click="openWithdraw()" x-show="session" x-cloak><?php esc_html_e( 'Retiro', 'keytill' ); ?></button>
+				<button type="button" class="keytill-abtn" @click="openWithdraw()" x-show="session" x-cloak><?php esc_html_e( 'Withdrawal', 'keytill' ); ?></button>
 				<button type="button" class="keytill-abtn" @click="openClose()" x-show="session && $store.pos.canManage" x-cloak><?php esc_html_e( 'Cerrar caja', 'keytill' ); ?></button>
 			</div>
 			<button type="button" class="keytill-abtn keytill-abtn--pay" @click="openPay()">
@@ -324,10 +324,10 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 				<template x-for="c in meta.cashiers" :key="c.id"><option :value="c.id" x-text="c.name"></option></template>
 			</select>
 			<span class="orders__spacer"></span>
-			<label class="orders__daterange"><?php esc_html_e( 'Desde', 'keytill' ); ?>
+			<label class="orders__daterange"><?php esc_html_e( 'From', 'keytill' ); ?>
 				<input type="date" class="orders__filter" x-model="filters.date_from" @change="setCustomRange()" />
 			</label>
-			<label class="orders__daterange"><?php esc_html_e( 'Hasta', 'keytill' ); ?>
+			<label class="orders__daterange"><?php esc_html_e( 'To', 'keytill' ); ?>
 				<input type="date" class="orders__filter" x-model="filters.date_to" @change="setCustomRange()" />
 			</label>
 			<button type="button" class="orders__export" @click="exportCsv()" title="<?php esc_attr_e( 'Descargar CSV para Excel', 'keytill' ); ?>">⬇ <?php esc_html_e( 'Exportar CSV', 'keytill' ); ?></button>
@@ -339,10 +339,10 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<table class="orders__table">
 				<thead>
 					<tr>
-						<th>N°</th><th><?php esc_html_e( 'Fecha', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Cliente', 'keytill' ); ?></th><th><?php esc_html_e( 'Cajero', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Medio', 'keytill' ); ?></th><th><?php esc_html_e( 'Origen', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Estado', 'keytill' ); ?></th><th class="n"><?php esc_html_e( 'Total', 'keytill' ); ?></th>
+						<th>N°</th><th><?php esc_html_e( 'Date', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Customer', 'keytill' ); ?></th><th><?php esc_html_e( 'Cashier', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Medio', 'keytill' ); ?></th><th><?php esc_html_e( 'Source', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Status', 'keytill' ); ?></th><th class="n"><?php esc_html_e( 'Total', 'keytill' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -378,7 +378,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<aside class="drawer">
 				<div class="drawer__head">
 					<div>
-						<span class="drawer__num"><?php esc_html_e( 'Pedido', 'keytill' ); ?> #<span x-text="selected ? selected.number : ''"></span></span>
+						<span class="drawer__num"><?php esc_html_e( 'Order', 'keytill' ); ?> #<span x-text="selected ? selected.number : ''"></span></span>
 						<span class="mono muted" x-text="selected ? selected.date : ''"></span>
 					</div>
 					<button type="button" class="drawer__close" @click="closeDetail()" aria-label="Cerrar">✕</button>
@@ -396,7 +396,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 						</div>
 
 						<div class="drawer__cust" x-show="selected.customer.name || selected.customer.doc || selected.customer.email">
-							<b x-text="selected.customer.name || '<?php esc_attr_e( 'Consumidor final', 'keytill' ); ?>'"></b>
+							<b x-text="selected.customer.name || '<?php esc_attr_e( 'Walk-in customer', 'keytill' ); ?>'"></b>
 							<span class="mono muted" x-text="[selected.customer.doc, selected.customer.iva, selected.customer.email].filter(Boolean).join(' · ')"></span>
 						</div>
 
@@ -415,7 +415,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 								<div class="drawer__row"><span><?php esc_html_e( 'Subtotal', 'keytill' ); ?></span><span class="mono" x-text="selected.subtotal_f"></span></div>
 							</template>
 							<template x-if="selected.discount > 0">
-								<div class="drawer__row"><span><?php esc_html_e( 'Descuento', 'keytill' ); ?></span><span class="mono" x-text="'−' + selected.discount_f"></span></div>
+								<div class="drawer__row"><span><?php esc_html_e( 'Discount', 'keytill' ); ?></span><span class="mono" x-text="'−' + selected.discount_f"></span></div>
 							</template>
 							<div class="drawer__row drawer__row--grand"><span><?php esc_html_e( 'Total', 'keytill' ); ?></span><span class="mono" x-text="selected.total_f"></span></div>
 							<template x-if="selected.refunded > 0">
@@ -424,21 +424,21 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 						</div>
 
 						<div class="drawer__pay">
-							<div class="drawer__row"><span><?php esc_html_e( 'Medio de pago', 'keytill' ); ?></span><span x-text="selected.payment_title"></span></div>
+							<div class="drawer__row"><span><?php esc_html_e( 'Payment method', 'keytill' ); ?></span><span x-text="selected.payment_title"></span></div>
 							<template x-if="selected.credit_used > 0">
 								<div class="drawer__row"><span><?php esc_html_e( 'Crédito', 'keytill' ); ?><span x-show="selected.credit_code" x-text="' (' + selected.credit_code + ')'"></span></span><span class="mono" x-text="selected.credit_used_f"></span></div>
 							</template>
 							<template x-if="selected.tendered_f">
-								<div class="drawer__row"><span><?php esc_html_e( 'Recibido', 'keytill' ); ?></span><span class="mono" x-text="selected.tendered_f"></span></div>
+								<div class="drawer__row"><span><?php esc_html_e( 'Tendered', 'keytill' ); ?></span><span class="mono" x-text="selected.tendered_f"></span></div>
 							</template>
 							<template x-if="selected.change_f">
-								<div class="drawer__row"><span><?php esc_html_e( 'Vuelto', 'keytill' ); ?></span><span class="mono" x-text="selected.change_f"></span></div>
+								<div class="drawer__row"><span><?php esc_html_e( 'Change', 'keytill' ); ?></span><span class="mono" x-text="selected.change_f"></span></div>
 							</template>
 						</div>
 
 						<template x-if="selected.giftcards.length">
 							<div class="drawer__gc">
-								<span class="mono muted"><?php esc_html_e( 'Gift cards emitidas', 'keytill' ); ?></span>
+								<span class="mono muted"><?php esc_html_e( 'Gift cards issued', 'keytill' ); ?></span>
 								<template x-for="(g, i) in selected.giftcards" :key="i">
 									<span class="mono drawer__code" x-text="g.code"></span>
 								</template>
@@ -488,7 +488,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 		<div class="prod__modebar" x-show="canManage && branches.length" x-cloak>
 			<span class="mono muted"><?php esc_html_e( 'Seleccionar para:', 'keytill' ); ?></span>
 			<div class="prod__seg">
-				<button type="button" :class="{ 'is-on': selMode === 'labels' }" @click="setSelMode('labels')"><?php esc_html_e( 'Etiquetas', 'keytill' ); ?></button>
+				<button type="button" :class="{ 'is-on': selMode === 'labels' }" @click="setSelMode('labels')"><?php esc_html_e( 'Labels', 'keytill' ); ?></button>
 				<button type="button" :class="{ 'is-on': selMode === 'branch' }" @click="setSelMode('branch')"><?php esc_html_e( 'Sucursal', 'keytill' ); ?></button>
 			</div>
 		</div>
@@ -523,13 +523,13 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 				<thead>
 					<tr>
 						<th class="prod__c-exp"></th>
-						<th><?php esc_html_e( 'Producto', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Product', 'keytill' ); ?></th>
 						<th><?php esc_html_e( 'SKU', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Cód. barras', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Barcode', 'keytill' ); ?></th>
 						<th><?php esc_html_e( 'Categoría', 'keytill' ); ?></th>
 						<th class="n"><?php esc_html_e( 'Precio', 'keytill' ); ?></th>
 						<th class="n"><?php esc_html_e( 'Stock', 'keytill' ); ?></th>
-						<th class="c"><?php esc_html_e( 'Activo', 'keytill' ); ?></th>
+						<th class="c"><?php esc_html_e( 'Enabled', 'keytill' ); ?></th>
 					</tr>
 				</thead>
 					<template x-for="r in items" :key="r.id">
@@ -705,7 +705,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 								<span class="mono muted" x-text="it.barcode"></span>
 							</div>
 							<input type="number" min="1" max="1000" class="modal__input mono lblbatch__qty" x-model.number="it.qty" />
-							<button type="button" class="lblbatch__rm" @click="removeLabelSel(it.id)" title="<?php esc_attr_e( 'Quitar', 'keytill' ); ?>">✕</button>
+							<button type="button" class="lblbatch__rm" @click="removeLabelSel(it.id)" title="<?php esc_attr_e( 'Remove', 'keytill' ); ?>">✕</button>
 						</div>
 					</template>
 				</div>
@@ -757,7 +757,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 									<span x-show="uploadBusy" x-cloak><?php esc_html_e( 'Subiendo…', 'keytill' ); ?></span>
 									<input type="file" accept="image/*" @change="uploadImage($event)" hidden />
 								</label>
-								<button type="button" class="prod__imglink" x-show="form.image_url" @click="removeImage()"><?php esc_html_e( 'Quitar', 'keytill' ); ?></button>
+								<button type="button" class="prod__imglink" x-show="form.image_url" @click="removeImage()"><?php esc_html_e( 'Remove', 'keytill' ); ?></button>
 							</div>
 						</div>
 
@@ -782,7 +782,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 							<div class="mono muted prod__gallery-empty" x-show="!form.gallery.length" x-cloak><?php esc_html_e( 'Sin imágenes adicionales.', 'keytill' ); ?></div>
 						</div>
 
-						<label class="modal__label"><?php esc_html_e( 'Nombre', 'keytill' ); ?>
+						<label class="modal__label"><?php esc_html_e( 'Name', 'keytill' ); ?>
 							<input type="text" x-ref="edName" x-model="form.name" class="modal__input" autocomplete="off" />
 						</label>
 						<div class="modal__grid">
@@ -812,7 +812,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 										<input type="text" inputmode="numeric" maxlength="12" x-model="form.barcode" class="modal__input mono" placeholder="<?php esc_attr_e( '12 dígitos', 'keytill' ); ?>" autocomplete="off" />
 									</label>
 									<label class="modal__label modal__label--check">
-										<span><?php esc_html_e( 'Etiquetas', 'keytill' ); ?></span>
+										<span><?php esc_html_e( 'Labels', 'keytill' ); ?></span>
 										<button type="button" class="prod__imgbtn" @click="openLabels(form)" :disabled="!form.id || !form.barcode"><?php esc_html_e( 'Generar', 'keytill' ); ?></button>
 									</label>
 								</div>
@@ -913,9 +913,9 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 										<table class="prod__vartable prod__gridtable">
 											<thead>
 												<tr>
-													<th><?php esc_html_e( 'Variación', 'keytill' ); ?></th>
+													<th><?php esc_html_e( 'Variation', 'keytill' ); ?></th>
 													<th><?php esc_html_e( 'SKU', 'keytill' ); ?></th>
-													<th><?php esc_html_e( 'Cód. barras', 'keytill' ); ?></th>
+													<th><?php esc_html_e( 'Barcode', 'keytill' ); ?></th>
 													<th class="n"><?php esc_html_e( 'Precio', 'keytill' ); ?></th>
 													<th class="n"><?php esc_html_e( 'Stock', 'keytill' ); ?></th>
 													<th x-show="branches.length" x-cloak><?php esc_html_e( 'Sucursal', 'keytill' ); ?></th>
@@ -965,7 +965,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 															</template>
 														</td>
 														<td class="c">
-															<button type="button" class="prod__varlabel" @click="openLabels(v)" x-show="v.barcode" title="<?php esc_attr_e( 'Etiquetas', 'keytill' ); ?>">🏷</button>
+															<button type="button" class="prod__varlabel" @click="openLabels(v)" x-show="v.barcode" title="<?php esc_attr_e( 'Labels', 'keytill' ); ?>">🏷</button>
 															<button type="button" class="prod__vardel" @click="deleteVariation(v)" title="<?php esc_attr_e( 'Borrar variación', 'keytill' ); ?>">✕</button>
 														</td>
 													</tr>
@@ -1067,7 +1067,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					<span class="mono muted" x-text="moveBox.name"></span>
 				</div>
 				<div class="modal__grid">
-					<label class="modal__label"><?php esc_html_e( 'Desde', 'keytill' ); ?>
+					<label class="modal__label"><?php esc_html_e( 'From', 'keytill' ); ?>
 						<select class="modal__input" x-model="moveBox.from">
 							<template x-for="b in branches" :key="b.id"><option :value="b.id" x-text="b.name"></option></template>
 						</select>
@@ -1078,7 +1078,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 						</select>
 					</label>
 				</div>
-				<label class="modal__label"><?php esc_html_e( 'Cantidad', 'keytill' ); ?>
+				<label class="modal__label"><?php esc_html_e( 'Quantity', 'keytill' ); ?>
 					<input type="text" inputmode="numeric" class="modal__input mono" x-model="moveBox.qty" placeholder="0" autocomplete="off" />
 				</label>
 				<div class="cust__error mono" x-show="moveBox.error" x-cloak x-text="moveBox.error"></div>
@@ -1107,9 +1107,9 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<table class="cx__table">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'Cliente', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Customer', 'keytill' ); ?></th>
 						<th><?php esc_html_e( 'Email', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Documento', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Tax ID', 'keytill' ); ?></th>
 						<th><?php esc_html_e( 'Cond. fiscal', 'keytill' ); ?></th>
 						<th class="n"><?php esc_html_e( 'Pedidos', 'keytill' ); ?></th>
 						<th class="n"><?php esc_html_e( 'Total gastado', 'keytill' ); ?></th>
@@ -1146,7 +1146,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<aside class="drawer">
 				<div class="drawer__head">
 					<div>
-						<span class="drawer__num"><?php esc_html_e( 'Cliente', 'keytill' ); ?></span>
+						<span class="drawer__num"><?php esc_html_e( 'Customer', 'keytill' ); ?></span>
 						<span class="mono muted" x-text="selected ? ('#' + selected.id) : ''"></span>
 					</div>
 					<button type="button" class="drawer__close" @click="closeDetail()" aria-label="Cerrar">✕</button>
@@ -1170,19 +1170,19 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 
 						<!-- Edición -->
 						<div class="cx__edit">
-							<label class="modal__label"><?php esc_html_e( 'Nombre', 'keytill' ); ?>
+							<label class="modal__label"><?php esc_html_e( 'Name', 'keytill' ); ?>
 								<input type="text" x-model="selected.name" class="modal__input" autocomplete="off" />
 							</label>
 							<div class="modal__grid">
 								<label class="modal__label"><?php esc_html_e( 'Email', 'keytill' ); ?>
 									<input type="email" x-model="selected.email" class="modal__input mono" placeholder="—" autocomplete="off" spellcheck="false" />
 								</label>
-								<label class="modal__label"><?php esc_html_e( 'Documento', 'keytill' ); ?>
+								<label class="modal__label"><?php esc_html_e( 'Tax ID', 'keytill' ); ?>
 									<input type="text" x-model="selected.doc" class="modal__input mono" placeholder="—" autocomplete="off" />
 								</label>
 							</div>
 							<div class="modal__grid">
-								<label class="modal__label"><?php esc_html_e( 'Teléfono', 'keytill' ); ?>
+								<label class="modal__label"><?php esc_html_e( 'Phone', 'keytill' ); ?>
 									<input type="tel" x-model="selected.phone" class="modal__input mono" placeholder="—" autocomplete="off" />
 								</label>
 								<label class="modal__label"><?php esc_html_e( 'Fecha de nacimiento', 'keytill' ); ?>
@@ -1233,19 +1233,19 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<div class="prod__card">
 				<span class="modal__title"><?php esc_html_e( 'NUEVO CLIENTE', 'keytill' ); ?></span>
 				<span class="mono modal__sub"><?php esc_html_e( 'Al menos email o documento · no se envía ningún email', 'keytill' ); ?></span>
-				<label class="modal__label"><?php esc_html_e( 'Nombre', 'keytill' ); ?>
+				<label class="modal__label"><?php esc_html_e( 'Name', 'keytill' ); ?>
 					<input type="text" x-ref="newName" x-model="newCust.name" class="modal__input" autocomplete="off" @keydown.enter="submitCreate()" />
 				</label>
 				<div class="modal__grid">
 					<label class="modal__label"><?php esc_html_e( 'Email', 'keytill' ); ?>
 						<input type="email" x-model="newCust.email" class="modal__input mono" placeholder="—" autocomplete="off" spellcheck="false" @keydown.enter="submitCreate()" />
 					</label>
-					<label class="modal__label"><?php esc_html_e( 'Documento', 'keytill' ); ?>
+					<label class="modal__label"><?php esc_html_e( 'Tax ID', 'keytill' ); ?>
 						<input type="text" x-model="newCust.doc" class="modal__input mono" placeholder="—" autocomplete="off" @keydown.enter="submitCreate()" />
 					</label>
 				</div>
 				<div class="modal__grid">
-					<label class="modal__label"><?php esc_html_e( 'Teléfono', 'keytill' ); ?>
+					<label class="modal__label"><?php esc_html_e( 'Phone', 'keytill' ); ?>
 						<input type="tel" x-model="newCust.phone" class="modal__input mono" placeholder="—" autocomplete="off" @keydown.enter="submitCreate()" />
 					</label>
 					<label class="modal__label"><?php esc_html_e( 'Fecha de nacimiento', 'keytill' ); ?>
@@ -1276,7 +1276,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 	<div class="keytill-view keytill-cashbank" x-show="$store.pos.view === 'cajabanco'" x-data="keytillCashBank()" x-cloak>
 		<div class="cb__head">
 			<h2 class="cb__title"><?php esc_html_e( 'Caja / Banco', 'keytill' ); ?></h2>
-			<button type="button" class="prod__link" @click="load()"><?php esc_html_e( 'Actualizar', 'keytill' ); ?></button>
+			<button type="button" class="prod__link" @click="load()"><?php esc_html_e( 'Refresh', 'keytill' ); ?></button>
 		</div>
 		<div class="prod__err" x-show="error" x-cloak x-text="error"></div>
 		<div class="cb__loading mono muted" x-show="loading" x-cloak><?php esc_html_e( 'Cargando…', 'keytill' ); ?></div>
@@ -1295,16 +1295,16 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					<div>
 						<div class="cb__rows">
 							<div class="cb__row" x-show="cash.branch_name"><span><?php esc_html_e( 'Sucursal', 'keytill' ); ?></span><span class="mono" x-text="cash.branch_name"></span></div>
-							<div class="cb__row"><span><?php esc_html_e( 'Fondo inicial', 'keytill' ); ?></span><span class="mono" x-text="money(cash.opening_float)"></span></div>
-							<div class="cb__row"><span><?php esc_html_e( 'Ventas efectivo', 'keytill' ); ?></span><span class="mono" x-text="money(cash.cash_sales)"></span></div>
-							<div class="cb__row"><span><?php esc_html_e( 'Ingresos', 'keytill' ); ?></span><span class="mono" x-text="money(cash.deposits_total)"></span></div>
-							<div class="cb__row"><span><?php esc_html_e( 'Retiros', 'keytill' ); ?></span><span class="mono" x-text="'− ' + money(cash.withdrawals_total)"></span></div>
-							<div class="cb__row"><span><?php esc_html_e( 'Devoluciones efectivo', 'keytill' ); ?></span><span class="mono" x-text="'− ' + money(cash.cash_refunds)"></span></div>
-							<div class="cb__row cb__row--total"><span><?php esc_html_e( 'Esperado en cajón', 'keytill' ); ?></span><span class="mono" x-text="money(cash.expected_cash)"></span></div>
+							<div class="cb__row"><span><?php esc_html_e( 'Opening float', 'keytill' ); ?></span><span class="mono" x-text="money(cash.opening_float)"></span></div>
+							<div class="cb__row"><span><?php esc_html_e( 'Cash sales', 'keytill' ); ?></span><span class="mono" x-text="money(cash.cash_sales)"></span></div>
+							<div class="cb__row"><span><?php esc_html_e( 'Deposits', 'keytill' ); ?></span><span class="mono" x-text="money(cash.deposits_total)"></span></div>
+							<div class="cb__row"><span><?php esc_html_e( 'Withdrawals', 'keytill' ); ?></span><span class="mono" x-text="'− ' + money(cash.withdrawals_total)"></span></div>
+							<div class="cb__row"><span><?php esc_html_e( 'Cash refunds', 'keytill' ); ?></span><span class="mono" x-text="'− ' + money(cash.cash_refunds)"></span></div>
+							<div class="cb__row cb__row--total"><span><?php esc_html_e( 'Expected in drawer', 'keytill' ); ?></span><span class="mono" x-text="money(cash.expected_cash)"></span></div>
 						</div>
 						<div class="cb__actions">
-							<button type="button" class="cb__btn" @click="openMove('efectivo','ingreso')"><?php esc_html_e( 'Ingreso', 'keytill' ); ?></button>
-							<button type="button" class="cb__btn" @click="openMove('efectivo','retiro')"><?php esc_html_e( 'Retiro', 'keytill' ); ?></button>
+							<button type="button" class="cb__btn" @click="openMove('efectivo','ingreso')"><?php esc_html_e( 'Deposit', 'keytill' ); ?></button>
+							<button type="button" class="cb__btn" @click="openMove('efectivo','retiro')"><?php esc_html_e( 'Withdrawal', 'keytill' ); ?></button>
 						</div>
 						<template x-if="(cash.deposits && cash.deposits.length) || (cash.withdrawals && cash.withdrawals.length)">
 							<div class="cb__moves">
@@ -1340,16 +1340,16 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 				<template x-if="digital && digital.open">
 					<div>
 						<div class="cb__rows">
-							<div class="cb__row"><span><?php esc_html_e( 'Apertura', 'keytill' ); ?></span><span class="mono" x-text="money(digital.opening)"></span></div>
+							<div class="cb__row"><span><?php esc_html_e( 'Opening', 'keytill' ); ?></span><span class="mono" x-text="money(digital.opening)"></span></div>
 							<div class="cb__row"><span><?php esc_html_e( 'Cobros (transf./QR/tarjeta)', 'keytill' ); ?></span><span class="mono" x-text="money(digital.sales)"></span></div>
-							<div class="cb__row"><span><?php esc_html_e( 'Devoluciones', 'keytill' ); ?></span><span class="mono" x-text="'− ' + money(digital.refunds)"></span></div>
-							<div class="cb__row"><span><?php esc_html_e( 'Ingresos', 'keytill' ); ?></span><span class="mono" x-text="money(digital.ingresos)"></span></div>
-							<div class="cb__row"><span><?php esc_html_e( 'Retiros', 'keytill' ); ?></span><span class="mono" x-text="'− ' + money(digital.retiros)"></span></div>
-							<div class="cb__row cb__row--total"><span><?php esc_html_e( 'Saldo', 'keytill' ); ?></span><span class="mono" x-text="money(digital.balance)"></span></div>
+							<div class="cb__row"><span><?php esc_html_e( 'Refunds', 'keytill' ); ?></span><span class="mono" x-text="'− ' + money(digital.refunds)"></span></div>
+							<div class="cb__row"><span><?php esc_html_e( 'Deposits', 'keytill' ); ?></span><span class="mono" x-text="money(digital.ingresos)"></span></div>
+							<div class="cb__row"><span><?php esc_html_e( 'Withdrawals', 'keytill' ); ?></span><span class="mono" x-text="'− ' + money(digital.retiros)"></span></div>
+							<div class="cb__row cb__row--total"><span><?php esc_html_e( 'Balance', 'keytill' ); ?></span><span class="mono" x-text="money(digital.balance)"></span></div>
 						</div>
 						<div class="cb__actions">
-							<button type="button" class="cb__btn" @click="openMove('digital','ingreso')"><?php esc_html_e( 'Ingreso', 'keytill' ); ?></button>
-							<button type="button" class="cb__btn" @click="openMove('digital','retiro')"><?php esc_html_e( 'Retiro', 'keytill' ); ?></button>
+							<button type="button" class="cb__btn" @click="openMove('digital','ingreso')"><?php esc_html_e( 'Deposit', 'keytill' ); ?></button>
+							<button type="button" class="cb__btn" @click="openMove('digital','retiro')"><?php esc_html_e( 'Withdrawal', 'keytill' ); ?></button>
 							<button type="button" class="cb__btn cb__btn--warn" :disabled="busy" @click="closeDigital()"><?php esc_html_e( 'Cerrar', 'keytill' ); ?></button>
 						</div>
 						<template x-if="digital.moves && digital.moves.length">
@@ -1373,15 +1373,15 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<div class="cb__ledger-head">
 				<h3 class="cb__subtitle"><?php esc_html_e( 'Libro de movimientos', 'keytill' ); ?></h3>
 				<div class="cb__ledger-actions">
-					<button type="button" class="prod__link" @click="loadLedger()"><?php esc_html_e( 'Actualizar', 'keytill' ); ?></button>
+					<button type="button" class="prod__link" @click="loadLedger()"><?php esc_html_e( 'Refresh', 'keytill' ); ?></button>
 					<button type="button" class="cb__btn" @click="exportCsv()">⬇ <?php esc_html_e( 'Exportar CSV', 'keytill' ); ?></button>
 				</div>
 			</div>
 
 			<!-- Filtros -->
 			<div class="cb__filters">
-				<label><?php esc_html_e( 'Desde', 'keytill' ); ?> <input type="date" x-model="lf.from" @change="loadLedger()"></label>
-				<label><?php esc_html_e( 'Hasta', 'keytill' ); ?> <input type="date" x-model="lf.to" @change="loadLedger()"></label>
+				<label><?php esc_html_e( 'From', 'keytill' ); ?> <input type="date" x-model="lf.from" @change="loadLedger()"></label>
+				<label><?php esc_html_e( 'To', 'keytill' ); ?> <input type="date" x-model="lf.to" @change="loadLedger()"></label>
 				<select x-model="lf.origen" @change="loadLedger()">
 					<option value=""><?php esc_html_e( 'Origen: todos', 'keytill' ); ?></option>
 					<option value="local"><?php esc_html_e( 'Local', 'keytill' ); ?></option>
@@ -1389,26 +1389,26 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 				</select>
 				<select x-model="lf.movement" @change="loadLedger()">
 					<option value=""><?php esc_html_e( 'Movimiento: todos', 'keytill' ); ?></option>
-					<option value="ingreso"><?php esc_html_e( 'Ingreso', 'keytill' ); ?></option>
+					<option value="ingreso"><?php esc_html_e( 'Deposit', 'keytill' ); ?></option>
 					<option value="egreso"><?php esc_html_e( 'Egreso', 'keytill' ); ?></option>
 				</select>
 				<select x-model="lf.type" @change="loadLedger()">
 					<option value=""><?php esc_html_e( 'Tipo: todos', 'keytill' ); ?></option>
-					<option value="venta"><?php esc_html_e( 'Venta', 'keytill' ); ?></option>
-					<option value="ingreso"><?php esc_html_e( 'Ingreso', 'keytill' ); ?></option>
-					<option value="retiro"><?php esc_html_e( 'Retiro', 'keytill' ); ?></option>
+					<option value="venta"><?php esc_html_e( 'Sale', 'keytill' ); ?></option>
+					<option value="ingreso"><?php esc_html_e( 'Deposit', 'keytill' ); ?></option>
+					<option value="retiro"><?php esc_html_e( 'Withdrawal', 'keytill' ); ?></option>
 					<option value="devolucion"><?php esc_html_e( 'Devolución', 'keytill' ); ?></option>
 				</select>
 				<select x-model="lf.account" @change="loadLedger()">
 					<option value=""><?php esc_html_e( 'Cuenta: todas', 'keytill' ); ?></option>
-					<option value="efectivo"><?php esc_html_e( 'Efectivo', 'keytill' ); ?></option>
+					<option value="efectivo"><?php esc_html_e( 'Cash', 'keytill' ); ?></option>
 					<option value="digital"><?php esc_html_e( 'Digital', 'keytill' ); ?></option>
 				</select>
 			</div>
 
 			<!-- Totales del rango -->
 			<div class="cb__ledger-totals">
-				<div class="cb__tot"><span class="cb__tot-h"><?php esc_html_e( 'Efectivo', 'keytill' ); ?></span>
+				<div class="cb__tot"><span class="cb__tot-h"><?php esc_html_e( 'Cash', 'keytill' ); ?></span>
 					<span class="cb__move-in" x-text="'+ ' + money(ledger.totals.efectivo.in)"></span>
 					<span class="cb__move-out" x-text="'− ' + money(ledger.totals.efectivo.out)"></span>
 					<span class="cb__tot-net"><?php esc_html_e( 'neto', 'keytill' ); ?> <b x-text="money(ledger.totals.efectivo.net)"></b></span>
@@ -1427,12 +1427,12 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 				<table class="cb__table">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'Fecha', 'keytill' ); ?></th>
-							<th><?php esc_html_e( 'Origen', 'keytill' ); ?></th>
+							<th><?php esc_html_e( 'Date', 'keytill' ); ?></th>
+							<th><?php esc_html_e( 'Source', 'keytill' ); ?></th>
 							<th><?php esc_html_e( 'Mov.', 'keytill' ); ?></th>
-							<th><?php esc_html_e( 'Tipo', 'keytill' ); ?></th>
+							<th><?php esc_html_e( 'Type', 'keytill' ); ?></th>
 							<th><?php esc_html_e( 'Cuenta', 'keytill' ); ?></th>
-							<th class="n"><?php esc_html_e( 'Monto', 'keytill' ); ?></th>
+							<th class="n"><?php esc_html_e( 'Amount', 'keytill' ); ?></th>
 							<th><?php esc_html_e( 'Detalle', 'keytill' ); ?></th>
 							<th class="c"><?php esc_html_e( 'Conciliación', 'keytill' ); ?></th>
 						</tr>
@@ -1451,7 +1451,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 									<template x-if="r.order_id">
 										<span class="cb__verify" :class="'is-' + r.verification">
 											<button type="button" class="cb__vbtn cb__vbtn--ok" :class="{ 'is-on': r.verification === 'verificada' }" @click="setVerify(r, 'verificada')" title="<?php esc_attr_e( 'Verificada (entró al banco)', 'keytill' ); ?>">✓</button>
-											<button type="button" class="cb__vbtn cb__vbtn--bad" :class="{ 'is-on': r.verification === 'no_llego' }" @click="setVerify(r, 'no_llego')" title="<?php esc_attr_e( 'No llegó', 'keytill' ); ?>">✕</button>
+											<button type="button" class="cb__vbtn cb__vbtn--bad" :class="{ 'is-on': r.verification === 'no_llego' }" @click="setVerify(r, 'no_llego')" title="<?php esc_attr_e( 'Not received', 'keytill' ); ?>">✕</button>
 										</span>
 									</template>
 								</td>
@@ -1475,7 +1475,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<div class="keytill-modal__card">
 				<span class="modal__title"><?php esc_html_e( 'SALDO INICIAL · CAJA DIGITAL', 'keytill' ); ?></span>
 				<span class="mono modal__sub"><?php esc_html_e( 'Cuánto hay hoy en la cuenta bancaria (solo la primera vez).', 'keytill' ); ?></span>
-				<label class="modal__label"><?php esc_html_e( 'Saldo inicial', 'keytill' ); ?>
+				<label class="modal__label"><?php esc_html_e( 'Opening balance', 'keytill' ); ?>
 					<input type="text" inputmode="decimal" x-model="seed.initial" class="modal__input mono cash-amount" placeholder="0" @keydown.enter="seedConfirm()" autocomplete="off" />
 				</label>
 				<div class="sheet-actions">
@@ -1489,10 +1489,10 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 		<div class="keytill-modal" x-show="move.open" x-cloak @click.self="move.open = false">
 			<div class="keytill-modal__card">
 				<span class="modal__title mono" x-text="moveTitle()"></span>
-				<label class="modal__label"><?php esc_html_e( 'Monto', 'keytill' ); ?>
+				<label class="modal__label"><?php esc_html_e( 'Amount', 'keytill' ); ?>
 					<input type="text" inputmode="decimal" x-model="move.amount" class="modal__input mono cash-amount" placeholder="0" @keydown.enter="submitMove()" autocomplete="off" />
 				</label>
-				<label class="modal__label"><?php esc_html_e( 'Concepto', 'keytill' ); ?>
+				<label class="modal__label"><?php esc_html_e( 'Description', 'keytill' ); ?>
 					<input type="text" x-model="move.concept" class="modal__input" :placeholder="move.kind === 'ingreso' ? 'Ej. aporte, cambio' : 'Ej. pago proveedor'" @keydown.enter="submitMove()" autocomplete="off" />
 				</label>
 				<div class="pay__error" x-show="move.error" x-cloak x-text="move.error"></div>
@@ -1534,7 +1534,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 
 			<!-- Sub-etapa: ingreso de código de crédito -->
 			<div class="pay__credit-entry" x-show="payStage === 'credit'" x-cloak>
-				<span class="pay__col-label"><?php esc_html_e( 'CRÉDITO EN TIENDA', 'keytill' ); ?></span>
+				<span class="pay__col-label"><?php esc_html_e( 'STORE CREDIT', 'keytill' ); ?></span>
 				<span class="mono modal__sub"><?php esc_html_e( 'Ingresá el código · ENTER valida · ESC vuelve', 'keytill' ); ?></span>
 				<input type="text" x-ref="payCredit" x-model="creditCodeDraft" class="modal__input mono cash-amount" placeholder="HM-XXXX-XXXX" autocomplete="off" spellcheck="false" style="text-transform:uppercase" />
 				<div class="pay__error" x-show="creditError" x-cloak x-text="creditError"></div>
@@ -1557,7 +1557,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					</template>
 					<div class="pay__method pay__method--credit" :class="{ 'is-on': !!creditApplied }" @click="openCreditEntry()" role="button">
 						<span class="mono pay__key">C</span>
-						<span class="pay__method-name"><?php esc_html_e( 'Crédito en tienda', 'keytill' ); ?></span>
+						<span class="pay__method-name"><?php esc_html_e( 'Store credit', 'keytill' ); ?></span>
 					</div>
 					<div class="pay__credit-applied" x-show="creditApplied" x-cloak>
 						<span class="mono" x-text="creditApplied ? creditApplied.code : ''"></span>
@@ -1571,7 +1571,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 						<span class="mono" x-text="money(subtotal())"></span>
 					</div>
 					<div class="pay__row pay__row--muted" x-show="discount > 0" x-cloak>
-						<span><?php esc_html_e( 'Descuento', 'keytill' ); ?> <span x-show="discountType === 'percent'" x-text="'(' + discount + '%)'"></span></span>
+						<span><?php esc_html_e( 'Discount', 'keytill' ); ?> <span x-show="discountType === 'percent'" x-text="'(' + discount + '%)'"></span></span>
 						<span class="mono">−<span x-text="money(discountAmount())"></span></span>
 					</div>
 					<div class="pay__row">
@@ -1651,19 +1651,19 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<template x-if="custStage === 'create'">
 				<div class="cust">
 					<span class="mono modal__sub"><?php esc_html_e( 'Nuevo cliente · al menos email o documento · TAB entre campos · ENTER guarda · ESC vuelve', 'keytill' ); ?></span>
-					<label class="modal__label"><?php esc_html_e( 'Nombre', 'keytill' ); ?>
+					<label class="modal__label"><?php esc_html_e( 'Name', 'keytill' ); ?>
 						<input type="text" x-ref="custName" x-model="newCust.name" class="modal__input" autocomplete="off" />
 					</label>
 					<div class="modal__grid">
 						<label class="modal__label"><?php esc_html_e( 'Email', 'keytill' ); ?>
 							<input type="email" x-model="newCust.email" class="modal__input mono" placeholder="—" autocomplete="off" spellcheck="false" />
 						</label>
-						<label class="modal__label"><?php esc_html_e( 'Documento', 'keytill' ); ?>
+						<label class="modal__label"><?php esc_html_e( 'Tax ID', 'keytill' ); ?>
 							<input type="text" x-model="newCust.doc" class="modal__input mono" placeholder="—" autocomplete="off" />
 						</label>
 					</div>
 					<div class="modal__grid">
-						<label class="modal__label"><?php esc_html_e( 'Teléfono', 'keytill' ); ?>
+						<label class="modal__label"><?php esc_html_e( 'Phone', 'keytill' ); ?>
 							<input type="tel" x-model="newCust.phone" class="modal__input mono" placeholder="—" autocomplete="off" />
 						</label>
 						<label class="modal__label"><?php esc_html_e( 'Fecha de nacimiento', 'keytill' ); ?>
@@ -1742,7 +1742,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 		<div class="keytill-modal__card saleresult-modal">
 			<span class="modal__title"><?php esc_html_e( 'VENTA REALIZADA', 'keytill' ); ?></span>
 			<span class="mono modal__sub">
-				<?php esc_html_e( 'Pedido', 'keytill' ); ?>
+				<?php esc_html_e( 'Order', 'keytill' ); ?>
 				<b x-text="saleResult ? ('#' + saleResult.number) : ''"></b>
 				· <span x-text="saleResult ? saleResult.methodName : ''"></span>
 			</span>
@@ -1760,7 +1760,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 				</template>
 				<template x-if="saleResult && saleResult.change > 0">
 					<div class="saleresult__row saleresult__row--change">
-						<span><?php esc_html_e( 'Vuelto', 'keytill' ); ?></span>
+						<span><?php esc_html_e( 'Change', 'keytill' ); ?></span>
 						<span class="mono" x-text="money(saleResult.change)"></span>
 					</div>
 				</template>
@@ -2000,10 +2000,10 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 						<span class="return-method__label"><?php esc_html_e( 'REINTEGRO', 'keytill' ); ?></span>
 						<div class="return-method__opts">
 							<button type="button" class="return-method__opt" :class="{ 'is-on': returnMethod === 'credito' }" @click="setReturnMethod('credito')" tabindex="-1">
-								<span class="mono">C</span> <?php esc_html_e( 'Crédito en tienda', 'keytill' ); ?>
+								<span class="mono">C</span> <?php esc_html_e( 'Store credit', 'keytill' ); ?>
 							</button>
 							<button type="button" class="return-method__opt" :class="{ 'is-on': returnMethod === 'efectivo' }" @click="setReturnMethod('efectivo')" tabindex="-1">
-								<span class="mono">E</span> <?php esc_html_e( 'Efectivo', 'keytill' ); ?>
+								<span class="mono">E</span> <?php esc_html_e( 'Cash', 'keytill' ); ?>
 							</button>
 							<button type="button" class="return-method__opt" :class="{ 'is-on': returnMethod === 'transferencia' }" @click="setReturnMethod('transferencia')" tabindex="-1">
 								<span class="mono">T</span> <?php esc_html_e( 'Transferencia', 'keytill' ); ?>
@@ -2031,7 +2031,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<!-- Etapa: resumen -->
 			<div class="return-body return-done" x-show="returnStage === 'done'" x-cloak>
 				<span class="cash-done__title"><?php esc_html_e( 'DEVOLUCIÓN OK', 'keytill' ); ?></span>
-				<div class="cash-line"><span><?php esc_html_e( 'Venta', 'keytill' ); ?></span><span class="mono" x-text="returnResult ? '#' + returnResult.order_number : ''"></span></div>
+				<div class="cash-line"><span><?php esc_html_e( 'Sale', 'keytill' ); ?></span><span class="mono" x-text="returnResult ? '#' + returnResult.order_number : ''"></span></div>
 				<div class="cash-line"><span><?php esc_html_e( 'Devuelto', 'keytill' ); ?></span><span class="mono" x-text="returnResult ? money(returnResult.amount) : ''"></span></div>
 
 				<!-- Reintegro en efectivo -->
@@ -2046,7 +2046,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 
 				<!-- Crédito en tienda emitido -->
 				<div class="return-credit-result" x-show="returnResult && returnResult.credit_code" x-cloak>
-					<span class="return-credit-result__label"><?php esc_html_e( 'CRÉDITO EN TIENDA', 'keytill' ); ?></span>
+					<span class="return-credit-result__label"><?php esc_html_e( 'STORE CREDIT', 'keytill' ); ?></span>
 					<span class="mono return-credit-result__code" x-text="returnResult ? returnResult.credit_code : ''"></span>
 					<span class="mono return-credit-result__amt" x-text="returnResult ? money(returnResult.credit_amount) : ''"></span>
 					<span class="mono muted" x-show="returnResult && returnResult.credit_expires"><?php esc_html_e( 'vence', 'keytill' ); ?> <span x-text="returnResult ? returnResult.credit_expires : ''"></span></span>
@@ -2111,7 +2111,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					<template x-for="b in branches" :key="b.id"><option :value="b.id" x-text="b.name"></option></template>
 				</select>
 			</label>
-			<label class="modal__label"><?php esc_html_e( 'Fondo inicial', 'keytill' ); ?>
+			<label class="modal__label"><?php esc_html_e( 'Opening float', 'keytill' ); ?>
 				<input type="text" inputmode="decimal" x-ref="cashOpen" x-model="openFloat" class="modal__input mono cash-amount" placeholder="0" autocomplete="off" />
 			</label>
 			<div class="pay__error" x-show="cashError" x-cloak x-text="cashError"></div>
@@ -2141,7 +2141,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					<button type="button" class="return-method__opt" :class="{ 'is-on': withdrawAccount === 'digital' }" @click="setWithdrawAccount('digital')" tabindex="-1">Caja digital</button>
 				</div>
 			</div>
-			<label class="modal__label"><?php esc_html_e( 'Monto', 'keytill' ); ?>
+			<label class="modal__label"><?php esc_html_e( 'Amount', 'keytill' ); ?>
 				<input type="text" inputmode="decimal" x-ref="cashWithdraw" x-model="withdrawAmount" class="modal__input mono cash-amount" placeholder="0" autocomplete="off" />
 			</label>
 			<label class="modal__label"><?php esc_html_e( 'Motivo', 'keytill' ); ?>
@@ -2196,9 +2196,9 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					</template>
 				</div>
 				<div class="cash-close__col">
-					<div class="cash-line"><span><?php esc_html_e( 'Fondo inicial', 'keytill' ); ?></span><span class="mono" x-text="session ? money(session.opening_float) : ''"></span></div>
+					<div class="cash-line"><span><?php esc_html_e( 'Opening float', 'keytill' ); ?></span><span class="mono" x-text="session ? money(session.opening_float) : ''"></span></div>
 					<div class="cash-line"><span>+ <?php esc_html_e( 'Ventas en efectivo', 'keytill' ); ?></span><span class="mono" x-text="session ? money(session.cash_sales) : ''"></span></div>
-					<div class="cash-line"><span>− <?php esc_html_e( 'Retiros', 'keytill' ); ?></span><span class="mono" x-text="session ? money(session.withdrawals_total) : ''"></span></div>
+					<div class="cash-line"><span>− <?php esc_html_e( 'Withdrawals', 'keytill' ); ?></span><span class="mono" x-text="session ? money(session.withdrawals_total) : ''"></span></div>
 					<div class="cash-line cash-line--exp"><span><?php esc_html_e( 'Efectivo esperado', 'keytill' ); ?></span><span class="mono" x-text="session ? money(session.expected_cash) : ''"></span></div>
 					<label class="modal__label"><?php esc_html_e( 'Efectivo contado', 'keytill' ); ?>
 						<input type="text" inputmode="decimal" x-ref="cashClose" x-model="countedCash" class="modal__input mono cash-amount" placeholder="0" autocomplete="off" />

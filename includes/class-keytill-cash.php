@@ -43,15 +43,15 @@ class KEYTILL_Cash {
 	/** Columnas de la lista de sesiones de caja. */
 	public static function admin_columns( $cols ) {
 		return array(
-			'apertura'   => __( 'Apertura', 'keytill' ),
-			'cierre'     => __( 'Cierre', 'keytill' ),
-			'cajero'     => __( 'Cajero', 'keytill' ),
-			'estado'     => __( 'Estado', 'keytill' ),
-			'fondo'      => __( 'Fondo', 'keytill' ),
-			'retiros'    => __( 'Retiros', 'keytill' ),
-			'esperado'   => __( 'Esperado', 'keytill' ),
-			'contado'    => __( 'Contado', 'keytill' ),
-			'diferencia' => __( 'Diferencia', 'keytill' ),
+			'apertura'   => __( 'Opening', 'keytill' ),
+			'cierre'     => __( 'Closing', 'keytill' ),
+			'cajero'     => __( 'Cashier', 'keytill' ),
+			'estado'     => __( 'Status', 'keytill' ),
+			'fondo'      => __( 'Float', 'keytill' ),
+			'retiros'    => __( 'Withdrawals', 'keytill' ),
+			'esperado'   => __( 'Expected', 'keytill' ),
+			'contado'    => __( 'Counted', 'keytill' ),
+			'diferencia' => __( 'Difference', 'keytill' ),
 		);
 	}
 
@@ -87,7 +87,7 @@ class KEYTILL_Cash {
 				$link = get_edit_post_link( $post_id );
 				$txt  = self::fmt_date( get_post_meta( $post_id, '_keytill_opened_at', true ) );
 				echo $link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					? '<a href="' . esc_url( $link ) . '" title="' . esc_attr__( 'Ver detalle', 'keytill' ) . '"><strong>' . esc_html( $txt ) . '</strong></a>'
+					? '<a href="' . esc_url( $link ) . '" title="' . esc_attr__( 'View details', 'keytill' ) . '"><strong>' . esc_html( $txt ) . '</strong></a>'
 					: esc_html( $txt );
 				break;
 			case 'cierre':
@@ -101,7 +101,7 @@ class KEYTILL_Cash {
 				printf(
 					'<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-weight:600;%s">%s</span>',
 					$open ? 'background:#e1f7ef;color:#15805f' : 'background:#eef1f6;color:#50607a', // phpcs:ignore
-					esc_html( $open ? __( 'Abierta', 'keytill' ) : __( 'Cerrada', 'keytill' ) )
+					esc_html( $open ? __( 'Open', 'keytill' ) : __( 'Closed', 'keytill' ) )
 				);
 				break;
 			case 'fondo':
@@ -127,7 +127,7 @@ class KEYTILL_Cash {
 				}
 				$d     = (float) $v;
 				$color = $d < 0 ? '#c0392b' : ( $d > 0 ? '#b7791f' : '#15805f' );
-				$lbl   = $d < 0 ? __( 'FALTA', 'keytill' ) : ( $d > 0 ? __( 'SOBRA', 'keytill' ) : __( 'OK', 'keytill' ) );
+				$lbl   = $d < 0 ? __( 'SHORT', 'keytill' ) : ( $d > 0 ? __( 'OVER', 'keytill' ) : __( 'OK', 'keytill' ) );
 				printf(
 					'<strong style="color:%s">%s</strong> <span style="color:%s;font-size:11px">%s</span>',
 					esc_attr( $color ),
@@ -149,7 +149,7 @@ class KEYTILL_Cash {
 
 	/** Caja de detalle de la sesión (retiros/ingresos con motivo + desglose). */
 	public static function add_detail_metabox() {
-		add_meta_box( 'keytill_cash_detail', __( 'Detalle de la caja', 'keytill' ), array( __CLASS__, 'render_detail' ), self::CPT, 'normal', 'high' );
+		add_meta_box( 'keytill_cash_detail', __( 'Register details', 'keytill' ), array( __CLASS__, 'render_detail' ), self::CPT, 'normal', 'high' );
 	}
 
 	public static function render_detail( $post ) {
@@ -158,16 +158,16 @@ class KEYTILL_Cash {
 
 		echo '<table class="widefat" style="max-width:420px;margin-bottom:16px"><tbody>';
 		$rows = array(
-			array( __( 'Fondo inicial', 'keytill' ), self::fmt( $p['opening_float'] ) ),
-			array( __( 'Ventas efectivo', 'keytill' ), self::fmt( $p['cash_sales'] ) ),
-			array( __( 'Ingresos', 'keytill' ), self::fmt( $p['deposits_total'] ) ),
-			array( __( 'Retiros', 'keytill' ), '− ' . self::fmt( $p['withdrawals_total'] ) ),
-			array( __( 'Devoluciones efectivo', 'keytill' ), '− ' . self::fmt( $p['cash_refunds'] ) ),
-			array( __( 'Esperado en cajón', 'keytill' ), self::fmt( $p['expected_cash'] ) ),
+			array( __( 'Opening float', 'keytill' ), self::fmt( $p['opening_float'] ) ),
+			array( __( 'Cash sales', 'keytill' ), self::fmt( $p['cash_sales'] ) ),
+			array( __( 'Deposits', 'keytill' ), self::fmt( $p['deposits_total'] ) ),
+			array( __( 'Withdrawals', 'keytill' ), '− ' . self::fmt( $p['withdrawals_total'] ) ),
+			array( __( 'Cash refunds', 'keytill' ), '− ' . self::fmt( $p['cash_refunds'] ) ),
+			array( __( 'Expected in drawer', 'keytill' ), self::fmt( $p['expected_cash'] ) ),
 		);
 		if ( 'closed' === $p['status'] ) {
-			$rows[] = array( __( 'Contado', 'keytill' ), self::fmt( isset( $p['counted_cash'] ) ? $p['counted_cash'] : 0 ) );
-			$rows[] = array( __( 'Diferencia', 'keytill' ), self::fmt( isset( $p['difference'] ) ? $p['difference'] : 0 ) );
+			$rows[] = array( __( 'Counted', 'keytill' ), self::fmt( isset( $p['counted_cash'] ) ? $p['counted_cash'] : 0 ) );
+			$rows[] = array( __( 'Difference', 'keytill' ), self::fmt( isset( $p['difference'] ) ? $p['difference'] : 0 ) );
 		}
 		foreach ( $rows as $r ) {
 			printf( '<tr><td>%s</td><td style="text-align:right">%s</td></tr>', esc_html( $r[0] ), wp_kses_post( $r[1] ) );
@@ -176,7 +176,7 @@ class KEYTILL_Cash {
 
 		// Desglose por medio de pago.
 		if ( ! empty( $p['breakdown'] ) ) {
-			echo '<h3>' . esc_html__( 'Por medio de pago', 'keytill' ) . '</h3>';
+			echo '<h3>' . esc_html__( 'By payment method', 'keytill' ) . '</h3>';
 			echo '<table class="widefat striped" style="max-width:420px"><tbody>';
 			foreach ( $p['breakdown'] as $b ) {
 				if ( (float) $b['total'] <= 0 && (int) $b['count'] <= 0 ) {
@@ -192,19 +192,19 @@ class KEYTILL_Cash {
 			echo '</tbody></table>';
 		}
 
-		self::render_move_table( __( 'Retiros', 'keytill' ), $p['withdrawals'], 'reason' );
-		self::render_move_table( __( 'Ingresos', 'keytill' ), $p['deposits'], 'concept' );
+		self::render_move_table( __( 'Withdrawals', 'keytill' ), $p['withdrawals'], 'reason' );
+		self::render_move_table( __( 'Deposits', 'keytill' ), $p['deposits'], 'concept' );
 	}
 
 	/** Tabla de movimientos (retiros/ingresos) con su motivo. */
 	private static function render_move_table( $title, $list, $concept_key ) {
 		echo '<h3>' . esc_html( $title ) . '</h3>';
 		if ( empty( $list ) || ! is_array( $list ) ) {
-			echo '<p>' . esc_html__( 'Sin movimientos.', 'keytill' ) . '</p>';
+			echo '<p>' . esc_html__( 'No movements.', 'keytill' ) . '</p>';
 			return;
 		}
 		echo '<table class="widefat striped"><thead><tr>';
-		foreach ( array( __( 'Fecha', 'keytill' ), __( 'Concepto', 'keytill' ), __( 'Monto', 'keytill' ), __( 'Cajero', 'keytill' ) ) as $h ) {
+		foreach ( array( __( 'Date', 'keytill' ), __( 'Description', 'keytill' ), __( 'Amount', 'keytill' ), __( 'Cashier', 'keytill' ) ) as $h ) {
 			echo '<th>' . esc_html( $h ) . '</th>';
 		}
 		echo '</tr></thead><tbody>';
@@ -229,9 +229,9 @@ class KEYTILL_Cash {
 			self::CPT,
 			array(
 				'labels'          => array(
-					'name'          => __( 'Sesiones de caja', 'keytill' ),
-					'singular_name' => __( 'Sesión de caja', 'keytill' ),
-					'menu_name'     => __( 'Cajas (POS)', 'keytill' ),
+					'name'          => __( 'Register sessions', 'keytill' ),
+					'singular_name' => __( 'Register session', 'keytill' ),
+					'menu_name'     => __( 'Registers (POS)', 'keytill' ),
 				),
 				'public'          => false,
 				'show_ui'         => true,
@@ -374,7 +374,7 @@ class KEYTILL_Cash {
 	public static function open_session( $opening_float, $user_id, $branch_id = '' ) {
 		// Multi-caja: solo se rechaza si ESTE cajero ya tiene una caja abierta.
 		if ( self::get_open_session_id( $user_id ) ) {
-			return new WP_Error( 'keytill_cash_open', __( 'Ya tenés una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_open', __( 'You already have an open register.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		// Sucursal de la caja: si hay sucursales activas, es obligatoria (define de
@@ -383,7 +383,7 @@ class KEYTILL_Cash {
 		if ( class_exists( 'KEYTILL_Branches' ) && KEYTILL_Branches::active() ) {
 			$branch = KEYTILL_Branches::valid_id( $branch_id );
 			if ( '' === $branch ) {
-				return new WP_Error( 'keytill_cash_branch', __( 'Elegí la sucursal de la caja.', 'keytill' ), array( 'status' => 400 ) );
+				return new WP_Error( 'keytill_cash_branch', __( 'Choose the register\'s location.', 'keytill' ), array( 'status' => 400 ) );
 			}
 		}
 
@@ -394,7 +394,7 @@ class KEYTILL_Cash {
 				'post_status' => 'publish',
 				'post_title'  => sprintf(
 					/* translators: 1: fecha/hora, 2: cajero. */
-					__( 'Caja %1$s · %2$s', 'keytill' ),
+					__( 'Register %1$s · %2$s', 'keytill' ),
 					wp_date( 'd/m/Y H:i' ),
 					$user ? $user->display_name : ''
 				),
@@ -430,11 +430,11 @@ class KEYTILL_Cash {
 	 */
 	public static function add_withdrawal( $id, $amount, $reason ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'There is no open register.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$amount = round( (float) $amount, 2 );
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'keytill_bad_amount', __( 'Monto de retiro inválido.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_amount', __( 'Invalid withdrawal amount.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$uid    = get_current_user_id();
@@ -464,11 +464,11 @@ class KEYTILL_Cash {
 	 */
 	public static function add_deposit( $id, $amount, $concept ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'There is no open register.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$amount = round( (float) $amount, 2 );
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'keytill_bad_amount', __( 'Monto de ingreso inválido.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_amount', __( 'Invalid deposit amount.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$uid    = get_current_user_id();
@@ -496,7 +496,7 @@ class KEYTILL_Cash {
 	 */
 	public static function close_session( $id, $counted_cash ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta para cerrar.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'There is no open register to close.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		$summary  = self::compute_summary( $id );
@@ -538,7 +538,7 @@ class KEYTILL_Cash {
 		// Bucket informativo del crédito en tienda (no es efectivo del cajón).
 		$breakdown['credito'] = array(
 			'id'    => 'credito',
-			'label' => __( 'Crédito en tienda', 'keytill' ),
+			'label' => __( 'Store credit', 'keytill' ),
 			'total' => 0.0,
 			'count' => 0,
 		);

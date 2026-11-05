@@ -181,7 +181,7 @@ class KEYTILL_Credit_Web {
 	public static function coupon_label( $label, $coupon ) {
 		if ( self::is_our_coupon( $coupon ) ) {
 			/* translators: %s: código del crédito. */
-			return sprintf( __( 'Crédito en tienda (%s)', 'keytill' ), $coupon->get_code() );
+			return sprintf( __( 'Store credit (%s)', 'keytill' ), $coupon->get_code() );
 		}
 		return $label;
 	}
@@ -308,7 +308,7 @@ class KEYTILL_Credit_Web {
 			$order->add_order_note(
 				sprintf(
 					/* translators: 1: monto, 2: código de crédito. */
-					__( 'Crédito en tienda aplicado: %1$s (código %2$s).', 'keytill' ),
+					__( 'Store credit applied: %1$s (code %2$s).', 'keytill' ),
 					wp_strip_all_tags( wc_price( $used ) ),
 					$code
 				)
@@ -376,7 +376,7 @@ class KEYTILL_Credit_Web {
 			$order->add_order_note(
 				sprintf(
 					/* translators: 1: monto, 2: código. */
-					__( 'ATENCIÓN: no se pudo re-debitar el crédito %2$s por %1$s al pagarse la orden (saldo insuficiente). Revisar manualmente.', 'keytill' ),
+					__( 'WARNING: the credit %2$s could not be re-debited for %1$s when the order was paid (insufficient balance). Please review manually.', 'keytill' ),
 					wp_strip_all_tags( wc_price( $r['used'] ) ),
 					(string) $order->get_meta( self::META_CODE )
 				)
@@ -440,7 +440,7 @@ class KEYTILL_Credit_Web {
 		$order->add_order_note(
 			sprintf(
 				/* translators: 1: monto, 2: código de crédito. */
-				__( 'Crédito en tienda reintegrado: %1$s (código %2$s) por orden no completada.', 'keytill' ),
+				__( 'Store credit refunded: %1$s (code %2$s) for an uncompleted order.', 'keytill' ),
 				wp_strip_all_tags( wc_price( $r['used'] ) ),
 				(string) $order->get_meta( self::META_CODE )
 			)

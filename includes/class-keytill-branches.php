@@ -138,8 +138,8 @@ class KEYTILL_Branches {
 	public static function register_menus() {
 		add_submenu_page(
 			KEYTILL_Settings::MENU,
-			__( 'Sucursales', 'keytill' ),
-			__( 'Sucursales', 'keytill' ),
+			__( 'Locations', 'keytill' ),
+			__( 'Locations', 'keytill' ),
 			'manage_woocommerce',
 			'keytill-branches',
 			array( __CLASS__, 'render_manage' )
@@ -151,18 +151,18 @@ class KEYTILL_Branches {
 		$rows = self::all();
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Sucursales', 'keytill' ); ?></h1>
+			<h1><?php esc_html_e( 'Locations', 'keytill' ); ?></h1>
 			<p class="description">
-				<?php esc_html_e( 'Locales del negocio. El stock se lleva por sucursal (se carga en el editor de productos). "Prioridad web": orden en que las ventas de la tienda online descuentan stock (menor número = primero; si se agota, pasa a la siguiente). Para quitar una sucursal, vaciá su nombre y guardá.', 'keytill' ); ?>
+				<?php esc_html_e( 'Your business locations. Stock is tracked per location (set it in the product editor). «Web priority»: the order in which online sales deduct stock (lower number first; when it runs out, the next one is used). To remove a location, clear its name and save.', 'keytill' ); ?>
 			</p>
 			<form method="post" action="options.php">
 				<?php settings_fields( 'keytill_branches_group' ); ?>
 				<table class="widefat striped" style="max-width:640px;margin-top:12px">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'Nombre', 'keytill' ); ?></th>
-							<th style="width:120px;text-align:center"><?php esc_html_e( 'Prioridad web', 'keytill' ); ?></th>
-							<th style="width:90px;text-align:center"><?php esc_html_e( 'Activa', 'keytill' ); ?></th>
+							<th><?php esc_html_e( 'Name', 'keytill' ); ?></th>
+							<th style="width:120px;text-align:center"><?php esc_html_e( 'Web priority', 'keytill' ); ?></th>
+							<th style="width:90px;text-align:center"><?php esc_html_e( 'Active', 'keytill' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -190,7 +190,7 @@ class KEYTILL_Branches {
 							?>
 							<tr>
 								<td>
-									<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][name]" value="" placeholder="<?php esc_attr_e( 'Nueva sucursal…', 'keytill' ); ?>" />
+									<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][name]" value="" placeholder="<?php esc_attr_e( 'New location…', 'keytill' ); ?>" />
 								</td>
 								<td style="text-align:center">
 									<input type="number" min="0" style="width:70px" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][web_priority]" value="0" />

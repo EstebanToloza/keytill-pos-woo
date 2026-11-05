@@ -374,17 +374,17 @@ class KEYTILL_Branch_Stock {
 		$to   = KEYTILL_Branches::valid_id( $to );
 		$qty  = (int) $qty;
 		if ( '' === $from || '' === $to ) {
-			return new WP_Error( 'keytill_move_branch', __( 'Sucursal inválida.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_move_branch', __( 'Invalid location.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( $from === $to ) {
-			return new WP_Error( 'keytill_move_same', __( 'Elegí sucursales distintas.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_move_same', __( 'Choose different locations.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( $qty <= 0 ) {
-			return new WP_Error( 'keytill_move_qty', __( 'Cantidad inválida.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_move_qty', __( 'Invalid quantity.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		// Resta atómica en origen (con guard); si no alcanza, aborta sin tocar destino.
 		if ( ! self::adjust( $product_id, $from, -$qty, true ) ) {
-			return new WP_Error( 'keytill_move_stock', __( 'No hay suficiente stock en la sucursal de origen.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_move_stock', __( 'Not enough stock at the source location.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		self::adjust( $product_id, $to, $qty );
 		return true;

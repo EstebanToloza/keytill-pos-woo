@@ -90,7 +90,7 @@ class KEYTILL_Labels {
 		}
 		// El permiso (capability) se chequea SIEMPRE antes del nonce.
 		if ( ! self::can_print() ) {
-			wp_die( esc_html__( 'No tenés permiso para imprimir etiquetas.', 'keytill' ), 403 );
+			wp_die( esc_html__( 'You do not have permission to print labels.', 'keytill' ), 403 );
 		}
 
 		if ( 'batch' === $_GET[ self::QV ] ) {
@@ -104,15 +104,15 @@ class KEYTILL_Labels {
 		}
 		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, self::nonce_action( $id ) ) ) {
-			wp_die( esc_html__( 'El enlace de etiquetas venció. Reabrilo desde el producto.', 'keytill' ), 403 );
+			wp_die( esc_html__( 'The label link expired. Reopen it from the product.', 'keytill' ), 403 );
 		}
 		$product = wc_get_product( $id );
 		if ( ! $product ) {
-			wp_die( esc_html__( 'Producto no encontrado.', 'keytill' ), 404 );
+			wp_die( esc_html__( 'Product not found.', 'keytill' ), 404 );
 		}
 		$code = (string) $product->get_meta( '_keytill_barcode' );
 		if ( '' === $code ) {
-			wp_die( esc_html__( 'Este producto no tiene código de barras cargado.', 'keytill' ), 400 );
+			wp_die( esc_html__( 'This product has no barcode set.', 'keytill' ), 400 );
 		}
 		$qty = isset( $_GET['qty'] ) ? absint( $_GET['qty'] ) : 1;
 		$qty = max( 1, min( self::MAX_QTY, $qty ) );
@@ -129,11 +129,11 @@ class KEYTILL_Labels {
 	private static function render_batch() {
 		$nonce = isset( $_POST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, self::BATCH_NONCE ) ) {
-			wp_die( esc_html__( 'La sesión de etiquetas venció. Volvé a generarlas desde el POS.', 'keytill' ), 403 );
+			wp_die( esc_html__( 'The label session expired. Generate the labels again from the POS.', 'keytill' ), 403 );
 		}
 		$items = isset( $_POST['items'] ) && is_array( $_POST['items'] ) ? wp_unslash( $_POST['items'] ) : array();
 		if ( empty( $items ) ) {
-			wp_die( esc_html__( 'No seleccionaste ningún producto para imprimir.', 'keytill' ), 400 );
+			wp_die( esc_html__( 'You did not select any product to print.', 'keytill' ), 400 );
 		}
 
 		$units       = array();
@@ -173,7 +173,7 @@ class KEYTILL_Labels {
 		}
 
 		if ( empty( $units ) ) {
-			wp_die( esc_html__( 'Ninguno de los productos seleccionados tiene código de barras cargado.', 'keytill' ), 400 );
+			wp_die( esc_html__( 'None of the selected products has a barcode set.', 'keytill' ), 400 );
 		}
 
 		// Aviso visible (no se imprime) si algo quedó afuera por topes o sin código.
@@ -265,7 +265,7 @@ class KEYTILL_Labels {
 			$total += (int) $u['qty'];
 		}
 		$title = $qty_control && isset( $opts['code'] )
-			? sprintf( __( 'Etiquetas %1$s (%2$d)', 'keytill' ), $opts['code'], $total )
+			? sprintf( __( 'Labels %1$s (%2$d)', 'keytill' ), $opts['code'], $total )
 			: sprintf( _n( 'Etiquetas (%d)', 'Etiquetas (%d)', $total, 'keytill' ), $total );
 
 		header( 'Content-Type: text/html; charset=utf-8' );
@@ -325,9 +325,9 @@ class KEYTILL_Labels {
 </head>
 <body class="<?php echo empty( $opts['notice'] ) ? '' : 'has-notice'; ?>">
 	<div class="toolbar">
-		<button type="button" onclick="window.print()"><?php esc_html_e( 'Imprimir / Guardar PDF', 'keytill' ); ?></button>
+		<button type="button" onclick="window.print()"><?php esc_html_e( 'Print / Save PDF', 'keytill' ); ?></button>
 		<span class="paperbox">
-			<label for="keytill-paper"><?php esc_html_e( 'Hoja', 'keytill' ); ?></label>
+			<label for="keytill-paper"><?php esc_html_e( 'Sheet', 'keytill' ); ?></label>
 			<select id="keytill-paper" onchange="keytillSetPaper(this.value)">
 				<option value="A4">A4</option>
 				<option value="A3">A3</option>
@@ -335,11 +335,11 @@ class KEYTILL_Labels {
 		</span>
 		<?php if ( $qty_control ) : ?>
 			<span class="qtybox">
-				<label for="keytill-qty"><?php esc_html_e( 'Cantidad', 'keytill' ); ?></label>
+				<label for="keytill-qty"><?php esc_html_e( 'Quantity', 'keytill' ); ?></label>
 				<input id="keytill-qty" type="number" min="1" max="<?php echo (int) self::MAX_QTY; ?>" value="<?php echo (int) $total; ?>" />
-				<button type="button" onclick="keytillSetQty(document.getElementById('keytill-qty').value)"><?php esc_html_e( 'Actualizar', 'keytill' ); ?></button>
+				<button type="button" onclick="keytillSetQty(document.getElementById('keytill-qty').value)"><?php esc_html_e( 'Refresh', 'keytill' ); ?></button>
 			</span>
-			<span class="muted"><?php echo esc_html( sprintf( __( '%1$d etiquetas · %2$s · 3,5 × 3,5 cm', 'keytill' ), $total, isset( $opts['code'] ) ? $opts['code'] : '' ) ); ?></span>
+			<span class="muted"><?php echo esc_html( sprintf( __( '%1$d labels · %2$s · 3.5 × 3.5 cm', 'keytill' ), $total, isset( $opts['code'] ) ? $opts['code'] : '' ) ); ?></span>
 		<?php else : ?>
 			<span class="muted"><?php echo esc_html( sprintf( _n( '%1$d etiqueta · %2$d producto · 3,5 × 3,5 cm', '%1$d etiquetas · %2$d productos · 3,5 × 3,5 cm', $total, 'keytill' ), $total, count( $units ) ) ); ?></span>
 		<?php endif; ?>

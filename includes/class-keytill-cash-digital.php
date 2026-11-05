@@ -55,9 +55,9 @@ class KEYTILL_Cash_Digital {
 			self::CPT,
 			array(
 				'labels'              => array(
-					'name'          => __( 'Caja digital', 'keytill' ),
-					'singular_name' => __( 'Período de caja digital', 'keytill' ),
-					'menu_name'     => __( 'Caja digital', 'keytill' ),
+					'name'          => __( 'Digital register', 'keytill' ),
+					'singular_name' => __( 'Digital register period', 'keytill' ),
+					'menu_name'     => __( 'Digital register', 'keytill' ),
 				),
 				'public'              => false,
 				'show_ui'             => true,
@@ -81,15 +81,15 @@ class KEYTILL_Cash_Digital {
 
 	public static function admin_columns( $cols ) {
 		return array(
-			'apertura' => __( 'Apertura', 'keytill' ),
-			'cierre'   => __( 'Cierre', 'keytill' ),
-			'abrio'    => __( 'Abrió', 'keytill' ),
-			'estado'   => __( 'Estado', 'keytill' ),
-			'inicial'  => __( 'Saldo inicial', 'keytill' ),
-			'cobros'   => __( 'Cobros', 'keytill' ),
-			'ingresos' => __( 'Ingresos', 'keytill' ),
-			'retiros'  => __( 'Retiros', 'keytill' ),
-			'saldo'    => __( 'Saldo', 'keytill' ),
+			'apertura' => __( 'Opening', 'keytill' ),
+			'cierre'   => __( 'Closing', 'keytill' ),
+			'abrio'    => __( 'Opened by', 'keytill' ),
+			'estado'   => __( 'Status', 'keytill' ),
+			'inicial'  => __( 'Opening balance', 'keytill' ),
+			'cobros'   => __( 'Payments in', 'keytill' ),
+			'ingresos' => __( 'Deposits', 'keytill' ),
+			'retiros'  => __( 'Withdrawals', 'keytill' ),
+			'saldo'    => __( 'Balance', 'keytill' ),
 		);
 	}
 
@@ -109,7 +109,7 @@ class KEYTILL_Cash_Digital {
 				$link = get_edit_post_link( $post_id );
 				$txt  = self::fmt_date( get_post_meta( $post_id, '_keytill_opened_at', true ) );
 				echo $link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					? '<a href="' . esc_url( $link ) . '" title="' . esc_attr__( 'Ver detalle', 'keytill' ) . '"><strong>' . esc_html( $txt ) . '</strong></a>'
+					? '<a href="' . esc_url( $link ) . '" title="' . esc_attr__( 'View details', 'keytill' ) . '"><strong>' . esc_html( $txt ) . '</strong></a>'
 					: esc_html( $txt );
 				break;
 			case 'cierre':
@@ -123,7 +123,7 @@ class KEYTILL_Cash_Digital {
 				printf(
 					'<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-weight:600;%s">%s</span>',
 					$open ? 'background:#e1f7ef;color:#15805f' : 'background:#eef1f6;color:#50607a', // phpcs:ignore
-					esc_html( $open ? __( 'Abierta', 'keytill' ) : __( 'Cerrada', 'keytill' ) )
+					esc_html( $open ? __( 'Open', 'keytill' ) : __( 'Closed', 'keytill' ) )
 				);
 				break;
 			case 'inicial':
@@ -162,7 +162,7 @@ class KEYTILL_Cash_Digital {
 
 	/** Caja de detalle del período (movimientos con motivo + transferencias). */
 	public static function add_detail_metabox() {
-		add_meta_box( 'keytill_digital_detail', __( 'Detalle del período', 'keytill' ), array( __CLASS__, 'render_detail' ), self::CPT, 'normal', 'high' );
+		add_meta_box( 'keytill_digital_detail', __( 'Period details', 'keytill' ), array( __CLASS__, 'render_detail' ), self::CPT, 'normal', 'high' );
 	}
 
 	public static function render_detail( $post ) {
@@ -171,24 +171,24 @@ class KEYTILL_Cash_Digital {
 
 		echo '<table class="widefat" style="max-width:420px;margin-bottom:16px"><tbody>';
 		$rows = array(
-			array( __( 'Saldo inicial', 'keytill' ), self::fmt( $s['opening'] ) ),
-			array( __( 'Cobros (no-efectivo)', 'keytill' ), self::fmt( $s['sales'] ) ),
-			array( __( 'Devoluciones', 'keytill' ), '− ' . self::fmt( $s['refunds'] ) ),
-			array( __( 'Ingresos', 'keytill' ), self::fmt( $s['ingresos'] ) ),
-			array( __( 'Retiros', 'keytill' ), '− ' . self::fmt( $s['retiros'] ) ),
+			array( __( 'Opening balance', 'keytill' ), self::fmt( $s['opening'] ) ),
+			array( __( 'Payments in (non-cash)', 'keytill' ), self::fmt( $s['sales'] ) ),
+			array( __( 'Refunds', 'keytill' ), '− ' . self::fmt( $s['refunds'] ) ),
+			array( __( 'Deposits', 'keytill' ), self::fmt( $s['ingresos'] ) ),
+			array( __( 'Withdrawals', 'keytill' ), '− ' . self::fmt( $s['retiros'] ) ),
 		);
 		foreach ( $rows as $r ) {
 			printf( '<tr><td>%s</td><td style="text-align:right">%s</td></tr>', esc_html( $r[0] ), wp_kses_post( $r[1] ) );
 		}
-		printf( '<tr><td><strong>%s</strong></td><td style="text-align:right"><strong>%s</strong></td></tr>', esc_html__( 'Saldo', 'keytill' ), wp_kses_post( self::fmt( $s['balance'] ) ) );
+		printf( '<tr><td><strong>%s</strong></td><td style="text-align:right"><strong>%s</strong></td></tr>', esc_html__( 'Balance', 'keytill' ), wp_kses_post( self::fmt( $s['balance'] ) ) );
 		echo '</tbody></table>';
 
-		echo '<h3>' . esc_html__( 'Movimientos manuales', 'keytill' ) . '</h3>';
+		echo '<h3>' . esc_html__( 'Manual movements', 'keytill' ) . '</h3>';
 		if ( empty( $s['moves'] ) ) {
-			echo '<p>' . esc_html__( 'Sin movimientos manuales en el período.', 'keytill' ) . '</p>';
+			echo '<p>' . esc_html__( 'No manual movements in this period.', 'keytill' ) . '</p>';
 		} else {
 			echo '<table class="widefat striped"><thead><tr>';
-			foreach ( array( __( 'Fecha', 'keytill' ), __( 'Tipo', 'keytill' ), __( 'Concepto', 'keytill' ), __( 'Monto', 'keytill' ), __( 'Usuario', 'keytill' ) ) as $h ) {
+			foreach ( array( __( 'Date', 'keytill' ), __( 'Type', 'keytill' ), __( 'Description', 'keytill' ), __( 'Amount', 'keytill' ), __( 'User', 'keytill' ) ) as $h ) {
 				echo '<th>' . esc_html( $h ) . '</th>';
 			}
 			echo '</tr></thead><tbody>';
@@ -197,7 +197,7 @@ class KEYTILL_Cash_Digital {
 				printf(
 					'<tr><td>%s</td><td>%s</td><td>%s</td><td style="text-align:right">%s%s</td><td>%s</td></tr>',
 					esc_html( self::fmt_date( $m['at'] ) ),
-					esc_html( $ingreso ? __( 'Ingreso', 'keytill' ) : __( 'Retiro', 'keytill' ) ),
+					esc_html( $ingreso ? __( 'Deposit', 'keytill' ) : __( 'Withdrawal', 'keytill' ) ),
 					esc_html( '' !== $m['concept'] ? $m['concept'] : '—' ),
 					$ingreso ? '' : '− ',
 					wp_kses_post( self::fmt( $m['amount'] ) ),
@@ -207,17 +207,17 @@ class KEYTILL_Cash_Digital {
 			echo '</tbody></table>';
 		}
 
-		echo '<h3>' . esc_html__( 'Transferencias del período', 'keytill' ) . '</h3>';
+		echo '<h3>' . esc_html__( 'Transfers in this period', 'keytill' ) . '</h3>';
 		if ( empty( $s['transfers'] ) ) {
-			echo '<p>' . esc_html__( 'Sin transferencias en el período.', 'keytill' ) . '</p>';
+			echo '<p>' . esc_html__( 'No transfers in this period.', 'keytill' ) . '</p>';
 		} else {
 			echo '<table class="widefat striped"><thead><tr>';
-			foreach ( array( __( 'Fecha', 'keytill' ), __( 'Venta', 'keytill' ), __( 'Cliente', 'keytill' ), __( 'Monto', 'keytill' ), __( 'Verificación', 'keytill' ) ) as $h ) {
+			foreach ( array( __( 'Date', 'keytill' ), __( 'Sale', 'keytill' ), __( 'Customer', 'keytill' ), __( 'Amount', 'keytill' ), __( 'Reconciliation', 'keytill' ) ) as $h ) {
 				echo '<th>' . esc_html( $h ) . '</th>';
 			}
 			echo '</tr></thead><tbody>';
 			foreach ( $s['transfers'] as $tx ) {
-				$vl = 'verificada' === $tx['verification'] ? __( 'Verificada', 'keytill' ) : ( 'no_llego' === $tx['verification'] ? __( 'No llegó', 'keytill' ) : __( 'Pendiente', 'keytill' ) );
+				$vl = 'verificada' === $tx['verification'] ? __( 'Verified', 'keytill' ) : ( 'no_llego' === $tx['verification'] ? __( 'Not received', 'keytill' ) : __( 'Pending', 'keytill' ) );
 				printf(
 					'<tr><td>%s</td><td>#%s</td><td>%s</td><td style="text-align:right">%s</td><td>%s</td></tr>',
 					esc_html( $tx['date'] ),
@@ -275,7 +275,7 @@ class KEYTILL_Cash_Digital {
 	 */
 	public static function open_session( $user_id, $initial = null ) {
 		if ( self::get_open_session_id() ) {
-			return new WP_Error( 'keytill_digital_open', __( 'La caja digital ya está abierta.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_digital_open', __( 'The digital register is already open.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		if ( self::is_seeded() ) {
@@ -287,7 +287,7 @@ class KEYTILL_Cash_Digital {
 			$period_from = $last ? gmdate( 'Y-m-d H:i:s', strtotime( $last . ' UTC' ) + 1 ) : current_time( 'mysql', true );
 		} else {
 			if ( null === $initial ) {
-				return new WP_Error( 'keytill_digital_seed', __( 'Cargá el saldo inicial de la caja digital (solo la primera vez).', 'keytill' ), array( 'status' => 400 ) );
+				return new WP_Error( 'keytill_digital_seed', __( 'Enter the opening balance of the digital register (first time only).', 'keytill' ), array( 'status' => 400 ) );
 			}
 			$opening     = round( (float) $initial, 2 );
 			$period_from = current_time( 'mysql', true ); // GMT
@@ -297,7 +297,7 @@ class KEYTILL_Cash_Digital {
 			array(
 				'post_type'   => self::CPT,
 				'post_status' => 'publish',
-				'post_title'  => sprintf( __( 'Caja digital %s', 'keytill' ), wp_date( 'd/m/Y H:i' ) ),
+				'post_title'  => sprintf( __( 'Digital register %s', 'keytill' ), wp_date( 'd/m/Y H:i' ) ),
 			),
 			true
 		);
@@ -327,12 +327,12 @@ class KEYTILL_Cash_Digital {
 	 */
 	public static function add_move( $id, $kind, $amount, $concept ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'keytill_digital_closed', __( 'La caja digital no está abierta.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_digital_closed', __( 'The digital register is not open.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$kind   = ( 'ingreso' === $kind ) ? 'ingreso' : 'retiro';
 		$amount = round( (float) $amount, 2 );
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'keytill_bad_amount', __( 'Monto inválido.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_amount', __( 'Invalid amount.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		$uid    = get_current_user_id();
 		$list   = get_post_meta( $id, '_keytill_moves', true );
@@ -357,7 +357,7 @@ class KEYTILL_Cash_Digital {
 	 */
 	public static function close_session( $id ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'keytill_digital_closed', __( 'La caja digital no está abierta.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_digital_closed', __( 'The digital register is not open.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$gmt = current_time( 'mysql', true );                               // borde del período (GMT)
 		update_post_meta( $id, '_keytill_period_to', $gmt );

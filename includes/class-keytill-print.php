@@ -125,15 +125,15 @@ class KEYTILL_Print {
 				return;
 			}
 			if ( ! self::can_print() ) {
-				wp_die( esc_html__( 'No tenés permiso para imprimir este voucher.', 'keytill' ), 403 );
+				wp_die( esc_html__( 'You do not have permission to print this voucher.', 'keytill' ), 403 );
 			}
 			$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 			if ( ! wp_verify_nonce( $nonce, self::voucher_nonce_action( $code ) ) ) {
-				wp_die( esc_html__( 'El enlace del voucher venció. Volvé a generarlo desde el POS.', 'keytill' ), 403 );
+				wp_die( esc_html__( 'The voucher link expired. Generate it again from the POS.', 'keytill' ), 403 );
 			}
 			$credit = KEYTILL_Credit::get_by_code( $code );
 			if ( ! $credit ) {
-				wp_die( esc_html__( 'No se encontró el crédito.', 'keytill' ), 404 );
+				wp_die( esc_html__( 'The credit was not found.', 'keytill' ), 404 );
 			}
 			self::render_voucher( $credit );
 			exit;
@@ -146,15 +146,15 @@ class KEYTILL_Print {
 				return;
 			}
 			if ( ! self::can_print() ) {
-				wp_die( esc_html__( 'No tenés permiso para imprimir este ticket.', 'keytill' ), 403 );
+				wp_die( esc_html__( 'You do not have permission to print this ticket.', 'keytill' ), 403 );
 			}
 			$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 			if ( ! wp_verify_nonce( $nonce, self::gift_nonce_action( $order_id ) ) ) {
-				wp_die( esc_html__( 'El enlace del ticket de cambio venció. Reabrilo desde el POS.', 'keytill' ), 403 );
+				wp_die( esc_html__( 'The gift receipt link expired. Reopen it from the POS.', 'keytill' ), 403 );
 			}
 			$order = wc_get_order( $order_id );
 			if ( ! $order ) {
-				wp_die( esc_html__( 'No se encontró el pedido.', 'keytill' ), 404 );
+				wp_die( esc_html__( 'The order was not found.', 'keytill' ), 404 );
 			}
 			self::render_gift( $order );
 			exit;
@@ -169,17 +169,17 @@ class KEYTILL_Print {
 		}
 
 		if ( ! self::can_print() ) {
-			wp_die( esc_html__( 'No tenés permiso para imprimir este comprobante.', 'keytill' ), 403 );
+			wp_die( esc_html__( 'You do not have permission to print this receipt.', 'keytill' ), 403 );
 		}
 
 		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, self::nonce_action( $order_id ) ) ) {
-			wp_die( esc_html__( 'El enlace de impresión venció. Reabrí el comprobante desde el pedido.', 'keytill' ), 403 );
+			wp_die( esc_html__( 'The print link expired. Reopen the receipt from the order.', 'keytill' ), 403 );
 		}
 
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
-			wp_die( esc_html__( 'No se encontró el pedido.', 'keytill' ), 404 );
+			wp_die( esc_html__( 'The order was not found.', 'keytill' ), 404 );
 		}
 
 		self::render( $order );
@@ -198,7 +198,7 @@ class KEYTILL_Print {
 		}
 		$url = self::print_url( $order->get_id() );
 		echo '<p class="form-field form-field-wide"><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener" class="button">'
-			. esc_html__( 'Imprimir comprobante POS', 'keytill' ) . '</a></p>';
+			. esc_html__( 'Print POS receipt', 'keytill' ) . '</a></p>';
 	}
 
 	/**
@@ -213,8 +213,8 @@ class KEYTILL_Print {
 			'tax_id'   => '',
 			'address'  => '',
 			'phone'    => '',
-			'subtitle' => __( 'Resumen de compra', 'keytill' ),
-			'footer'   => __( 'Documento no válido como factura. ¡Gracias por su compra!', 'keytill' ),
+			'subtitle' => __( 'Purchase summary', 'keytill' ),
+			'footer'   => __( 'Not valid as an invoice. Thank you for your purchase!', 'keytill' ),
 			'logo'     => 0,
 		);
 		$store    = $biz['name'];
@@ -293,7 +293,7 @@ class KEYTILL_Print {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo esc_html( sprintf( __( 'Comprobante venta #%s', 'keytill' ), $number ) ); ?></title>
+<title><?php echo esc_html( sprintf( __( 'Sale receipt #%s', 'keytill' ), $number ) ); ?></title>
 <style>
 	/* Ticket térmico de 58 mm (área imprimible ~48 mm). Fuente monoespaciada para
 	   que los importes queden alineados; todo en negro sobre blanco. */
@@ -340,11 +340,11 @@ class KEYTILL_Print {
 		<?php endif; ?>
 
 		<hr class="hr">
-		<div class="doc"><span class="b"><?php echo esc_html( sprintf( __( 'Venta #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
-		<?php if ( $cashier ) : ?><div class="who muted"><?php esc_html_e( 'Cajero', 'keytill' ); ?>: <?php echo esc_html( $cashier ); ?></div><?php endif; ?>
+		<div class="doc"><span class="b"><?php echo esc_html( sprintf( __( 'Sale #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
+		<?php if ( $cashier ) : ?><div class="who muted"><?php esc_html_e( 'Cashier', 'keytill' ); ?>: <?php echo esc_html( $cashier ); ?></div><?php endif; ?>
 		<?php if ( '' !== $cust_name || '' !== $cust_doc ) : ?>
 			<div class="who muted">
-				<?php esc_html_e( 'Cliente', 'keytill' ); ?>: <?php echo esc_html( $cust_name ? $cust_name : __( 'Consumidor final', 'keytill' ) ); ?>
+				<?php esc_html_e( 'Customer', 'keytill' ); ?>: <?php echo esc_html( $cust_name ? $cust_name : __( 'Walk-in customer', 'keytill' ) ); ?>
 				<?php if ( '' !== $cust_doc ) : ?><br><?php echo esc_html( $cust_doc ); ?><?php endif; ?>
 				<?php if ( '' !== $cust_iva ) : ?> · <?php echo esc_html( $cust_iva ); ?><?php endif; ?>
 			</div>
@@ -368,25 +368,25 @@ class KEYTILL_Print {
 		<hr class="hr">
 		<?php if ( $discount > 0 ) : ?>
 			<div class="row"><span class="l"><?php esc_html_e( 'Subtotal', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( $subtotal, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
-			<div class="row"><span class="l"><?php esc_html_e( 'Descuento', 'keytill' ); ?></span><span class="v">−<?php echo wp_kses_post( wc_price( $discount, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+			<div class="row"><span class="l"><?php esc_html_e( 'Discount', 'keytill' ); ?></span><span class="v">−<?php echo wp_kses_post( wc_price( $discount, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 		<?php endif; ?>
 		<div class="row grand"><span class="l"><?php esc_html_e( 'TOTAL', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( $total, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 
 		<hr class="hr">
-		<div class="row"><span class="l"><?php esc_html_e( 'Medio de pago', 'keytill' ); ?></span><span class="v"><?php echo esc_html( $pay_title ); ?></span></div>
+		<div class="row"><span class="l"><?php esc_html_e( 'Payment method', 'keytill' ); ?></span><span class="v"><?php echo esc_html( $pay_title ); ?></span></div>
 		<?php if ( $credit_used > 0 ) : ?>
-			<div class="row"><span class="l"><?php esc_html_e( 'Crédito en tienda', 'keytill' ); ?><?php echo $credit_code ? ' (' . esc_html( $credit_code ) . ')' : ''; ?></span><span class="v"><?php echo wp_kses_post( wc_price( $credit_used, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+			<div class="row"><span class="l"><?php esc_html_e( 'Store credit', 'keytill' ); ?><?php echo $credit_code ? ' (' . esc_html( $credit_code ) . ')' : ''; ?></span><span class="v"><?php echo wp_kses_post( wc_price( $credit_used, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 		<?php endif; ?>
 		<?php if ( '' !== (string) $tendered ) : ?>
-			<div class="row"><span class="l"><?php esc_html_e( 'Recibido', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( (float) $tendered, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+			<div class="row"><span class="l"><?php esc_html_e( 'Tendered', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( (float) $tendered, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 		<?php endif; ?>
 		<?php if ( '' !== (string) $change ) : ?>
-			<div class="row"><span class="l"><?php esc_html_e( 'Vuelto', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( (float) $change, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+			<div class="row"><span class="l"><?php esc_html_e( 'Change', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( (float) $change, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 		<?php endif; ?>
 
 		<?php if ( ! empty( $giftcards ) ) : ?>
 			<div class="gc">
-				<div class="h"><?php esc_html_e( 'Gift cards emitidas', 'keytill' ); ?></div>
+				<div class="h"><?php esc_html_e( 'Gift cards issued', 'keytill' ); ?></div>
 				<?php foreach ( $giftcards as $g ) : ?>
 					<div class="code">
 						<span><?php echo esc_html( $g['code'] ); ?></span>
@@ -457,22 +457,22 @@ class KEYTILL_Print {
 <body>
 	<div class="t">
 		<div class="store"><?php echo esc_html( $store ); ?></div>
-		<div class="kind"><?php esc_html_e( 'CRÉDITO EN TIENDA', 'keytill' ); ?></div>
-		<div class="lbl"><?php esc_html_e( 'Voucher de devolución', 'keytill' ); ?></div>
+		<div class="kind"><?php esc_html_e( 'STORE CREDIT', 'keytill' ); ?></div>
+		<div class="lbl"><?php esc_html_e( 'Refund voucher', 'keytill' ); ?></div>
 		<hr class="hr">
-		<div class="lbl"><?php esc_html_e( 'MONTO', 'keytill' ); ?></div>
+		<div class="lbl"><?php esc_html_e( 'AMOUNT', 'keytill' ); ?></div>
 		<div class="amt"><?php echo wp_kses_post( wc_price( $amount ) ); ?></div>
 		<hr class="hr">
-		<div class="lbl"><?php esc_html_e( 'CÓDIGO', 'keytill' ); ?></div>
+		<div class="lbl"><?php esc_html_e( 'CODE', 'keytill' ); ?></div>
 		<div class="code"><?php echo esc_html( $code ); ?></div>
 		<?php if ( $svg ) : ?>
 			<span class="bc"><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG generado internamente ?></span>
 		<?php endif; ?>
 		<?php if ( '' !== $expires ) : ?>
-			<div class="exp"><?php esc_html_e( 'Válido hasta', 'keytill' ); ?> <?php echo esc_html( $expires ); ?></div>
+			<div class="exp"><?php esc_html_e( 'Valid until', 'keytill' ); ?> <?php echo esc_html( $expires ); ?></div>
 		<?php endif; ?>
 		<hr class="hr">
-		<div class="foot"><?php esc_html_e( 'Presentá este voucher para usar tu crédito. No es dinero en efectivo.', 'keytill' ); ?></div>
+		<div class="foot"><?php esc_html_e( 'Present this voucher to use your credit. It is not cash.', 'keytill' ); ?></div>
 	</div>
 	<script>window.addEventListener('load',function(){window.print();});</script>
 </body>
@@ -536,7 +536,7 @@ class KEYTILL_Print {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo esc_html( sprintf( __( 'Ticket de cambio #%s', 'keytill' ), $number ) ); ?></title>
+<title><?php echo esc_html( sprintf( __( 'Gift receipt #%s', 'keytill' ), $number ) ); ?></title>
 <style>
 	*{ box-sizing:border-box; }
 	html,body{ margin:0; padding:0; background:#e9edf2; color:#000;
@@ -568,17 +568,17 @@ class KEYTILL_Print {
 	<div class="t">
 		<?php if ( $logo_src ) : ?><img class="logo" src="<?php echo esc_url( $logo_src ); ?>" alt=""><?php endif; ?>
 		<div class="store"><?php echo esc_html( $store ); ?></div>
-		<div class="title"><?php esc_html_e( 'TICKET DE CAMBIO', 'keytill' ); ?></div>
+		<div class="title"><?php esc_html_e( 'GIFT RECEIPT', 'keytill' ); ?></div>
 
 		<hr class="hr">
-		<div class="doc"><span style="font-weight:700"><?php echo esc_html( sprintf( __( 'Venta #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
+		<div class="doc"><span style="font-weight:700"><?php echo esc_html( sprintf( __( 'Sale #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
 
 		<hr class="hr">
 		<?php foreach ( $rows as $r ) : ?>
 			<div class="it">
 				<div class="nm"><?php echo esc_html( $r['name'] ); ?></div>
 				<?php if ( '' !== $r['attrs'] ) : ?><div class="at"><?php echo esc_html( $r['attrs'] ); ?></div><?php endif; ?>
-				<div class="qty"><?php echo esc_html( sprintf( __( 'Cantidad: %d', 'keytill' ), $r['qty'] ) ); ?></div>
+				<div class="qty"><?php echo esc_html( sprintf( __( 'Quantity: %d', 'keytill' ), $r['qty'] ) ); ?></div>
 			</div>
 		<?php endforeach; ?>
 
@@ -593,13 +593,13 @@ class KEYTILL_Print {
 		<div class="note">
 			<?php
 			if ( '' !== $valid_str ) {
-				echo esc_html( sprintf( __( 'Válido para cambios hasta el %1$s (%2$d días).', 'keytill' ), $valid_str, $days ) );
+				echo esc_html( sprintf( __( 'Valid for exchanges until %1$s (%2$d days).', 'keytill' ), $valid_str, $days ) );
 			} else {
-				esc_html_e( 'Presentá este ticket para realizar cambios.', 'keytill' );
+				esc_html_e( 'Present this receipt to make an exchange.', 'keytill' );
 			}
 			?>
 		</div>
-		<div class="foot"><?php esc_html_e( 'No es comprobante de pago.', 'keytill' ); ?></div>
+		<div class="foot"><?php esc_html_e( 'Not a proof of payment.', 'keytill' ); ?></div>
 	</div>
 	<script>window.addEventListener('load',function(){window.print();});</script>
 </body>

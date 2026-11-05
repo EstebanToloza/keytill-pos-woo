@@ -75,7 +75,7 @@ function keytill_register_roles() {
 	// (privados/ocultos), sin exponerlos en la web.
 	add_role(
 		'cajero',
-		__( 'Cajero', 'keytill' ),
+		__( 'Cashier', 'keytill' ),
 		array(
 			'read'                  => true,
 			KEYTILL_CAP               => true,
@@ -87,7 +87,7 @@ function keytill_register_roles() {
 	// `upload_files` habilita subir la imagen del producto desde el editor del POS.
 	add_role(
 		'encargado',
-		__( 'Encargado', 'keytill' ),
+		__( 'Manager', 'keytill' ),
 		array(
 			'read'                  => true,
 			KEYTILL_CAP               => true,
@@ -142,6 +142,20 @@ function keytill_maybe_upgrade_roles() {
 add_action( 'init', 'keytill_maybe_upgrade_roles' );
 
 /* -------------------------------------------------------------------------
+ * Traducciones
+ * ---------------------------------------------------------------------- */
+/**
+ * Carga las traducciones del plugin.
+ *
+ * Se engancha en `init` a propósito: cargarlo antes dispara el aviso
+ * `_load_textdomain_just_in_time` de WP 6.7+.
+ */
+function keytill_load_textdomain() {
+	load_plugin_textdomain( 'keytill', false, dirname( plugin_basename( KEYTILL_FILE ) ) . '/languages' );
+}
+add_action( 'init', 'keytill_load_textdomain' );
+
+/* -------------------------------------------------------------------------
  * Compatibilidad con WooCommerce HPOS (custom order tables)
  * ---------------------------------------------------------------------- */
 add_action(
@@ -168,7 +182,7 @@ add_action(
 				'admin_notices',
 				function () {
 					echo '<div class="notice notice-error"><p>';
-					esc_html_e( 'Keytill POS necesita WooCommerce activo para funcionar.', 'keytill' );
+					esc_html_e( 'Keytill POS requires WooCommerce to be active.', 'keytill' );
 					echo '</p></div>';
 				}
 			);
@@ -273,13 +287,13 @@ function keytill_render_gate_notice() {
 	<div class="keytill-gate" role="alert">
 		<div class="keytill-gate__card">
 			<span class="keytill-gate__mark">HM<small>SPORT</small></span>
-			<h1 class="keytill-gate__title"><?php esc_html_e( 'Acceso restringido', 'keytill' ); ?></h1>
+			<h1 class="keytill-gate__title"><?php esc_html_e( 'Restricted access', 'keytill' ); ?></h1>
 			<p class="keytill-gate__msg">
-				<?php esc_html_e( 'Este punto de venta es solo para cajeros. Iniciá sesión con un usuario autorizado.', 'keytill' ); ?>
+				<?php esc_html_e( 'This point of sale is for cashiers only. Sign in with an authorized user.', 'keytill' ); ?>
 			</p>
 			<?php if ( ! is_user_logged_in() ) : ?>
 				<a class="keytill-gate__btn" href="<?php echo esc_url( $login_url ); ?>">
-					<?php esc_html_e( 'Iniciar sesión', 'keytill' ); ?>
+					<?php esc_html_e( 'Log in', 'keytill' ); ?>
 				</a>
 			<?php endif; ?>
 		</div>
@@ -299,7 +313,7 @@ function keytill_render_gate_notice() {
  * @return array
  */
 function keytill_register_page_template( $templates ) {
-	$templates[ KEYTILL_TEMPLATE ] = __( 'Keytill — Pantalla completa', 'keytill' );
+	$templates[ KEYTILL_TEMPLATE ] = __( 'Keytill — Full screen', 'keytill' );
 	return $templates;
 }
 add_filter( 'theme_page_templates', 'keytill_register_page_template' );

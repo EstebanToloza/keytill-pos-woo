@@ -51,14 +51,14 @@ class KEYTILL_Export {
 			return;
 		}
 		if ( ! self::can_export() ) {
-			wp_die( esc_html__( 'No tenés permiso para exportar.', 'keytill' ), 403 );
+			wp_die( esc_html__( 'You do not have permission to export.', 'keytill' ), 403 );
 		}
 		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, self::NONCE ) ) {
-			wp_die( esc_html__( 'El enlace de exportación venció. Volvé a generarlo desde el POS.', 'keytill' ), 403 );
+			wp_die( esc_html__( 'The export link expired. Generate it again from the POS.', 'keytill' ), 403 );
 		}
 		if ( ! function_exists( 'wc_get_orders' ) ) {
-			wp_die( esc_html__( 'WooCommerce no está disponible.', 'keytill' ), 500 );
+			wp_die( esc_html__( 'WooCommerce is unavailable.', 'keytill' ), 500 );
 		}
 
 		self::stream_csv();
@@ -114,7 +114,7 @@ class KEYTILL_Export {
 		$from = $g( 'date_from' );
 		$to   = $g( 'date_to' );
 		if ( '' === $from || '' === $to ) {
-			wp_die( esc_html__( 'Elegí un rango de fechas (Desde y Hasta) para exportar.', 'keytill' ), 400 );
+			wp_die( esc_html__( 'Choose a date range (From and To) to export.', 'keytill' ), 400 );
 		}
 		$args['date_created'] = strtotime( $from . ' 00:00:00' ) . '...' . strtotime( $to . ' 23:59:59' );
 		$search = trim( $g( 'search' ) );
@@ -147,21 +147,21 @@ class KEYTILL_Export {
 		fwrite( $out, "\xEF\xBB\xBF" ); // BOM UTF-8 para Excel.
 
 		$cols = array(
-			__( 'Pedido', 'keytill' ),
-			__( 'Fecha', 'keytill' ),
-			__( 'Estado', 'keytill' ),
-			__( 'Origen', 'keytill' ),
-			__( 'Cliente', 'keytill' ),
-			__( 'Documento', 'keytill' ),
-			__( 'Vendedor', 'keytill' ),
-			__( 'Cajero', 'keytill' ),
-			__( 'Medio de pago', 'keytill' ),
-			__( 'Producto', 'keytill' ),
-			__( 'Variación', 'keytill' ),
-			__( 'Cantidad', 'keytill' ),
-			__( 'Precio unit.', 'keytill' ),
-			__( 'Importe', 'keytill' ),
-			__( 'Total pedido', 'keytill' ),
+			__( 'Order', 'keytill' ),
+			__( 'Date', 'keytill' ),
+			__( 'Status', 'keytill' ),
+			__( 'Source', 'keytill' ),
+			__( 'Customer', 'keytill' ),
+			__( 'Tax ID', 'keytill' ),
+			__( 'Salesperson', 'keytill' ),
+			__( 'Cashier', 'keytill' ),
+			__( 'Payment method', 'keytill' ),
+			__( 'Product', 'keytill' ),
+			__( 'Variation', 'keytill' ),
+			__( 'Quantity', 'keytill' ),
+			__( 'Unit price', 'keytill' ),
+			__( 'Amount', 'keytill' ),
+			__( 'Order total', 'keytill' ),
 		);
 		fputcsv( $out, $cols, ';' );
 

@@ -71,7 +71,7 @@ class KEYTILL_Credit_Product {
 		$min    = $denoms ? min( $denoms ) : (float) $product->get_price();
 		if ( $min > 0 ) {
 			/* translators: %s: monto mínimo. */
-			return sprintf( esc_html__( 'desde %s', 'keytill' ), wc_price( $min ) );
+			return sprintf( esc_html__( 'since %s', 'keytill' ), wc_price( $min ) );
 		}
 		return $html;
 	}
@@ -137,24 +137,24 @@ class KEYTILL_Credit_Product {
 		woocommerce_wp_checkbox(
 			array(
 				'id'          => self::META_FLAG,
-				'label'       => __( 'Gift card (HM Crédito)', 'keytill' ),
-				'description' => __( 'Al pagarse la orden, emite un crédito al portador por el monto elegido y entrega el código.', 'keytill' ),
+				'label'       => __( 'Gift card (store credit)', 'keytill' ),
+				'description' => __( 'When the order is paid, issues a bearer credit for the chosen amount and provides the code.', 'keytill' ),
 			)
 		);
 		woocommerce_wp_text_input(
 			array(
 				'id'          => self::META_DENOMS,
-				'label'       => __( 'Denominaciones fijas', 'keytill' ),
+				'label'       => __( 'Fixed denominations', 'keytill' ),
 				'placeholder' => '5000, 10000, 20000',
-				'description' => __( 'Montos sugeridos separados por coma. Se ofrecen como opciones rápidas en el POS y en la web.', 'keytill' ),
+				'description' => __( 'Suggested amounts separated by commas. They are offered as quick options at the POS and on the web.', 'keytill' ),
 				'desc_tip'    => true,
 			)
 		);
 		woocommerce_wp_checkbox(
 			array(
 				'id'          => self::META_CUSTOM,
-				'label'       => __( 'Permitir monto a elección (web)', 'keytill' ),
-				'description' => __( 'El cliente puede escribir un importe libre en la web además de las denominaciones. En el POS el cajero siempre puede tipear un monto.', 'keytill' ),
+				'label'       => __( 'Allow custom amount (web)', 'keytill' ),
+				'description' => __( 'Customers can enter a custom amount on the web in addition to the denominations. At the POS the cashier can always type an amount.', 'keytill' ),
 			)
 		);
 		echo '</div>';
@@ -207,7 +207,7 @@ class KEYTILL_Credit_Product {
 		$default = $denoms ? $denoms[0] : ( (float) $product->get_price() );
 
 		echo '<div class="keytill-giftcard-amount" style="margin:0 0 14px">';
-		echo '<label style="display:block;font-weight:600;margin-bottom:6px">' . esc_html__( 'Elegí el monto de la gift card', 'keytill' ) . '</label>';
+		echo '<label style="display:block;font-weight:600;margin-bottom:6px">' . esc_html__( 'Choose the gift card amount', 'keytill' ) . '</label>';
 
 		if ( $denoms ) {
 			echo '<div class="keytill-gc-denoms" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px">';
@@ -228,7 +228,7 @@ class KEYTILL_Credit_Product {
 			$custom ? '' : 'readonly'
 		);
 		if ( $custom ) {
-			echo '<p class="description" style="margin:4px 0 0">' . esc_html__( 'O escribí otro monto.', 'keytill' ) . '</p>';
+			echo '<p class="description" style="margin:4px 0 0">' . esc_html__( 'Or type another amount.', 'keytill' ) . '</p>';
 		}
 		echo '</div>';
 		?>
@@ -259,14 +259,14 @@ class KEYTILL_Credit_Product {
 		}
 		$amt = isset( $_POST['keytill_giftcard_amount'] ) ? round( (float) wp_unslash( $_POST['keytill_giftcard_amount'] ), 2 ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( $amt <= 0 ) {
-			wc_add_notice( __( 'Elegí un monto para la gift card.', 'keytill' ), 'error' );
+			wc_add_notice( __( 'Choose an amount for the gift card.', 'keytill' ), 'error' );
 			return false;
 		}
 		// Sin monto libre: el importe debe ser una de las denominaciones.
 		if ( ! self::is_custom( $product ) ) {
 			$denoms = self::denominations( $product );
 			if ( $denoms && ! in_array( $amt, $denoms, false ) ) {
-				wc_add_notice( __( 'Elegí una de las denominaciones disponibles.', 'keytill' ), 'error' );
+				wc_add_notice( __( 'Choose one of the available denominations.', 'keytill' ), 'error' );
 				return false;
 			}
 		}
@@ -319,7 +319,7 @@ class KEYTILL_Credit_Product {
 	public static function web_display_amount( $item_data, $cart_item ) {
 		if ( ! empty( $cart_item['keytill_giftcard_amount'] ) ) {
 			$item_data[] = array(
-				'key'   => __( 'Monto', 'keytill' ),
+				'key'   => __( 'Amount', 'keytill' ),
 				'value' => wp_strip_all_tags( wc_price( $cart_item['keytill_giftcard_amount'] ) ),
 			);
 		}
@@ -447,7 +447,7 @@ class KEYTILL_Credit_Product {
 			$lines[] = $c['code'] . ' — ' . wp_strip_all_tags( wc_price( $c['amount'] ) );
 		}
 		$order->add_order_note(
-			__( 'Gift card(s) emitida(s):', 'keytill' ) . ' ' . implode( ' · ', $lines )
+			__( 'Gift card(s) issued:', 'keytill' ) . ' ' . implode( ' · ', $lines )
 		);
 
 		if ( $is_pos ) {
@@ -460,14 +460,14 @@ class KEYTILL_Credit_Product {
 		}
 
 		$store   = get_bloginfo( 'name' );
-		$subject = sprintf( __( 'Tu gift card de %s', 'keytill' ), $store );
-		$body    = sprintf( __( 'Hola %s,', 'keytill' ), $order->get_billing_first_name() ) . "\n\n";
-		$body   .= __( '¡Gracias por tu compra! Estos son los códigos de tu(s) gift card(s):', 'keytill' ) . "\n\n";
+		$subject = sprintf( __( 'Your %s gift card', 'keytill' ), $store );
+		$body    = sprintf( __( 'Hi %s,', 'keytill' ), $order->get_billing_first_name() ) . "\n\n";
+		$body   .= __( 'Thank you for your purchase! These are your gift card code(s):', 'keytill' ) . "\n\n";
 		foreach ( $codes as $c ) {
-			$exp   = $c['expires'] ? sprintf( __( ' (vence %s)', 'keytill' ), mysql2date( 'd/m/Y', $c['expires'] ) ) : '';
+			$exp   = $c['expires'] ? sprintf( __( ' (expires %s)', 'keytill' ), mysql2date( 'd/m/Y', $c['expires'] ) ) : '';
 			$body .= '  • ' . $c['code'] . ' — ' . wp_strip_all_tags( wc_price( $c['amount'] ) ) . $exp . "\n";
 		}
-		$body .= "\n" . __( 'Canjealo en la tienda o en el checkout web ingresando el código.', 'keytill' ) . "\n";
+		$body .= "\n" . __( 'Redeem it in store or at web checkout by entering the code.', 'keytill' ) . "\n";
 		$body .= "\n" . $store . "\n";
 
 		wp_mail( $email, $subject, $body );

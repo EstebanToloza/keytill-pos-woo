@@ -61,8 +61,8 @@ class KEYTILL_Manual {
 		}
 		if ( ! self::can_view() ) {
 			wp_die(
-				esc_html__( 'No tenés permiso para ver el manual.', 'keytill' ),
-				esc_html__( 'Sin permiso', 'keytill' ),
+				esc_html__( 'You do not have permission to view the manual.', 'keytill' ),
+				esc_html__( 'No permission', 'keytill' ),
 				array( 'response' => 403 )
 			);
 		}
@@ -81,7 +81,7 @@ class KEYTILL_Manual {
 	public static function register_admin_menu() {
 		add_submenu_page(
 			'keytill',
-			__( 'Manual de mostrador', 'keytill' ),
+			__( 'Counter manual', 'keytill' ),
 			__( 'Manual', 'keytill' ),
 			KEYTILL_CAP,
 			'keytill-manual',
@@ -95,21 +95,21 @@ class KEYTILL_Manual {
 	 */
 	public static function render_admin_page() {
 		if ( ! self::can_view() ) {
-			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
+			wp_die( esc_html__( 'No permission.', 'keytill' ) );
 		}
 		$url = self::url();
 		?>
 		<div class="wrap">
 			<h1 style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-				<?php esc_html_e( 'Manual de mostrador', 'keytill' ); ?>
+				<?php esc_html_e( 'Counter manual', 'keytill' ); ?>
 				<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" class="button button-secondary">
-					<?php esc_html_e( 'Abrir en pestaña nueva', 'keytill' ); ?> ↗
+					<?php esc_html_e( 'Open in a new tab', 'keytill' ); ?> ↗
 				</a>
 			</h1>
-			<p class="description"><?php esc_html_e( 'Guía de operatoria del POS. Se puede imprimir (Ctrl/Cmd + P) para dejar una copia en la caja.', 'keytill' ); ?></p>
+			<p class="description"><?php esc_html_e( 'POS operating guide. You can print it (Ctrl/Cmd + P) to keep a copy at the register.', 'keytill' ); ?></p>
 			<iframe
 				src="<?php echo esc_url( $url ); ?>"
-				title="<?php esc_attr_e( 'Manual de mostrador', 'keytill' ); ?>"
+				title="<?php esc_attr_e( 'Counter manual', 'keytill' ); ?>"
 				style="width:100%;height:calc(100vh - 180px);min-height:520px;border:1px solid #c3c4c7;border-radius:6px;background:#fff;margin-top:8px"
 			></iframe>
 		</div>

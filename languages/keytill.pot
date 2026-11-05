@@ -1,0 +1,1027 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Keytill POS\n"
+"Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
+"POT-Creation-Date: 2026-11-05 17:56\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid " (expires %s)"
+msgstr ""
+
+msgid "%1$d labels · %2$s · 3.5 × 3.5 cm"
+msgstr ""
+
+msgid "%1$s: %2$s."
+msgstr ""
+
+msgid "%1$s: out of stock at %2$s (available %3$d, requested %4$d)."
+msgstr ""
+
+msgid "%s: the source location is missing."
+msgstr ""
+
+msgid "(no salesperson)"
+msgstr ""
+
+msgid "+30 days"
+msgstr ""
+
+msgid "0 = never expires. Applies to new refund credits and gift cards."
+msgstr ""
+
+msgid "0 = no limit. Maximum amount a cashier can load on an open-amount gift card at the POS."
+msgstr ""
+
+msgid "12 digits."
+msgstr ""
+
+msgid "12 digits. Used to scan at the POS and print labels."
+msgstr ""
+
+msgid "A customer with that email already exists."
+msgstr ""
+
+msgid "A customer with that tax ID already exists."
+msgstr ""
+
+msgid "A product with that SKU already exists."
+msgstr ""
+
+msgid "AMOUNT"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Active balance in circulation: %s"
+msgstr ""
+
+msgid "Address"
+msgstr ""
+
+msgid "Allow custom amount (web)"
+msgstr ""
+
+msgid "Amount"
+msgstr ""
+
+msgid "Another product already uses that SKU."
+msgstr ""
+
+msgid "Another product already uses that barcode."
+msgstr ""
+
+msgid "Attribute not found."
+msgstr ""
+
+msgid "Attributes printed on variation labels, as «Property: Value» (e.g. «Size: XL»). If you select none, all variation attributes are shown."
+msgstr ""
+
+msgid "Attributes to show"
+msgstr ""
+
+msgid "Balance"
+msgstr ""
+
+msgid "Barcode"
+msgstr ""
+
+msgid "Barcode %s is already used by another product: not saved."
+msgstr ""
+
+msgid "Barcode (POS)"
+msgstr ""
+
+msgid "Below the business name, in the header."
+msgstr ""
+
+msgid "Business details (receipt)"
+msgstr ""
+
+msgid "Business name"
+msgstr ""
+
+msgid "Business tax ID"
+msgstr ""
+
+msgid "By payment method"
+msgstr ""
+
+msgid "CODE"
+msgstr ""
+
+msgid "Cash"
+msgstr ""
+
+msgid "Cash refunds"
+msgstr ""
+
+msgid "Cash sales"
+msgstr ""
+
+msgid "Cashier"
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
+msgid "Choose a date range (From and To) to export."
+msgstr ""
+
+msgid "Choose a payment method for the remainder."
+msgstr ""
+
+msgid "Choose an amount for the gift card."
+msgstr ""
+
+msgid "Choose at least one attribute with values."
+msgstr ""
+
+msgid "Choose different locations."
+msgstr ""
+
+msgid "Choose logo"
+msgstr ""
+
+msgid "Choose one of the available denominations."
+msgstr ""
+
+msgid "Choose the gift card amount"
+msgstr ""
+
+msgid "Choose the register's location."
+msgstr ""
+
+msgid "Closed"
+msgstr ""
+
+msgid "Closing"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Code or email…"
+msgstr ""
+
+msgid "Comped (100%)"
+msgstr ""
+
+msgid "Counted"
+msgstr ""
+
+msgid "Counter manual"
+msgstr ""
+
+msgid "Counter point of sale for WooCommerce."
+msgstr ""
+
+msgid "Counter sale (POS)."
+msgstr ""
+
+msgid "Credit code does not exist."
+msgstr ""
+
+msgid "Credits"
+msgstr ""
+
+msgid "Customer"
+msgstr ""
+
+msgid "Customer not found."
+msgstr ""
+
+msgid "Customer tax status"
+msgstr ""
+
+msgid "Customers can enter a custom amount on the web in addition to the denominations. At the POS the cashier can always type an amount."
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Default validity (days)"
+msgstr ""
+
+msgid "Default validity: %d days"
+msgstr ""
+
+msgid "Deposit"
+msgstr ""
+
+msgid "Deposits"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Difference"
+msgstr ""
+
+msgid "Digital register"
+msgstr ""
+
+msgid "Digital register %s"
+msgstr ""
+
+msgid "Digital register period"
+msgstr ""
+
+msgid "Disabled by default. Enable it if your country requires it (e.g. VAT status). It is a free-text field; an extension can provide a list with the keytill_fiscal_options filter."
+msgstr ""
+
+msgid "Discount"
+msgstr ""
+
+msgid "E.g. birthday gift"
+msgstr ""
+
+msgid "Email (optional)"
+msgstr ""
+
+msgid "Enabled"
+msgstr ""
+
+msgid "Enter the opening balance of the digital register (first time only)."
+msgstr ""
+
+msgid "Expected"
+msgstr ""
+
+msgid "Expected in drawer"
+msgstr ""
+
+msgid "Expired"
+msgstr ""
+
+msgid "Expires"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "Fixed denominations"
+msgstr ""
+
+msgid "Float"
+msgstr ""
+
+msgid "Footer text"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "GIFT RECEIPT"
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "Gift card"
+msgstr ""
+
+msgid "Gift card (store credit)"
+msgstr ""
+
+msgid "Gift card issued. Code:"
+msgstr ""
+
+msgid "Gift card limit (open amount)"
+msgstr ""
+
+msgid "Gift card(s) issued:"
+msgstr ""
+
+msgid "Gift cards issued"
+msgstr ""
+
+msgid "Gift receipt #%s"
+msgstr ""
+
+msgid "Header and footer of the internal receipt. If the name is empty, the site name is used."
+msgstr ""
+
+msgid "Hi %s,"
+msgstr ""
+
+msgid "Invalid amount."
+msgstr ""
+
+msgid "Invalid attribute name."
+msgstr ""
+
+msgid "Invalid credit amount."
+msgstr ""
+
+msgid "Invalid deposit amount."
+msgstr ""
+
+msgid "Invalid location."
+msgstr ""
+
+msgid "Invalid opening float."
+msgstr ""
+
+msgid "Invalid payment method."
+msgstr ""
+
+msgid "Invalid price."
+msgstr ""
+
+msgid "Invalid quantity."
+msgstr ""
+
+msgid "Invalid sale price."
+msgstr ""
+
+msgid "Invalid stock."
+msgstr ""
+
+msgid "Invalid withdrawal amount."
+msgstr ""
+
+msgid "Issue"
+msgstr ""
+
+msgid "Issue gift card"
+msgstr ""
+
+msgid "Issued"
+msgstr ""
+
+msgid "Issues a bearer credit (0 days = never expires). The code is shown on confirmation."
+msgstr ""
+
+msgid "It just ran out of stock at this location: %s (another register sold it)."
+msgstr ""
+
+msgid "Keytill"
+msgstr ""
+
+msgid "Keytill POS requires WooCommerce to be active."
+msgstr ""
+
+msgid "Keytill — Full screen"
+msgstr ""
+
+msgid "Labels"
+msgstr ""
+
+msgid "Labels %1$s (%2$d)"
+msgstr ""
+
+msgid "Locations"
+msgstr ""
+
+msgid "Log in"
+msgstr ""
+
+msgid "Logo"
+msgstr ""
+
+msgid "Manager"
+msgstr ""
+
+msgid "Manual"
+msgstr ""
+
+msgid "Manual movements"
+msgstr ""
+
+msgid "Methods (non-cash)"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Net total"
+msgstr ""
+
+msgid "Net total = POS sales (completed) minus refunds, in the range. Sales with no salesperson assigned are grouped as «(no salesperson)»."
+msgstr ""
+
+msgid "New location…"
+msgstr ""
+
+msgid "New salesperson…"
+msgstr ""
+
+msgid "No credits yet."
+msgstr ""
+
+msgid "No global product attributes are defined."
+msgstr ""
+
+msgid "No image was received."
+msgstr ""
+
+msgid "No manual movements in this period."
+msgstr ""
+
+msgid "No movements."
+msgstr ""
+
+msgid "No permission"
+msgstr ""
+
+msgid "No permission."
+msgstr ""
+
+msgid "No sales in the selected range."
+msgstr ""
+
+msgid "No transfers in this period."
+msgstr ""
+
+msgid "None of the selected products has a barcode set."
+msgstr ""
+
+msgid "Not a proof of payment."
+msgstr ""
+
+msgid "Not enough stock at the source location."
+msgstr ""
+
+msgid "Not enough stock: %1$s (available %2$s, requested %3$d)."
+msgstr ""
+
+msgid "Not received"
+msgstr ""
+
+msgid "Not valid as an invoice. Thank you for your purchase!"
+msgstr ""
+
+msgid "Note (optional)"
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "OVER"
+msgstr ""
+
+msgid "One per line (in addition to Cash, which is fixed). The POS only records the chosen method for the register count — the actual payment happens elsewhere (card terminal, bank transfer, app). You can rename or add (e.g. «PayPal», «Debit card»). Max. 8."
+msgstr ""
+
+msgid "Only a manager or administrator can close the register."
+msgstr ""
+
+msgid "Only a manager or administrator can move the digital register."
+msgstr ""
+
+msgid "Open"
+msgstr ""
+
+msgid "Open in a new tab"
+msgstr ""
+
+msgid "Open sales screen"
+msgstr ""
+
+msgid "Open the POS"
+msgstr ""
+
+msgid "Opened by"
+msgstr ""
+
+msgid "Opening"
+msgstr ""
+
+msgid "Opening balance"
+msgstr ""
+
+msgid "Opening float"
+msgstr ""
+
+msgid "Or type another amount."
+msgstr ""
+
+msgid "Order"
+msgstr ""
+
+msgid "Order not found."
+msgstr ""
+
+msgid "Order total"
+msgstr ""
+
+msgid "POS operating guide. You can print it (Ctrl/Cmd + P) to keep a copy at the register."
+msgstr ""
+
+msgid "POS settings"
+msgstr ""
+
+msgid "Payment method"
+msgstr ""
+
+msgid "Payment methods"
+msgstr ""
+
+msgid "Payments in"
+msgstr ""
+
+msgid "Payments in (non-cash)"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Period details"
+msgstr ""
+
+msgid "Phone"
+msgstr ""
+
+msgid "Present this receipt to make an exchange."
+msgstr ""
+
+msgid "Present this voucher to use your credit. It is not cash."
+msgstr ""
+
+msgid "Print / Save PDF"
+msgstr ""
+
+msgid "Print POS receipt"
+msgstr ""
+
+msgid "Print labels"
+msgstr ""
+
+msgid "Product"
+msgstr ""
+
+msgid "Product labels"
+msgstr ""
+
+msgid "Product not found (id %d)."
+msgstr ""
+
+msgid "Product not found."
+msgstr ""
+
+msgid "Purchase summary"
+msgstr ""
+
+msgid "Quantity"
+msgstr ""
+
+msgid "Quantity to refund exceeds the available amount: %s."
+msgstr ""
+
+msgid "Quantity: %d"
+msgstr ""
+
+msgid "REGISTER 01"
+msgstr ""
+
+msgid "Receipt subtitle"
+msgstr ""
+
+msgid "Reconciliation"
+msgstr ""
+
+msgid "Redeem it in store or at web checkout by entering the code."
+msgstr ""
+
+msgid "Refresh"
+msgstr ""
+
+msgid "Refund for sale #%s"
+msgstr ""
+
+msgid "Refund voucher"
+msgstr ""
+
+msgid "Refunds"
+msgstr ""
+
+msgid "Register %1$s · %2$s"
+msgstr ""
+
+msgid "Register details"
+msgstr ""
+
+msgid "Register label"
+msgstr ""
+
+msgid "Register session"
+msgstr ""
+
+msgid "Register sessions"
+msgstr ""
+
+msgid "Register:"
+msgstr ""
+
+msgid "Registers (POS)"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Restricted access"
+msgstr ""
+
+msgid "SHORT"
+msgstr ""
+
+msgid "STORE CREDIT"
+msgstr ""
+
+msgid "Sale"
+msgstr ""
+
+msgid "Sale #%s"
+msgstr ""
+
+msgid "Sale not found."
+msgstr ""
+
+msgid "Sale receipt #%s"
+msgstr ""
+
+msgid "Sales / salesperson"
+msgstr ""
+
+msgid "Sales by salesperson"
+msgstr ""
+
+msgid "Sales count"
+msgstr ""
+
+msgid "Salespeople"
+msgstr ""
+
+msgid "Salespeople who serve at the counter. They are selected when confirming a sale to track how much each one sold. They are not system users. To remove one, clear its name and save (sales already recorded keep the name)."
+msgstr ""
+
+msgid "Salesperson"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Sheet"
+msgstr ""
+
+msgid "Show the «Tax status» field on the customer record"
+msgstr ""
+
+msgid "Shown in the receipt header. Recommended: horizontal PNG/JPG."
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Store credit"
+msgstr ""
+
+msgid "Store credit (%s)"
+msgstr ""
+
+msgid "Store credit and gift cards"
+msgstr ""
+
+msgid "Store credit applied: %1$s (code %2$s)."
+msgstr ""
+
+msgid "Store credit refunded: %1$s (code %2$s) for an uncompleted order."
+msgstr ""
+
+msgid "Store credits"
+msgstr ""
+
+msgid "Subtotal"
+msgstr ""
+
+msgid "Suggested amounts separated by commas. They are offered as quick options at the POS and on the web."
+msgstr ""
+
+msgid "TOTAL"
+msgstr ""
+
+msgid "Tax ID"
+msgstr ""
+
+msgid "Tendered"
+msgstr ""
+
+msgid "Thank you for your purchase! These are your gift card code(s):"
+msgstr ""
+
+msgid "The attribute name is required."
+msgstr ""
+
+msgid "The barcode must be 12 digits."
+msgstr ""
+
+msgid "The barcode must be 12 digits: not saved."
+msgstr ""
+
+msgid "The cart is empty."
+msgstr ""
+
+msgid "The credit could not be issued."
+msgstr ""
+
+msgid "The credit has expired."
+msgstr ""
+
+msgid "The credit has no balance left."
+msgstr ""
+
+msgid "The credit is not valid."
+msgstr ""
+
+msgid "The credit no longer has enough balance."
+msgstr ""
+
+msgid "The credit was not found."
+msgstr ""
+
+msgid "The credit was voided."
+msgstr ""
+
+msgid "The customer needs at least an email or a tax ID."
+msgstr ""
+
+msgid "The digital register is already open."
+msgstr ""
+
+msgid "The digital register is not open."
+msgstr ""
+
+msgid "The email does not match the one on file for that customer."
+msgstr ""
+
+msgid "The email is not valid."
+msgstr ""
+
+msgid "The export link expired. Generate it again from the POS."
+msgstr ""
+
+msgid "The file must be an image."
+msgstr ""
+
+msgid "The gift card amount exceeds the allowed limit (%s)."
+msgstr ""
+
+msgid "The gift card could not be issued (check the amount)."
+msgstr ""
+
+msgid "The gift receipt link expired. Reopen it from the POS."
+msgstr ""
+
+msgid "The label link expired. Reopen it from the product."
+msgstr ""
+
+msgid "The label session expired. Generate the labels again from the POS."
+msgstr ""
+
+msgid "The name is required."
+msgstr ""
+
+msgid "The order could not be created."
+msgstr ""
+
+msgid "The order was not found (order)."
+msgstr ""
+
+msgid "The order was not found."
+msgstr ""
+
+msgid "The price is required."
+msgstr ""
+
+msgid "The print link expired. Reopen the receipt from the order."
+msgstr ""
+
+msgid "The product could not be created."
+msgstr ""
+
+msgid "The product is not a variable product."
+msgstr ""
+
+msgid "The sale could not be completed."
+msgstr ""
+
+msgid "The sale is not paid; it cannot be refunded."
+msgstr ""
+
+msgid "The tax ID does not match the one on file for that customer."
+msgstr ""
+
+msgid "The value name is required."
+msgstr ""
+
+msgid "The voucher link expired. Generate it again from the POS."
+msgstr ""
+
+msgid "There are no items to refund."
+msgstr ""
+
+msgid "There is no open register to close."
+msgstr ""
+
+msgid "There is no open register."
+msgstr ""
+
+msgid "There is no open register. Open the register to process a refund."
+msgstr ""
+
+msgid "There is no open register. Open the register to take payment."
+msgstr ""
+
+msgid "There is no page with the [keytill] shortcode yet. Create a page, paste the [keytill] shortcode and assign the «Keytill — Full screen» template."
+msgstr ""
+
+msgid "This point of sale is for cashiers only. Sign in with an authorized user."
+msgstr ""
+
+msgid "This product has no barcode set."
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "To save a customer, enter at least an email or a tax ID."
+msgstr ""
+
+msgid "Too many variations (max %d). Reduce values or create them in WooCommerce."
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Transfers in this period"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Unit price"
+msgstr ""
+
+msgid "Use as logo"
+msgstr ""
+
+msgid "Used"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "Valid for exchanges until %1$s (%2$d days)."
+msgstr ""
+
+msgid "Valid until"
+msgstr ""
+
+msgid "Validity (days)"
+msgstr ""
+
+msgid "Variation"
+msgstr ""
+
+msgid "Verified"
+msgstr ""
+
+msgid "Version:"
+msgstr ""
+
+msgid "View details"
+msgstr ""
+
+msgid "Void"
+msgstr ""
+
+msgid "Void this credit?"
+msgstr ""
+
+msgid "Voided"
+msgstr ""
+
+msgid "Voucher %s"
+msgstr ""
+
+msgid "WARNING: the credit %2$s could not be re-debited for %1$s when the order was paid (insufficient balance). Please review manually."
+msgstr ""
+
+msgid "Walk-in customer"
+msgstr ""
+
+msgid "Web"
+msgstr ""
+
+msgid "Web priority"
+msgstr ""
+
+msgid "When the order is paid, issues a bearer credit for the chosen amount and provides the code."
+msgstr ""
+
+msgid "Withdrawal"
+msgstr ""
+
+msgid "Withdrawals"
+msgstr ""
+
+msgid "WooCommerce is not available."
+msgstr ""
+
+msgid "WooCommerce is unavailable."
+msgstr ""
+
+msgid "Write it down or hand it to the customer."
+msgstr ""
+
+msgid "You already have an open register."
+msgstr ""
+
+msgid "You did not select any product to print."
+msgstr ""
+
+msgid "You did not select any product."
+msgstr ""
+
+msgid "You do not have permission to export."
+msgstr ""
+
+msgid "You do not have permission to manage products."
+msgstr ""
+
+msgid "You do not have permission to operate the POS."
+msgstr ""
+
+msgid "You do not have permission to print labels."
+msgstr ""
+
+msgid "You do not have permission to print this receipt."
+msgstr ""
+
+msgid "You do not have permission to print this ticket."
+msgstr ""
+
+msgid "You do not have permission to print this voucher."
+msgstr ""
+
+msgid "You do not have permission to upload images."
+msgstr ""
+
+msgid "You do not have permission to view the manual."
+msgstr ""
+
+msgid "Your %s gift card"
+msgstr ""
+
+msgid "Your business locations. Stock is tracked per location (set it in the product editor). «Web priority»: the order in which online sales deduct stock (lower number first; when it runs out, the next one is used). To remove a location, clear its name and save."
+msgstr ""
+
+msgid "admin"
+msgstr ""
+
+msgid "closed"
+msgstr ""
+
+msgid "no expiry"
+msgstr ""
+
+msgid "no price set"
+msgstr ""
+
+msgid "not available for sale"
+msgstr ""
+
+msgid "open (#%d)"
+msgstr ""
+
+msgid "opening"
+msgstr ""
+
+msgid "out of stock"
+msgstr ""
+
+msgid "per variation"
+msgstr ""
+
+msgid "refund #%d"
+msgstr ""
+
+msgid "sale #%d"
+msgstr ""
+
+msgid "since %s"
+msgstr ""

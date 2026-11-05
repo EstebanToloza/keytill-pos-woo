@@ -41,9 +41,9 @@ class KEYTILL_Settings {
 			'business_address' => '',
 			'business_phone'   => '',
 			'business_logo'    => 0,
-			'receipt_subtitle' => __( 'Resumen de compra', 'keytill' ),
-			'receipt_footer'   => __( 'Documento no válido como factura. ¡Gracias por su compra!', 'keytill' ),
-			'register_label'   => __( 'CAJA 01', 'keytill' ),
+			'receipt_subtitle' => __( 'Purchase summary', 'keytill' ),
+			'receipt_footer'   => __( 'Not valid as an invoice. Thank you for your purchase!', 'keytill' ),
+			'register_label'   => __( 'REGISTER 01', 'keytill' ),
 			'exchange_days'    => 30, // validez del ticket de cambio (0 = sin plazo)
 			'tax_status_field' => 0,  // mostrar el campo "condicion fiscal" del cliente
 		);
@@ -86,7 +86,7 @@ class KEYTILL_Settings {
 	/** Etiqueta de la caja (ej. "CAJA 01"). */
 	public static function register_label() {
 		$v = self::get( 'register_label' );
-		return '' !== $v ? $v : __( 'CAJA 01', 'keytill' );
+		return '' !== $v ? $v : __( 'REGISTER 01', 'keytill' );
 	}
 
 	/** Tope del monto de una gift card de monto libre en el POS. 0 = sin tope. */
@@ -124,7 +124,7 @@ class KEYTILL_Settings {
 		if ( ! is_array( $labels ) ) {
 			$labels = self::default_methods();
 		}
-		$methods = array( 'efectivo' => __( 'Efectivo', 'keytill' ) );
+		$methods = array( 'efectivo' => __( 'Cash', 'keytill' ) );
 		foreach ( $labels as $label ) {
 			$label = trim( (string) $label );
 			if ( '' === $label ) {
@@ -190,7 +190,7 @@ class KEYTILL_Settings {
 		$js = "(function($){var frame;" .
 			"$('#keytill_logo_pick').on('click',function(e){e.preventDefault();" .
 			"if(frame){frame.open();return;}" .
-			"frame=wp.media({title:" . wp_json_encode( __( 'Elegir logo', 'keytill' ) ) . ",library:{type:'image'},multiple:false,button:{text:" . wp_json_encode( __( 'Usar como logo', 'keytill' ) ) . "}});" .
+			"frame=wp.media({title:" . wp_json_encode( __( 'Choose logo', 'keytill' ) ) . ",library:{type:'image'},multiple:false,button:{text:" . wp_json_encode( __( 'Use as logo', 'keytill' ) ) . "}});" .
 			"frame.on('select',function(){var a=frame.state().get('selection').first().toJSON();" .
 			"var url=(a.sizes&&a.sizes.medium)?a.sizes.medium.url:a.url;" .
 			"$('#keytill_business_logo').val(a.id);" .
@@ -216,8 +216,8 @@ class KEYTILL_Settings {
 		// El primer submenú lo genera WP automáticamente (etiqueta "Keytill" → Inicio).
 		add_submenu_page(
 			self::MENU,
-			__( 'Ajustes del POS', 'keytill' ),
-			__( 'Ajustes', 'keytill' ),
+			__( 'POS settings', 'keytill' ),
+			__( 'Settings', 'keytill' ),
 			'manage_woocommerce',
 			'keytill-settings',
 			array( __CLASS__, 'render_settings' )
@@ -322,28 +322,28 @@ class KEYTILL_Settings {
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Keytill', 'keytill' ); ?></h1>
-			<p class="description"><?php esc_html_e( 'Punto de venta de mostrador sobre WooCommerce.', 'keytill' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Counter point of sale for WooCommerce.', 'keytill' ); ?></p>
 
 			<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:16px">
 				<div class="card" style="padding:16px 20px;max-width:420px">
-					<h2 style="margin-top:0"><?php esc_html_e( 'Abrir el POS', 'keytill' ); ?></h2>
+					<h2 style="margin-top:0"><?php esc_html_e( 'Open the POS', 'keytill' ); ?></h2>
 					<?php if ( $pos_url ) : ?>
-						<p><a class="button button-primary button-hero" href="<?php echo esc_url( $pos_url ); ?>"><?php esc_html_e( 'Abrir pantalla de venta', 'keytill' ); ?></a></p>
+						<p><a class="button button-primary button-hero" href="<?php echo esc_url( $pos_url ); ?>"><?php esc_html_e( 'Open sales screen', 'keytill' ); ?></a></p>
 						<p class="description"><code><?php echo esc_html( $pos_url ); ?></code></p>
 					<?php else : ?>
-						<p><?php esc_html_e( 'Todavía no hay una página con el shortcode [keytill]. Creá una página, pegá el shortcode [keytill] y asignale el template «Keytill — Pantalla completa».', 'keytill' ); ?></p>
+						<p><?php esc_html_e( 'There is no page with the [keytill] shortcode yet. Create a page, paste the [keytill] shortcode and assign the «Keytill — Full screen» template.', 'keytill' ); ?></p>
 					<?php endif; ?>
 				</div>
 
 				<div class="card" style="padding:16px 20px;max-width:420px">
-					<h2 style="margin-top:0"><?php esc_html_e( 'Estado', 'keytill' ); ?></h2>
+					<h2 style="margin-top:0"><?php esc_html_e( 'Status', 'keytill' ); ?></h2>
 					<p>
-						<?php esc_html_e( 'Caja:', 'keytill' ); ?>
-						<strong><?php echo $open ? esc_html( sprintf( __( 'abierta (#%d)', 'keytill' ), $open ) ) : esc_html__( 'cerrada', 'keytill' ); ?></strong>
+						<?php esc_html_e( 'Register:', 'keytill' ); ?>
+						<strong><?php echo $open ? esc_html( sprintf( __( 'open (#%d)', 'keytill' ), $open ) ) : esc_html__( 'closed', 'keytill' ); ?></strong>
 					</p>
-					<p><?php esc_html_e( 'Versión:', 'keytill' ); ?> <code><?php echo esc_html( KEYTILL_VERSION ); ?></code></p>
+					<p><?php esc_html_e( 'Version:', 'keytill' ); ?> <code><?php echo esc_html( KEYTILL_VERSION ); ?></code></p>
 					<?php if ( current_user_can( 'manage_woocommerce' ) ) : ?>
-						<p><a href="<?php echo esc_url( admin_url( 'admin.php?page=keytill-settings' ) ); ?>"><?php esc_html_e( 'Ajustes del POS', 'keytill' ); ?> →</a></p>
+						<p><a href="<?php echo esc_url( admin_url( 'admin.php?page=keytill-settings' ) ); ?>"><?php esc_html_e( 'POS settings', 'keytill' ); ?> →</a></p>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -362,27 +362,27 @@ class KEYTILL_Settings {
 		$opt          = wp_parse_args( (array) get_option( self::OPTION, array() ), $b );
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Ajustes del POS', 'keytill' ); ?></h1>
+			<h1><?php esc_html_e( 'POS settings', 'keytill' ); ?></h1>
 			<form method="post" action="options.php">
 				<?php settings_fields( 'keytill_settings_group' ); ?>
 
-				<h2><?php esc_html_e( 'Datos del negocio (comprobante)', 'keytill' ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Encabezado y pie del comprobante interno. Si el nombre queda vacío se usa el nombre del sitio.', 'keytill' ); ?></p>
+				<h2><?php esc_html_e( 'Business details (receipt)', 'keytill' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Header and footer of the internal receipt. If the name is empty, the site name is used.', 'keytill' ); ?></p>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="keytill_business_name"><?php esc_html_e( 'Nombre del negocio', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_business_name"><?php esc_html_e( 'Business name', 'keytill' ); ?></label></th>
 						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_name]" id="keytill_business_name" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_name'] ); ?>" placeholder="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="keytill_business_tax_id"><?php esc_html_e( 'ID fiscal', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_business_tax_id"><?php esc_html_e( 'Business tax ID', 'keytill' ); ?></label></th>
 						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_tax_id]" id="keytill_business_tax_id" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_tax_id'] ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="keytill_business_address"><?php esc_html_e( 'Dirección', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_business_address"><?php esc_html_e( 'Address', 'keytill' ); ?></label></th>
 						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_address]" id="keytill_business_address" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_address'] ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="keytill_business_phone"><?php esc_html_e( 'Teléfono', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_business_phone"><?php esc_html_e( 'Phone', 'keytill' ); ?></label></th>
 						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_phone]" id="keytill_business_phone" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_phone'] ); ?>" /></td>
 					</tr>
 					<tr>
@@ -396,20 +396,20 @@ class KEYTILL_Settings {
 							<div id="keytill_logo_preview" style="margin-bottom:8px;<?php echo $logo_src ? '' : 'display:none'; ?>">
 								<img src="<?php echo esc_url( $logo_src ); ?>" alt="" style="max-width:180px;max-height:90px;height:auto;border:1px solid #ccd0d4;padding:4px;background:#fff" />
 							</div>
-							<button type="button" class="button" id="keytill_logo_pick"><?php esc_html_e( 'Elegir logo', 'keytill' ); ?></button>
-							<button type="button" class="button" id="keytill_logo_clear" style="<?php echo $logo_id ? '' : 'display:none'; ?>"><?php esc_html_e( 'Quitar', 'keytill' ); ?></button>
-							<p class="description"><?php esc_html_e( 'Aparece en el encabezado del comprobante. Recomendado: PNG/JPG horizontal.', 'keytill' ); ?></p>
+							<button type="button" class="button" id="keytill_logo_pick"><?php esc_html_e( 'Choose logo', 'keytill' ); ?></button>
+							<button type="button" class="button" id="keytill_logo_clear" style="<?php echo $logo_id ? '' : 'display:none'; ?>"><?php esc_html_e( 'Remove', 'keytill' ); ?></button>
+							<p class="description"><?php esc_html_e( 'Shown in the receipt header. Recommended: horizontal PNG/JPG.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="keytill_receipt_subtitle"><?php esc_html_e( 'Subtítulo del comprobante', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_receipt_subtitle"><?php esc_html_e( 'Receipt subtitle', 'keytill' ); ?></label></th>
 						<td>
-							<input name="<?php echo esc_attr( self::OPTION ); ?>[receipt_subtitle]" id="keytill_receipt_subtitle" type="text" class="regular-text" value="<?php echo esc_attr( $opt['receipt_subtitle'] ); ?>" placeholder="<?php esc_attr_e( 'Resumen de compra', 'keytill' ); ?>" />
-							<p class="description"><?php esc_html_e( 'Bajo el nombre del negocio, en el encabezado.', 'keytill' ); ?></p>
+							<input name="<?php echo esc_attr( self::OPTION ); ?>[receipt_subtitle]" id="keytill_receipt_subtitle" type="text" class="regular-text" value="<?php echo esc_attr( $opt['receipt_subtitle'] ); ?>" placeholder="<?php esc_attr_e( 'Purchase summary', 'keytill' ); ?>" />
+							<p class="description"><?php esc_html_e( 'Below the business name, in the header.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="keytill_receipt_footer"><?php esc_html_e( 'Leyenda al pie', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_receipt_footer"><?php esc_html_e( 'Footer text', 'keytill' ); ?></label></th>
 						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[receipt_footer]" id="keytill_receipt_footer" type="text" class="large-text" value="<?php echo esc_attr( $opt['receipt_footer'] ); ?>" /></td>
 					</tr>
 					<tr>
@@ -420,42 +420,42 @@ class KEYTILL_Settings {
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Condición fiscal del cliente', 'keytill' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Customer tax status', 'keytill' ); ?></th>
 						<td>
 							<label>
 								<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[tax_status_field]" value="1" <?php checked( ! empty( $opt['tax_status_field'] ) ); ?> />
-								<?php esc_html_e( 'Mostrar el campo "Condición fiscal" en la ficha del cliente', 'keytill' ); ?>
+								<?php esc_html_e( 'Show the «Tax status» field on the customer record', 'keytill' ); ?>
 							</label>
-							<p class="description"><?php esc_html_e( 'Desactivado por defecto. Actívalo si tu país lo requiere (ej. Responsable Inscripto / Consumidor Final en Argentina). Es un campo de texto libre; una extensión puede definir una lista con el filtro keytill_fiscal_options.', 'keytill' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Disabled by default. Enable it if your country requires it (e.g. VAT status). It is a free-text field; an extension can provide a list with the keytill_fiscal_options filter.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 				</table>
 
-				<h2><?php esc_html_e( 'Medios de pago', 'keytill' ); ?></h2>
+				<h2><?php esc_html_e( 'Payment methods', 'keytill' ); ?></h2>
 				<p class="description">
-					<?php esc_html_e( 'Uno por línea (además de Efectivo, que es fijo). El POS solo registra el medio elegido para el arqueo — el cobro real se hace afuera (posnet, transferencia, app). Podés renombrar o agregar (ej. «Mercado Pago», «Tarjeta débito»). Máx. 8.', 'keytill' ); ?>
+					<?php esc_html_e( 'One per line (in addition to Cash, which is fixed). The POS only records the chosen method for the register count — the actual payment happens elsewhere (card terminal, bank transfer, app). You can rename or add (e.g. «PayPal», «Debit card»). Max. 8.', 'keytill' ); ?>
 				</p>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="keytill_methods"><?php esc_html_e( 'Medios (no-efectivo)', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_methods"><?php esc_html_e( 'Methods (non-cash)', 'keytill' ); ?></label></th>
 						<td><textarea name="<?php echo esc_attr( self::METHODS_OPTION ); ?>" id="keytill_methods" rows="6" class="regular-text" placeholder="Tarjeta&#10;Transferencia&#10;Mercado Pago"><?php echo esc_textarea( $methods_text ); ?></textarea></td>
 					</tr>
 				</table>
 
-				<h2><?php esc_html_e( 'Etiquetas de producto', 'keytill' ); ?></h2>
+				<h2><?php esc_html_e( 'Product labels', 'keytill' ); ?></h2>
 				<p class="description">
-					<?php esc_html_e( 'Atributos que se imprimen en las etiquetas de las variaciones, en formato «Propiedad: Valor» (ej. «Talle: XL»). Si no marcás ninguno se muestran todos los atributos de la variación.', 'keytill' ); ?>
+					<?php esc_html_e( 'Attributes printed on variation labels, as «Property: Value» (e.g. «Size: XL»). If you select none, all variation attributes are shown.', 'keytill' ); ?>
 				</p>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Atributos a mostrar', 'keytill' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Attributes to show', 'keytill' ); ?></th>
 						<td>
 							<?php
 							$attrs    = function_exists( 'wc_get_attribute_taxonomies' ) ? wc_get_attribute_taxonomies() : array();
 							$selected = (array) get_option( self::LABEL_ATTRS_OPTION, array() );
 							if ( empty( $attrs ) ) :
 								?>
-								<p class="description"><?php esc_html_e( 'No hay atributos globales de producto definidos.', 'keytill' ); ?></p>
+								<p class="description"><?php esc_html_e( 'No global product attributes are defined.', 'keytill' ); ?></p>
 							<?php else : ?>
 								<fieldset>
 									<?php foreach ( $attrs as $attr ) : ?>
@@ -472,20 +472,20 @@ class KEYTILL_Settings {
 					</tr>
 				</table>
 
-				<h2><?php esc_html_e( 'Crédito en tienda y gift cards', 'keytill' ); ?></h2>
+				<h2><?php esc_html_e( 'Store credit and gift cards', 'keytill' ); ?></h2>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="keytill_credit_expiry_days"><?php esc_html_e( 'Vigencia por defecto (días)', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_credit_expiry_days"><?php esc_html_e( 'Default validity (days)', 'keytill' ); ?></label></th>
 						<td>
 							<input name="keytill_credit_expiry_days" id="keytill_credit_expiry_days" type="number" min="0" step="1" value="<?php echo esc_attr( (int) get_option( 'keytill_credit_expiry_days', 30 ) ); ?>" class="small-text" />
-							<p class="description"><?php esc_html_e( '0 = sin vencimiento. Se aplica a los créditos de devolución y gift cards nuevos.', 'keytill' ); ?></p>
+							<p class="description"><?php esc_html_e( '0 = never expires. Applies to new refund credits and gift cards.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="keytill_giftcard_max"><?php esc_html_e( 'Tope de gift card (monto libre)', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_giftcard_max"><?php esc_html_e( 'Gift card limit (open amount)', 'keytill' ); ?></label></th>
 						<td>
 							<input name="keytill_giftcard_max" id="keytill_giftcard_max" type="number" min="0" step="1" value="<?php echo esc_attr( self::giftcard_max() ); ?>" class="small-text" />
-							<p class="description"><?php esc_html_e( '0 = sin tope. Monto máximo que un cajero puede cargar en una gift card de monto libre en el POS.', 'keytill' ); ?></p>
+							<p class="description"><?php esc_html_e( '0 = no limit. Maximum amount a cashier can load on an open-amount gift card at the POS.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 				</table>
@@ -493,7 +493,7 @@ class KEYTILL_Settings {
 				<h2><?php esc_html_e( 'General', 'keytill' ); ?></h2>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="keytill_register_label"><?php esc_html_e( 'Etiqueta de la caja', 'keytill' ); ?></label></th>
+						<th scope="row"><label for="keytill_register_label"><?php esc_html_e( 'Register label', 'keytill' ); ?></label></th>
 						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[register_label]" id="keytill_register_label" type="text" class="regular-text" value="<?php echo esc_attr( $opt['register_label'] ); ?>" placeholder="CAJA 01" /></td>
 					</tr>
 				</table>

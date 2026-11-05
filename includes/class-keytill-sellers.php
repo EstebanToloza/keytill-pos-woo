@@ -129,16 +129,16 @@ class KEYTILL_Sellers {
 	public static function register_menus() {
 		add_submenu_page(
 			KEYTILL_Settings::MENU,
-			__( 'Vendedores', 'keytill' ),
-			__( 'Vendedores', 'keytill' ),
+			__( 'Salespeople', 'keytill' ),
+			__( 'Salespeople', 'keytill' ),
 			'manage_woocommerce',
 			'keytill-sellers',
 			array( __CLASS__, 'render_manage' )
 		);
 		add_submenu_page(
 			KEYTILL_Settings::MENU,
-			__( 'Ventas por vendedor', 'keytill' ),
-			__( 'Ventas x vendedor', 'keytill' ),
+			__( 'Sales by salesperson', 'keytill' ),
+			__( 'Sales / salesperson', 'keytill' ),
 			'manage_woocommerce',
 			'keytill-seller-report',
 			array( __CLASS__, 'render_report' )
@@ -150,17 +150,17 @@ class KEYTILL_Sellers {
 		$rows = self::all();
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Vendedores', 'keytill' ); ?></h1>
+			<h1><?php esc_html_e( 'Salespeople', 'keytill' ); ?></h1>
 			<p class="description">
-				<?php esc_html_e( 'Vendedores que atienden en el mostrador. Se eligen al confirmar la venta para saber cuánto vendió cada uno. No son usuarios del sistema. Para quitar uno, vaciá su nombre y guardá (las ventas ya registradas conservan el nombre).', 'keytill' ); ?>
+				<?php esc_html_e( 'Salespeople who serve at the counter. They are selected when confirming a sale to track how much each one sold. They are not system users. To remove one, clear its name and save (sales already recorded keep the name).', 'keytill' ); ?>
 			</p>
 			<form method="post" action="options.php">
 				<?php settings_fields( 'keytill_sellers_group' ); ?>
 				<table class="widefat striped" style="max-width:640px;margin-top:12px">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'Nombre', 'keytill' ); ?></th>
-							<th style="width:90px;text-align:center"><?php esc_html_e( 'Activo', 'keytill' ); ?></th>
+							<th><?php esc_html_e( 'Name', 'keytill' ); ?></th>
+							<th style="width:90px;text-align:center"><?php esc_html_e( 'Enabled', 'keytill' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -185,7 +185,7 @@ class KEYTILL_Sellers {
 							?>
 							<tr>
 								<td>
-									<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][name]" value="" placeholder="<?php esc_attr_e( 'Nuevo vendedor…', 'keytill' ); ?>" />
+									<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][name]" value="" placeholder="<?php esc_attr_e( 'New salesperson…', 'keytill' ); ?>" />
 								</td>
 								<td style="text-align:center">
 									<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][active]" value="1" checked />
@@ -218,29 +218,29 @@ class KEYTILL_Sellers {
 		}
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Ventas por vendedor', 'keytill' ); ?></h1>
+			<h1><?php esc_html_e( 'Sales by salesperson', 'keytill' ); ?></h1>
 			<form method="get" style="margin:12px 0">
 				<input type="hidden" name="page" value="keytill-seller-report" />
-				<label><?php esc_html_e( 'Desde', 'keytill' ); ?>
+				<label><?php esc_html_e( 'From', 'keytill' ); ?>
 					<input type="date" name="from" value="<?php echo esc_attr( $from ); ?>" />
 				</label>
-				<label style="margin-left:8px"><?php esc_html_e( 'Hasta', 'keytill' ); ?>
+				<label style="margin-left:8px"><?php esc_html_e( 'To', 'keytill' ); ?>
 					<input type="date" name="to" value="<?php echo esc_attr( $to ); ?>" />
 				</label>
-				<?php submit_button( __( 'Filtrar', 'keytill' ), 'secondary', '', false ); ?>
+				<?php submit_button( __( 'Filter', 'keytill' ), 'secondary', '', false ); ?>
 			</form>
 
 			<table class="widefat striped" style="max-width:640px">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'Vendedor', 'keytill' ); ?></th>
-						<th style="width:120px;text-align:right"><?php esc_html_e( 'N° ventas', 'keytill' ); ?></th>
-						<th style="width:160px;text-align:right"><?php esc_html_e( 'Total neto', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Salesperson', 'keytill' ); ?></th>
+						<th style="width:120px;text-align:right"><?php esc_html_e( 'Sales count', 'keytill' ); ?></th>
+						<th style="width:160px;text-align:right"><?php esc_html_e( 'Net total', 'keytill' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php if ( empty( $data ) ) : ?>
-						<tr><td colspan="3"><?php esc_html_e( 'Sin ventas en el rango elegido.', 'keytill' ); ?></td></tr>
+						<tr><td colspan="3"><?php esc_html_e( 'No sales in the selected range.', 'keytill' ); ?></td></tr>
 					<?php else : ?>
 						<?php foreach ( $data as $d ) : ?>
 							<tr>
@@ -262,7 +262,7 @@ class KEYTILL_Sellers {
 				<?php endif; ?>
 			</table>
 			<p class="description" style="margin-top:10px">
-				<?php esc_html_e( 'Total neto = ventas del POS (completadas) menos devoluciones, en el rango. Las ventas sin vendedor asignado se agrupan como «(sin vendedor)».', 'keytill' ); ?>
+				<?php esc_html_e( 'Net total = POS sales (completed) minus refunds, in the range. Sales with no salesperson assigned are grouped as «(no salesperson)».', 'keytill' ); ?>
 			</p>
 		</div>
 		<?php
@@ -314,7 +314,7 @@ class KEYTILL_Sellers {
 			$snap  = (string) $o->get_meta( '_keytill_seller' );
 			$key   = '' !== $sid ? $sid : ( '' !== $snap ? 'name:' . $snap : '__none__' );
 			$name  = '' !== $sid ? self::name_of( $sid ) : '';
-			$label = '' !== $name ? $name : ( '' !== $snap ? $snap : __( '(sin vendedor)', 'keytill' ) );
+			$label = '' !== $name ? $name : ( '' !== $snap ? $snap : __( '(no salesperson)', 'keytill' ) );
 
 			$net = (float) $o->get_total() - (float) $o->get_total_refunded();
 

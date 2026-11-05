@@ -55,9 +55,9 @@ class KEYTILL_Product_Admin {
 		woocommerce_wp_text_input(
 			array(
 				'id'                => self::META,
-				'label'             => __( 'Código de barras (POS)', 'keytill' ),
+				'label'             => __( 'Barcode (POS)', 'keytill' ),
 				'desc_tip'          => true,
-				'description'       => __( '12 dígitos. Sirve para escanear en el POS e imprimir etiquetas.', 'keytill' ),
+				'description'       => __( '12 digits. Used to scan at the POS and print labels.', 'keytill' ),
 				'wrapper_class'     => 'show_if_simple',
 				'custom_attributes' => array(
 					'inputmode' => 'numeric',
@@ -72,7 +72,7 @@ class KEYTILL_Product_Admin {
 		$code = $pid ? (string) get_post_meta( $pid, self::META, true ) : '';
 		if ( '' !== $code ) {
 			echo '<p class="form-field show_if_simple"><a href="' . esc_url( self::labels_url( $pid ) ) . '" target="_blank" rel="noopener" class="button">'
-				. esc_html__( 'Imprimir etiquetas', 'keytill' ) . '</a></p>';
+				. esc_html__( 'Print labels', 'keytill' ) . '</a></p>';
 		}
 	}
 
@@ -103,9 +103,9 @@ class KEYTILL_Product_Admin {
 				'id'                => self::META . '_' . $loop,
 				'name'              => self::META . '[' . $loop . ']',
 				'value'             => $code,
-				'label'             => __( 'Código de barras (POS)', 'keytill' ),
+				'label'             => __( 'Barcode (POS)', 'keytill' ),
 				'desc_tip'          => true,
-				'description'       => __( '12 dígitos.', 'keytill' ),
+				'description'       => __( '12 digits.', 'keytill' ),
 				'wrapper_class'     => 'form-row form-row-full',
 				'custom_attributes' => array(
 					'inputmode' => 'numeric',
@@ -116,7 +116,7 @@ class KEYTILL_Product_Admin {
 		);
 		if ( '' !== $code ) {
 			echo '<p class="form-row form-row-full"><a href="' . esc_url( self::labels_url( $vid ) ) . '" target="_blank" rel="noopener" class="button button-small">'
-				. esc_html__( 'Imprimir etiquetas', 'keytill' ) . '</a></p>';
+				. esc_html__( 'Print labels', 'keytill' ) . '</a></p>';
 		}
 	}
 
@@ -151,12 +151,12 @@ class KEYTILL_Product_Admin {
 			return;
 		}
 		if ( 12 !== strlen( $code ) ) {
-			self::notice( __( 'El código de barras debe tener 12 dígitos: no se guardó.', 'keytill' ) );
+			self::notice( __( 'The barcode must be 12 digits: not saved.', 'keytill' ) );
 			return;
 		}
 		if ( class_exists( 'KEYTILL_REST' ) && KEYTILL_REST::barcode_in_use( $code, (int) $product->get_id() ) ) {
 			/* translators: %s: código de barras. */
-			self::notice( sprintf( __( 'El código de barras %s ya está en uso por otro producto: no se guardó.', 'keytill' ), $code ) );
+			self::notice( sprintf( __( 'Barcode %s is already used by another product: not saved.', 'keytill' ), $code ) );
 			return;
 		}
 		$product->update_meta_data( self::META, $code );
@@ -172,11 +172,11 @@ class KEYTILL_Product_Admin {
 		foreach ( $columns as $key => $label ) {
 			$out[ $key ] = $label;
 			if ( 'sku' === $key ) {
-				$out['keytill_barcode'] = __( 'Cód. barras', 'keytill' );
+				$out['keytill_barcode'] = __( 'Barcode', 'keytill' );
 			}
 		}
 		if ( ! isset( $out['keytill_barcode'] ) ) {
-			$out['keytill_barcode'] = __( 'Cód. barras', 'keytill' );
+			$out['keytill_barcode'] = __( 'Barcode', 'keytill' );
 		}
 		return $out;
 	}
@@ -192,7 +192,7 @@ class KEYTILL_Product_Admin {
 			return;
 		}
 		if ( $product->is_type( 'variable' ) ) {
-			echo '<span style="color:#888">' . esc_html__( 'por variación', 'keytill' ) . '</span>';
+			echo '<span style="color:#888">' . esc_html__( 'per variation', 'keytill' ) . '</span>';
 			return;
 		}
 		$code = (string) $product->get_meta( self::META );
@@ -207,7 +207,7 @@ class KEYTILL_Product_Admin {
 		$product = wc_get_product( $post->ID );
 		if ( $product && ! $product->is_type( 'variable' ) && '' !== (string) $product->get_meta( self::META ) ) {
 			$actions['keytill_labels'] = '<a href="' . esc_url( self::labels_url( $post->ID ) ) . '" target="_blank" rel="noopener">'
-				. esc_html__( 'Etiquetas', 'keytill' ) . '</a>';
+				. esc_html__( 'Labels', 'keytill' ) . '</a>';
 		}
 		return $actions;
 	}

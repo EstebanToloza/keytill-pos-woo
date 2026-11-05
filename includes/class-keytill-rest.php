@@ -583,12 +583,12 @@ class KEYTILL_REST {
 		}
 
 		if ( ! $order || ! ( $order instanceof WC_Order ) ) {
-			return new WP_Error( 'keytill_not_found', __( 'Venta no encontrada.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Sale not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		// Debe estar pagada. Se aceptan tanto ventas del POS como de la web.
 		$blocked = array( 'pending', 'on-hold', 'cancelled', 'failed', 'checkout-draft', 'auto-draft', 'trash' );
 		if ( in_array( $order->get_status(), $blocked, true ) ) {
-			return new WP_Error( 'keytill_not_paid', __( 'La venta no está pagada; no se puede devolver.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_not_paid', __( 'The sale is not paid; it cannot be refunded.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		return $order;
 	}
@@ -603,7 +603,7 @@ class KEYTILL_REST {
 	 */
 	public static function order_refund( WP_REST_Request $request ) {
 		if ( ! function_exists( 'wc_create_refund' ) ) {
-			return new WP_Error( 'keytill_no_woo', __( 'WooCommerce no disponible.', 'keytill' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_no_woo', __( 'WooCommerce is not available.', 'keytill' ), array( 'status' => 500 ) );
 		}
 		$params   = self::body( $request );
 		$order_id = isset( $params['order_id'] ) ? absint( $params['order_id'] ) : 0;
@@ -617,7 +617,7 @@ class KEYTILL_REST {
 		// quedar ligada a la sesión de caja del cajero para el arqueo. Se valida en
 		// el servidor (no se confía en el front).
 		if ( ! KEYTILL_Cash::get_open_session_id() ) {
-			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta. Abrí la caja para hacer una devolución.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'There is no open register. Open the register to process a refund.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		$raw_lines = isset( $params['lines'] ) && is_array( $params['lines'] ) ? $params['lines'] : array();
@@ -648,7 +648,7 @@ class KEYTILL_REST {
 				return new WP_Error(
 					'keytill_refund_qty',
 					/* translators: %s: nombre del ítem. */
-					sprintf( __( 'Cantidad a devolver mayor a la disponible: %s.', 'keytill' ), $item->get_name() ),
+					sprintf( __( 'Quantity to refund exceeds the available amount: %s.', 'keytill' ), $item->get_name() ),
 					array( 'status' => 400 )
 				);
 			}
@@ -677,7 +677,7 @@ class KEYTILL_REST {
 		}
 
 		if ( empty( $line_items ) ) {
-			return new WP_Error( 'keytill_refund_empty', __( 'No hay ítems para devolver.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_refund_empty', __( 'There are no items to refund.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$amount = round( $amount, 2 );
@@ -785,7 +785,7 @@ class KEYTILL_REST {
 					'channel'          => 'pos',
 					'note'             => sprintf(
 						/* translators: %s: número de venta. */
-						__( 'Devolución de la venta #%s', 'keytill' ),
+						__( 'Refund for sale #%s', 'keytill' ),
 						$order->get_order_number()
 					),
 				)
@@ -981,7 +981,7 @@ class KEYTILL_REST {
 		foreach ( self::payment_methods() as $id => $label ) {
 			$methods[] = array( 'id' => $id, 'label' => $label );
 		}
-		$methods[] = array( 'id' => 'credito', 'label' => __( 'Crédito en tienda', 'keytill' ) );
+		$methods[] = array( 'id' => 'credito', 'label' => __( 'Store credit', 'keytill' ) );
 
 		$statuses = array();
 		foreach ( wc_get_order_statuses() as $key => $label ) {
@@ -1003,7 +1003,7 @@ class KEYTILL_REST {
 	public static function order_detail( WP_REST_Request $request ) {
 		$order = wc_get_order( absint( $request->get_param( 'id' ) ) );
 		if ( ! $order instanceof WC_Order ) {
-			return new WP_Error( 'keytill_not_found', __( 'Pedido no encontrado.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'The order was not found (order).', 'keytill' ), array( 'status' => 404 ) );
 		}
 
 		$currency = $order->get_currency();
@@ -1205,7 +1205,7 @@ class KEYTILL_REST {
 		$id      = absint( $request->get_param( 'id' ) );
 		$product = wc_get_product( $id );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Product not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$params = self::body( $request );
 		$from   = isset( $params['from'] ) ? (string) $params['from'] : '';
@@ -1228,7 +1228,7 @@ class KEYTILL_REST {
 		$clear      = ( '' === trim( $branch_raw ) );
 		$branch     = $clear ? '' : KEYTILL_Branches::valid_id( $branch_raw );
 		if ( ! $clear && '' === $branch ) {
-			return new WP_Error( 'keytill_bad_branch', __( 'Sucursal inválida.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_branch', __( 'Invalid location.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Ids: explícitos (tildados) o resueltos por el filtro actual.
@@ -1246,7 +1246,7 @@ class KEYTILL_REST {
 		}
 
 		if ( empty( $ids ) ) {
-			return new WP_Error( 'keytill_no_ids', __( 'No seleccionaste ningún producto.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_no_ids', __( 'You did not select any product.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( count( $ids ) > 5000 ) {
 			$ids = array_slice( $ids, 0, 5000 ); // tope de seguridad.
@@ -1387,7 +1387,7 @@ class KEYTILL_REST {
 	public static function admin_product_detail( WP_REST_Request $request ) {
 		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Product not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$row               = self::admin_product_row( $product );
 		$row['variations'] = self::admin_variations( $product );
@@ -1732,12 +1732,12 @@ class KEYTILL_REST {
 		$params = self::body( $request );
 		$name   = isset( $params['name'] ) ? sanitize_text_field( $params['name'] ) : '';
 		if ( '' === $name ) {
-			return new WP_Error( 'keytill_bad_attr', __( 'El nombre del atributo es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_attr', __( 'The attribute name is required.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$slug = wc_sanitize_taxonomy_name( $name ); // sin prefijo pa_, minúsculas.
 		if ( '' === $slug ) {
-			return new WP_Error( 'keytill_bad_attr', __( 'Nombre de atributo inválido.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_attr', __( 'Invalid attribute name.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Dedup: si ya existe un atributo global con ese slug, se reutiliza.
@@ -1779,7 +1779,7 @@ class KEYTILL_REST {
 		$attr_id = absint( $request->get_param( 'id' ) );
 		$tax_obj = self::get_attribute_taxonomy( $attr_id );
 		if ( ! $tax_obj ) {
-			return new WP_Error( 'keytill_not_found', __( 'Atributo no encontrado.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Attribute not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$taxonomy = wc_attribute_taxonomy_name( $tax_obj->attribute_name );
 		self::register_attribute_taxonomy( $tax_obj->attribute_name );
@@ -1787,7 +1787,7 @@ class KEYTILL_REST {
 		$params = self::body( $request );
 		$name   = isset( $params['name'] ) ? sanitize_text_field( $params['name'] ) : '';
 		if ( '' === $name ) {
-			return new WP_Error( 'keytill_bad_term', __( 'El nombre del valor es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_term', __( 'The value name is required.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Dedup: por nombre o por slug ya existente.
@@ -1892,7 +1892,7 @@ class KEYTILL_REST {
 	public static function admin_product_update( WP_REST_Request $request ) {
 		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Product not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$params      = self::body( $request );
 		$is_variation = $product instanceof WC_Product_Variation;
@@ -1905,7 +1905,7 @@ class KEYTILL_REST {
 			} else {
 				$price = wc_format_decimal( $raw );
 				if ( '' === $price || (float) $price < 0 ) {
-					return new WP_Error( 'keytill_bad_price', __( 'Precio inválido.', 'keytill' ), array( 'status' => 400 ) );
+					return new WP_Error( 'keytill_bad_price', __( 'Invalid price.', 'keytill' ), array( 'status' => 400 ) );
 				}
 				$product->set_regular_price( $price );
 				// Sin oferta activa, el precio efectivo sigue al de lista.
@@ -1924,7 +1924,7 @@ class KEYTILL_REST {
 			} else {
 				$qty = (int) $raw;
 				if ( $qty < 0 ) {
-					return new WP_Error( 'keytill_bad_stock', __( 'Stock inválido.', 'keytill' ), array( 'status' => 400 ) );
+					return new WP_Error( 'keytill_bad_stock', __( 'Invalid stock.', 'keytill' ), array( 'status' => 400 ) );
 				}
 				$product->set_manage_stock( true );
 				$product->set_stock_quantity( $qty );
@@ -1940,7 +1940,7 @@ class KEYTILL_REST {
 			if ( '' !== $sku ) {
 				$existing = wc_get_product_id_by_sku( $sku );
 				if ( $existing && (int) $existing !== (int) $product->get_id() ) {
-					return new WP_Error( 'keytill_dup_sku', __( 'Ya existe otro producto con ese SKU.', 'keytill' ), array( 'status' => 409 ) );
+					return new WP_Error( 'keytill_dup_sku', __( 'Another product already uses that SKU.', 'keytill' ), array( 'status' => 409 ) );
 				}
 			}
 			$product->set_sku( $sku );
@@ -1958,7 +1958,7 @@ class KEYTILL_REST {
 			} else {
 				$sale = wc_format_decimal( $raw );
 				if ( '' === $sale || (float) $sale < 0 ) {
-					return new WP_Error( 'keytill_bad_price', __( 'Precio de oferta inválido.', 'keytill' ), array( 'status' => 400 ) );
+					return new WP_Error( 'keytill_bad_price', __( 'Invalid sale price.', 'keytill' ), array( 'status' => 400 ) );
 				}
 				$product->set_sale_price( $sale );
 				$product->set_price( $sale );
@@ -1978,7 +1978,7 @@ class KEYTILL_REST {
 			if ( array_key_exists( 'name', $params ) ) {
 				$name = sanitize_text_field( $params['name'] );
 				if ( '' === $name ) {
-					return new WP_Error( 'keytill_bad_name', __( 'El nombre es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
+					return new WP_Error( 'keytill_bad_name', __( 'The name is required.', 'keytill' ), array( 'status' => 400 ) );
 				}
 				$product->set_name( $name );
 			}
@@ -1987,7 +1987,7 @@ class KEYTILL_REST {
 				if ( '' !== $sku ) {
 					$existing = wc_get_product_id_by_sku( $sku );
 					if ( $existing && (int) $existing !== (int) $product->get_id() ) {
-						return new WP_Error( 'keytill_dup_sku', __( 'Ya existe otro producto con ese SKU.', 'keytill' ), array( 'status' => 409 ) );
+						return new WP_Error( 'keytill_dup_sku', __( 'Another product already uses that SKU.', 'keytill' ), array( 'status' => 409 ) );
 					}
 				}
 				$product->set_sku( $sku );
@@ -2029,9 +2029,9 @@ class KEYTILL_REST {
 			if ( '' === $code ) {
 				$product->delete_meta_data( '_keytill_barcode' );
 			} elseif ( 12 !== strlen( $code ) ) {
-				return new WP_Error( 'keytill_bad_barcode', __( 'El código de barras debe tener 12 dígitos.', 'keytill' ), array( 'status' => 400 ) );
+				return new WP_Error( 'keytill_bad_barcode', __( 'The barcode must be 12 digits.', 'keytill' ), array( 'status' => 400 ) );
 			} elseif ( self::barcode_in_use( $code, (int) $product->get_id() ) ) {
-				return new WP_Error( 'keytill_dup_barcode', __( 'Ya hay otro producto con ese código de barras.', 'keytill' ), array( 'status' => 409 ) );
+				return new WP_Error( 'keytill_dup_barcode', __( 'Another product already uses that barcode.', 'keytill' ), array( 'status' => 409 ) );
 			} else {
 				$product->update_meta_data( '_keytill_barcode', $code );
 			}
@@ -2098,7 +2098,7 @@ class KEYTILL_REST {
 
 		$name = isset( $params['name'] ) ? sanitize_text_field( $params['name'] ) : '';
 		if ( '' === $name ) {
-			return new WP_Error( 'keytill_bad_name', __( 'El nombre es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_name', __( 'The name is required.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Tipo: simple (default) o variable. Para variable el precio/stock van por
@@ -2107,7 +2107,7 @@ class KEYTILL_REST {
 
 		$sku = isset( $params['sku'] ) ? wc_clean( $params['sku'] ) : '';
 		if ( '' !== $sku && wc_get_product_id_by_sku( $sku ) ) {
-			return new WP_Error( 'keytill_dup_sku', __( 'Ya existe un producto con ese SKU.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_dup_sku', __( 'A product with that SKU already exists.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		if ( 'variable' === $type ) {
@@ -2115,7 +2115,7 @@ class KEYTILL_REST {
 		} else {
 			$price = isset( $params['regular_price'] ) ? wc_format_decimal( $params['regular_price'] ) : '';
 			if ( '' === $price || (float) $price < 0 ) {
-				return new WP_Error( 'keytill_bad_price', __( 'El precio es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
+				return new WP_Error( 'keytill_bad_price', __( 'The price is required.', 'keytill' ), array( 'status' => 400 ) );
 			}
 			$product = new WC_Product_Simple();
 			$product->set_regular_price( $price );
@@ -2175,7 +2175,7 @@ class KEYTILL_REST {
 			return new WP_Error( 'keytill_create_fail', $e->getMessage(), array( 'status' => 400 ) );
 		}
 		if ( ! $id ) {
-			return new WP_Error( 'keytill_create_fail', __( 'No se pudo crear el producto.', 'keytill' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_create_fail', __( 'The product could not be created.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		// Stock por sucursal al crear un simple (fuente de verdad; el nativo = suma).
@@ -2207,10 +2207,10 @@ class KEYTILL_REST {
 	public static function admin_variations_generate( WP_REST_Request $request ) {
 		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Product not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		if ( ! $product->is_type( 'variable' ) ) {
-			return new WP_Error( 'keytill_not_variable', __( 'El producto no es variable.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_not_variable', __( 'The product is not a variable product.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$params = self::body( $request );
@@ -2274,7 +2274,7 @@ class KEYTILL_REST {
 		}
 
 		if ( empty( $slugs_by_tax ) ) {
-			return new WP_Error( 'keytill_no_attrs', __( 'Elegí al menos un atributo con valores.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_no_attrs', __( 'Choose at least one attribute with values.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Combinaciones deseadas (por slug, que es lo que usan las variaciones).
@@ -2380,7 +2380,7 @@ class KEYTILL_REST {
 			return new WP_Error(
 				'keytill_too_many',
 				/* translators: %d: tope de variaciones. */
-				sprintf( __( 'Demasiadas variaciones (máx %d). Reducí valores o cargalas en Woo.', 'keytill' ), $max_total ),
+				sprintf( __( 'Too many variations (max %d). Reduce values or create them in WooCommerce.', 'keytill' ), $max_total ),
 				array( 'status' => 400 )
 			);
 		}
@@ -2484,7 +2484,7 @@ class KEYTILL_REST {
 		$id      = absint( $request->get_param( 'id' ) );
 		$product = wc_get_product( $id );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Product not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 
 		if ( $product->is_type( 'variation' ) ) {
@@ -2512,13 +2512,13 @@ class KEYTILL_REST {
 	public static function admin_media_upload( WP_REST_Request $request ) {
 		$files = $request->get_file_params();
 		if ( empty( $files['file'] ) || empty( $files['file']['name'] ) ) {
-			return new WP_Error( 'keytill_no_file', __( 'No se recibió ninguna imagen.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_no_file', __( 'No image was received.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Solo imágenes.
 		$check = wp_check_filetype( $files['file']['name'] );
 		if ( empty( $check['type'] ) || 0 !== strpos( $check['type'], 'image/' ) ) {
-			return new WP_Error( 'keytill_bad_file', __( 'El archivo debe ser una imagen.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_file', __( 'The file must be an image.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -2581,7 +2581,7 @@ class KEYTILL_REST {
 		$code = (string) $request->get_param( 'code' );
 		$row  = KEYTILL_Credit::get_by_code( $code );
 		if ( ! $row ) {
-			return new WP_Error( 'keytill_credit_404', __( 'Código de crédito inexistente.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_credit_404', __( 'Credit code does not exist.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$payload               = KEYTILL_Credit::payload( $row );
 		$payload['reason']     = KEYTILL_Credit::is_redeemable( $row ) ? '' : KEYTILL_Credit::reason_not_redeemable( $row );
@@ -2616,7 +2616,7 @@ class KEYTILL_REST {
 		$params = self::body( $request );
 		$float  = isset( $params['opening_float'] ) ? (float) $params['opening_float'] : 0.0;
 		if ( $float < 0 ) {
-			return new WP_Error( 'keytill_bad_amount', __( 'Fondo inicial inválido.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_amount', __( 'Invalid opening float.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		$branch = isset( $params['branch_id'] ) ? (string) $params['branch_id'] : '';
 		$res    = KEYTILL_Cash::open_session( $float, get_current_user_id(), $branch );
@@ -2633,7 +2633,7 @@ class KEYTILL_REST {
 		$params = self::body( $request );
 		$id     = KEYTILL_Cash::get_open_session_id();
 		if ( ! $id ) {
-			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'There is no open register.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$amount = isset( $params['amount'] ) ? (float) $params['amount'] : 0.0;
 		$reason = isset( $params['reason'] ) ? sanitize_text_field( $params['reason'] ) : '';
@@ -2651,12 +2651,12 @@ class KEYTILL_REST {
 		// Cerrar/arquear la caja es una función de control: solo encargado/admin
 		// (no un cajero, para que no cierre su propio cajón y tape un faltante).
 		if ( ! current_user_can( KEYTILL_CAP_MANAGE ) ) {
-			return new WP_Error( 'keytill_forbidden', __( 'Solo un encargado o administrador puede cerrar la caja.', 'keytill' ), array( 'status' => 403 ) );
+			return new WP_Error( 'keytill_forbidden', __( 'Only a manager or administrator can close the register.', 'keytill' ), array( 'status' => 403 ) );
 		}
 		$params  = self::body( $request );
 		$id      = KEYTILL_Cash::get_open_session_id();
 		if ( ! $id ) {
-			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta para cerrar.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'There is no open register to close.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$counted = isset( $params['counted_cash'] ) ? (float) $params['counted_cash'] : 0.0;
 		$res     = KEYTILL_Cash::close_session( $id, $counted );
@@ -2679,11 +2679,11 @@ class KEYTILL_REST {
 		if ( 'digital' === $account ) {
 			// La caja digital es la cuenta bancaria: moverla es de gestión.
 			if ( ! current_user_can( KEYTILL_CAP_MANAGE ) ) {
-				return new WP_Error( 'keytill_forbidden', __( 'Solo un encargado o administrador puede mover la caja digital.', 'keytill' ), array( 'status' => 403 ) );
+				return new WP_Error( 'keytill_forbidden', __( 'Only a manager or administrator can move the digital register.', 'keytill' ), array( 'status' => 403 ) );
 			}
 			$id = KEYTILL_Cash_Digital::get_open_session_id();
 			if ( ! $id ) {
-				return new WP_Error( 'keytill_digital_closed', __( 'La caja digital no está abierta.', 'keytill' ), array( 'status' => 409 ) );
+				return new WP_Error( 'keytill_digital_closed', __( 'The digital register is not open.', 'keytill' ), array( 'status' => 409 ) );
 			}
 			$res = KEYTILL_Cash_Digital::add_move( $id, $kind, $amount, $concept );
 			return is_wp_error( $res ) ? $res : new WP_REST_Response( array( 'account' => 'digital', 'digital' => $res ), 201 );
@@ -2692,7 +2692,7 @@ class KEYTILL_REST {
 		// Efectivo → caja física del cajero.
 		$id = KEYTILL_Cash::get_open_session_id();
 		if ( ! $id ) {
-			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'There is no open register.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$res = ( 'ingreso' === $kind )
 			? KEYTILL_Cash::add_deposit( $id, $amount, $concept )
@@ -2718,7 +2718,7 @@ class KEYTILL_REST {
 	public static function digital_close() {
 		$id = KEYTILL_Cash_Digital::get_open_session_id();
 		if ( ! $id ) {
-			return new WP_Error( 'keytill_digital_closed', __( 'La caja digital no está abierta.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_digital_closed', __( 'The digital register is not open.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$res = KEYTILL_Cash_Digital::close_session( $id );
 		return is_wp_error( $res ) ? $res : new WP_REST_Response( $res, 200 );
@@ -2729,7 +2729,7 @@ class KEYTILL_REST {
 		$oid    = isset( $params['order_id'] ) ? absint( $params['order_id'] ) : 0;
 		$status = isset( $params['status'] ) ? sanitize_key( $params['status'] ) : '';
 		if ( ! $oid || ! wc_get_order( $oid ) ) {
-			return new WP_Error( 'keytill_not_found', __( 'Orden no encontrada.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Order not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$new = KEYTILL_Cash_Digital::set_verification( $oid, $status );
 		return new WP_REST_Response( array( 'order_id' => $oid, 'verification' => $new ), 200 );
@@ -2972,7 +2972,7 @@ class KEYTILL_REST {
 		}
 		return new WP_Error(
 			'keytill_forbidden',
-			__( 'No tenés permiso para operar el POS.', 'keytill' ),
+			__( 'You do not have permission to operate the POS.', 'keytill' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -2989,7 +2989,7 @@ class KEYTILL_REST {
 		}
 		return new WP_Error(
 			'keytill_forbidden',
-			__( 'No tenés permiso para gestionar productos.', 'keytill' ),
+			__( 'You do not have permission to manage products.', 'keytill' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -3005,7 +3005,7 @@ class KEYTILL_REST {
 		}
 		return new WP_Error(
 			'keytill_forbidden',
-			__( 'No tenés permiso para subir imágenes.', 'keytill' ),
+			__( 'You do not have permission to upload images.', 'keytill' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -3232,7 +3232,7 @@ class KEYTILL_REST {
 	 */
 	public static function create_order( WP_REST_Request $request ) {
 		if ( ! function_exists( 'wc_create_order' ) ) {
-			return new WP_Error( 'keytill_no_woo', __( 'WooCommerce no está disponible.', 'keytill' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_no_woo', __( 'WooCommerce is unavailable.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		$params = $request->get_json_params();
@@ -3270,7 +3270,7 @@ class KEYTILL_REST {
 			}
 		}
 		if ( empty( $items ) ) {
-			return new WP_Error( 'keytill_empty', __( 'El carrito está vacío.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_empty', __( 'The cart is empty.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// --- idempotencia ---
@@ -3320,7 +3320,7 @@ class KEYTILL_REST {
 		// orden ya creada se resuelve arriba aunque la caja se haya cerrado luego.
 		$open_session_id = KEYTILL_Cash::get_open_session_id();
 		if ( ! $open_session_id ) {
-			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta. Abrí la caja para cobrar.', 'keytill' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'There is no open register. Open the register to take payment.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		// --- crédito en tienda (canje, opcional) ---
@@ -3339,7 +3339,7 @@ class KEYTILL_REST {
 		$methods = self::payment_methods();
 		$pm       = isset( $params['payment_method'] ) ? sanitize_key( $params['payment_method'] ) : '';
 		if ( '' !== $pm && ! isset( $methods[ $pm ] ) ) {
-			return new WP_Error( 'keytill_bad_method', __( 'Medio de pago inválido.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_method', __( 'Invalid payment method.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		// No se exige medio acá: si tras el descuento/crédito queda saldo a cobrar y
 		// no hay medio válido, se rechaza más abajo (cuando ya se conoce el total).
@@ -3375,7 +3375,7 @@ class KEYTILL_REST {
 		// --- construcción de la orden (CRUD de Woo) ---
 		$order = wc_create_order();
 		if ( is_wp_error( $order ) ) {
-			return new WP_Error( 'keytill_order_fail', __( 'No se pudo crear la orden.', 'keytill' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_order_fail', __( 'The order could not be created.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		// Agrupa cantidades por producto (por si viniera repetido) y valida
@@ -3397,7 +3397,7 @@ class KEYTILL_REST {
 					return new WP_Error(
 						'keytill_giftcard_max',
 						/* translators: %s: monto máximo. */
-						sprintf( __( 'El monto de la gift card supera el tope permitido (%s).', 'keytill' ), wp_strip_all_tags( wc_price( $gc_max ) ) ),
+						sprintf( __( 'The gift card amount exceeds the allowed limit (%s).', 'keytill' ), wp_strip_all_tags( wc_price( $gc_max ) ) ),
 						array( 'status' => 400 )
 					);
 				}
@@ -3426,15 +3426,15 @@ class KEYTILL_REST {
 			$product = wc_get_product( $pid );
 			if ( ! $product ) {
 				/* translators: %d: product id. */
-				$errors[] = sprintf( __( 'Producto no encontrado (id %d).', 'keytill' ), $pid );
+				$errors[] = sprintf( __( 'Product not found (id %d).', 'keytill' ), $pid );
 				continue;
 			}
 			if ( ! $product->is_purchasable() ) {
 				// Motivo más frecuente: producto sin precio cargado. Se nombra el
 				// producto (no un id) para que el cajero sepa cuál corregir.
 				$reason   = ( '' === (string) $product->get_price() )
-					? __( 'sin precio cargado', 'keytill' )
-					: __( 'no disponible para la venta', 'keytill' );
+					? __( 'no price set', 'keytill' )
+					: __( 'not available for sale', 'keytill' );
 				/* translators: 1: product name, 2: reason. */
 				$errors[] = sprintf( __( '%1$s: %2$s.', 'keytill' ), $product->get_name(), $reason );
 				continue;
@@ -3446,7 +3446,7 @@ class KEYTILL_REST {
 				// que el cajero haya confirmado vender igual (force → puede negativo).
 				$src = ! empty( $src_by_id[ $pid ] ) ? KEYTILL_Branches::valid_id( $src_by_id[ $pid ] ) : $caja_branch;
 				if ( '' === $src ) {
-					$errors[] = sprintf( __( '%s: falta indicar la sucursal de origen.', 'keytill' ), $product->get_name() );
+					$errors[] = sprintf( __( '%s: the source location is missing.', 'keytill' ), $product->get_name() );
 					continue;
 				}
 				$force = ! empty( $force_by_id[ $pid ] );
@@ -3471,9 +3471,9 @@ class KEYTILL_REST {
 					$avail    = $product->get_stock_quantity();
 					$errors[] = sprintf(
 						/* translators: 1: product name, 2: available stock (o "sin stock"), 3: requested qty. */
-						__( 'Stock insuficiente: %1$s (disponible %2$s, pedido %3$d).', 'keytill' ),
+						__( 'Not enough stock: %1$s (available %2$s, requested %3$d).', 'keytill' ),
 						$product->get_name(),
-						null === $avail ? __( 'sin stock', 'keytill' ) : (string) $avail,
+						null === $avail ? __( 'out of stock', 'keytill' ) : (string) $avail,
 						$qty
 					);
 					continue;
@@ -3495,7 +3495,7 @@ class KEYTILL_REST {
 			foreach ( $shortages as $s ) {
 				$parts[] = sprintf(
 					/* translators: 1: producto, 2: sucursal, 3: disponible, 4: pedido. */
-					__( '%1$s: sin stock en %2$s (hay %3$d, pedís %4$d).', 'keytill' ),
+					__( '%1$s: out of stock at %2$s (available %3$d, requested %4$d).', 'keytill' ),
 					$s['name'],
 					$s['branch_name'],
 					$s['have'],
@@ -3538,7 +3538,7 @@ class KEYTILL_REST {
 
 		if ( empty( $prepared ) && empty( $custom_lines ) ) {
 			$order->delete( true );
-			return new WP_Error( 'keytill_empty', __( 'El carrito está vacío.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_empty', __( 'The cart is empty.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Descuento aplicado sobre los LINE ITEMS (subtotal original, total con
@@ -3641,7 +3641,7 @@ class KEYTILL_REST {
 		// Si el crédito no cubre todo, hace falta un medio válido para el resto.
 		if ( $remainder > 0 && ! isset( $methods[ $pm ] ) ) {
 			$order->delete( true );
-			return new WP_Error( 'keytill_bad_method', __( 'Elegí un medio de pago para el resto.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_method', __( 'Choose a payment method for the remainder.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Medio de pago a registrar: el del resto; si no hay resto a cobrar, la venta
@@ -3650,10 +3650,10 @@ class KEYTILL_REST {
 		if ( $remainder <= 0 ) {
 			if ( $credit_used > 0 ) {
 				$order->set_payment_method( 'credito' );
-				$order->set_payment_method_title( __( 'Crédito en tienda', 'keytill' ) );
+				$order->set_payment_method_title( __( 'Store credit', 'keytill' ) );
 			} else {
 				$order->set_payment_method( 'bonificado' );
-				$order->set_payment_method_title( __( 'Bonificado (100%)', 'keytill' ) );
+				$order->set_payment_method_title( __( 'Comped (100%)', 'keytill' ) );
 			}
 		} else {
 			$order->set_payment_method( $pm );
@@ -3674,7 +3674,7 @@ class KEYTILL_REST {
 					return new WP_Error(
 						'keytill_branch_stock',
 						/* translators: %s: producto. */
-						sprintf( __( 'Se quedó sin stock en la sucursal: %s (lo vendió otra caja recién).', 'keytill' ), $pp['product']->get_name() ),
+						sprintf( __( 'It just ran out of stock at this location: %s (another register sold it).', 'keytill' ), $pp['product']->get_name() ),
 						array( 'status' => 409 )
 					);
 				}
@@ -3691,7 +3691,7 @@ class KEYTILL_REST {
 			if ( false === $credit_after ) {
 				self::rollback_stock( $stock_reduced ); // reintegra el stock ya descontado
 				$order->delete( true );
-				return new WP_Error( 'keytill_credit_race', __( 'El crédito ya no tiene saldo suficiente.', 'keytill' ), array( 'status' => 409 ) );
+				return new WP_Error( 'keytill_credit_race', __( 'The credit no longer has enough balance.', 'keytill' ), array( 'status' => 409 ) );
 			}
 			$order->add_meta_data( '_keytill_credit_used', $credit_used, true );
 			$order->add_meta_data( '_keytill_credit_code', $credit_row->code, true );
@@ -3702,7 +3702,7 @@ class KEYTILL_REST {
 		try {
 			$order->payment_complete();
 			if ( ! $order->has_status( 'completed' ) ) {
-				$order->update_status( 'completed', __( 'Venta de mostrador (POS).', 'keytill' ) );
+				$order->update_status( 'completed', __( 'Counter sale (POS).', 'keytill' ) );
 			}
 		} catch ( \Exception $e ) {
 			// Reversa del crédito si la venta no llegó a concretarse.
@@ -3711,7 +3711,7 @@ class KEYTILL_REST {
 			}
 			self::rollback_stock( $stock_reduced );
 			$order->delete( true );
-			return new WP_Error( 'keytill_order_fail', __( 'No se pudo completar la venta.', 'keytill' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_order_fail', __( 'The sale could not be completed.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		// Registra el canje en el ledger del crédito (ya con el order_id).

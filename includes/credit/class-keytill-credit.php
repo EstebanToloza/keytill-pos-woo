@@ -223,7 +223,7 @@ class KEYTILL_Credit {
 		global $wpdb;
 		$amount = round( (float) $amount, 2 );
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'keytill_credit_amount', __( 'Monto de crédito inválido.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_credit_amount', __( 'Invalid credit amount.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$now  = current_time( 'mysql' );
@@ -255,7 +255,7 @@ class KEYTILL_Credit {
 		);
 
 		if ( ! $ok ) {
-			return new WP_Error( 'keytill_credit_insert', __( 'No se pudo emitir el crédito.', 'keytill' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_credit_insert', __( 'The credit could not be issued.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		$id = (int) $wpdb->insert_id;
@@ -338,18 +338,18 @@ class KEYTILL_Credit {
 	 */
 	public static function reason_not_redeemable( $row ) {
 		if ( ! $row ) {
-			return __( 'Código de crédito inexistente.', 'keytill' );
+			return __( 'Credit code does not exist.', 'keytill' );
 		}
 		if ( 'void' === $row->status ) {
-			return __( 'El crédito fue anulado.', 'keytill' );
+			return __( 'The credit was voided.', 'keytill' );
 		}
 		if ( 'expired' === $row->status || ( $row->expires_at && strtotime( $row->expires_at ) <= current_time( 'timestamp' ) ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp
-			return __( 'El crédito está vencido.', 'keytill' );
+			return __( 'The credit has expired.', 'keytill' );
 		}
 		if ( (float) $row->balance <= 0 || 'used' === $row->status ) {
-			return __( 'El crédito no tiene saldo.', 'keytill' );
+			return __( 'The credit has no balance left.', 'keytill' );
 		}
-		return __( 'El crédito no es válido.', 'keytill' );
+		return __( 'The credit is not valid.', 'keytill' );
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -567,8 +567,8 @@ class KEYTILL_Credit {
 	public static function register_admin_menu() {
 		add_submenu_page(
 			'keytill',
-			__( 'Créditos en tienda', 'keytill' ),
-			__( 'Créditos', 'keytill' ),
+			__( 'Store credits', 'keytill' ),
+			__( 'Credits', 'keytill' ),
 			'manage_woocommerce',
 			'keytill-credits',
 			array( __CLASS__, 'render_admin_page' )
@@ -580,7 +580,7 @@ class KEYTILL_Credit {
 	 */
 	public static function render_admin_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
+			wp_die( esc_html__( 'No permission.', 'keytill' ) );
 		}
 		global $wpdb;
 		$table = self::table();
@@ -601,10 +601,10 @@ class KEYTILL_Credit {
 
 		$sum_active = (float) $wpdb->get_var( "SELECT COALESCE(SUM(balance),0) FROM $table WHERE status = 'active'" ); // phpcs:ignore
 		$labels     = array(
-			'active'  => __( 'Activo', 'keytill' ),
-			'used'    => __( 'Usado', 'keytill' ),
-			'expired' => __( 'Vencido', 'keytill' ),
-			'void'    => __( 'Anulado', 'keytill' ),
+			'active'  => __( 'Enabled', 'keytill' ),
+			'used'    => __( 'Used', 'keytill' ),
+			'expired' => __( 'Expired', 'keytill' ),
+			'void'    => __( 'Voided', 'keytill' ),
 		);
 
 		// Código recién emitido (para mostrarlo destacado tras el redirect).
@@ -612,87 +612,87 @@ class KEYTILL_Credit {
 		$issued = ( '' !== $issued && self::get_by_code( $issued ) ) ? $issued : '';
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Créditos en tienda', 'keytill' ); ?></h1>
+			<h1><?php esc_html_e( 'Store credits', 'keytill' ); ?></h1>
 			<p>
 				<?php
 				printf(
 					/* translators: %s: saldo total activo. */
-					esc_html__( 'Saldo activo en circulación: %s', 'keytill' ),
+					esc_html__( 'Active balance in circulation: %s', 'keytill' ),
 					'<strong>' . wp_kses_post( wc_price( $sum_active ) ) . '</strong>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				);
 				?>
-				· <?php printf( esc_html__( 'Vigencia por defecto: %d días', 'keytill' ), (int) self::get_expiry_days() ); ?>
+				· <?php printf( esc_html__( 'Default validity: %d days', 'keytill' ), (int) self::get_expiry_days() ); ?>
 			</p>
 
 			<?php if ( '' !== $issued ) : ?>
 				<div class="notice notice-success">
 					<p style="font-size:14px">
-						<?php esc_html_e( 'Gift card emitida. Código:', 'keytill' ); ?>
+						<?php esc_html_e( 'Gift card issued. Code:', 'keytill' ); ?>
 						<code style="font-size:18px;padding:4px 8px"><?php echo esc_html( $issued ); ?></code>
-						<?php esc_html_e( 'Anotalo/entregáselo al cliente.', 'keytill' ); ?>
+						<?php esc_html_e( 'Write it down or hand it to the customer.', 'keytill' ); ?>
 					</p>
 				</div>
 			<?php endif; ?>
 			<?php if ( isset( $_GET['issue_error'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
-				<div class="notice notice-error"><p><?php esc_html_e( 'No se pudo emitir la gift card (revisá el monto).', 'keytill' ); ?></p></div>
+				<div class="notice notice-error"><p><?php esc_html_e( 'The gift card could not be issued (check the amount).', 'keytill' ); ?></p></div>
 			<?php endif; ?>
 
-			<h2 style="margin-top:1em"><?php esc_html_e( 'Emitir gift card', 'keytill' ); ?></h2>
+			<h2 style="margin-top:1em"><?php esc_html_e( 'Issue gift card', 'keytill' ); ?></h2>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="background:#fff;border:1px solid #ccd0d4;padding:12px 16px;max-width:760px">
 				<input type="hidden" name="action" value="keytill_credit_issue" />
 				<?php wp_nonce_field( 'keytill_credit_issue' ); ?>
 				<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
-					<label><?php esc_html_e( 'Monto', 'keytill' ); ?><br />
+					<label><?php esc_html_e( 'Amount', 'keytill' ); ?><br />
 						<input type="number" name="amount" min="1" step="0.01" required style="width:140px" placeholder="0,00" />
 					</label>
-					<label><?php esc_html_e( 'Vigencia (días)', 'keytill' ); ?><br />
+					<label><?php esc_html_e( 'Validity (days)', 'keytill' ); ?><br />
 						<input type="number" name="expiry_days" min="0" step="1" value="<?php echo (int) self::get_expiry_days(); ?>" style="width:100px" />
 					</label>
-					<label><?php esc_html_e( 'Email (opcional)', 'keytill' ); ?><br />
+					<label><?php esc_html_e( 'Email (optional)', 'keytill' ); ?><br />
 						<input type="email" name="customer_email" style="width:220px" placeholder="cliente@ejemplo.com" />
 					</label>
-					<label style="flex:1;min-width:180px"><?php esc_html_e( 'Nota (opcional)', 'keytill' ); ?><br />
-						<input type="text" name="note" style="width:100%" placeholder="<?php esc_attr_e( 'Ej: regalo cumpleaños', 'keytill' ); ?>" />
+					<label style="flex:1;min-width:180px"><?php esc_html_e( 'Note (optional)', 'keytill' ); ?><br />
+						<input type="text" name="note" style="width:100%" placeholder="<?php esc_attr_e( 'E.g. birthday gift', 'keytill' ); ?>" />
 					</label>
-					<button class="button button-primary"><?php esc_html_e( 'Emitir', 'keytill' ); ?></button>
+					<button class="button button-primary"><?php esc_html_e( 'Issue', 'keytill' ); ?></button>
 				</div>
-				<p class="description" style="margin:8px 0 0"><?php esc_html_e( 'Genera un crédito al portador (0 días = sin vencimiento). El código se muestra al confirmar.', 'keytill' ); ?></p>
+				<p class="description" style="margin:8px 0 0"><?php esc_html_e( 'Issues a bearer credit (0 days = never expires). The code is shown on confirmation.', 'keytill' ); ?></p>
 			</form>
 
 			<form method="get">
 				<input type="hidden" name="page" value="keytill-credits" />
 				<p class="search-box">
-					<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Código o email…', 'keytill' ); ?>" />
-					<button class="button"><?php esc_html_e( 'Buscar', 'keytill' ); ?></button>
+					<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Code or email…', 'keytill' ); ?>" />
+					<button class="button"><?php esc_html_e( 'Search', 'keytill' ); ?></button>
 				</p>
 			</form>
 
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'Código', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Saldo', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Emitido', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Estado', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Cliente', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Vence', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Origen', 'keytill' ); ?></th>
-						<th><?php esc_html_e( 'Acciones', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Code', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Balance', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Issued', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Status', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Customer', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Expires', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Source', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Actions', 'keytill' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php if ( empty( $rows ) ) : ?>
-						<tr><td colspan="8"><?php esc_html_e( 'Sin créditos todavía.', 'keytill' ); ?></td></tr>
+						<tr><td colspan="8"><?php esc_html_e( 'No credits yet.', 'keytill' ); ?></td></tr>
 					<?php else : ?>
 						<?php foreach ( $rows as $r ) : ?>
 							<tr>
 								<td><code><?php echo esc_html( $r->code ); ?></code></td>
 								<td><strong><?php echo wp_kses_post( wc_price( (float) $r->balance ) ); ?></strong>
-									<br /><small class="description"><?php echo wp_kses_post( wc_price( (float) $r->initial_amount ) ); ?> <?php esc_html_e( 'inicial', 'keytill' ); ?></small></td>
+									<br /><small class="description"><?php echo wp_kses_post( wc_price( (float) $r->initial_amount ) ); ?> <?php esc_html_e( 'opening', 'keytill' ); ?></small></td>
 								<td><?php echo esc_html( $r->issued_at ? mysql2date( 'd/m/Y', $r->issued_at ) : '—' ); ?></td>
 								<td><?php echo esc_html( isset( $labels[ $r->status ] ) ? $labels[ $r->status ] : $r->status ); ?></td>
 								<td><?php echo esc_html( $r->customer_email ? $r->customer_email : '—' ); ?></td>
-								<td><?php echo esc_html( $r->expires_at ? mysql2date( 'd/m/Y', $r->expires_at ) : __( 'sin venc.', 'keytill' ) ); ?></td>
+								<td><?php echo esc_html( $r->expires_at ? mysql2date( 'd/m/Y', $r->expires_at ) : __( 'no expiry', 'keytill' ) ); ?></td>
 								<td>
 									<?php
 									$is_gift = isset( $r->kind ) && 'giftcard' === $r->kind;
@@ -700,12 +700,12 @@ class KEYTILL_Credit {
 										echo '<span class="dashicons dashicons-tickets-alt" style="color:#996b00"></span> ';
 										esc_html_e( 'Gift card', 'keytill' );
 										if ( $r->source_order_id ) {
-											echo ' · <a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'venta #%d', 'keytill' ), (int) $r->source_order_id ) ) . '</a>';
+											echo ' · <a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'sale #%d', 'keytill' ), (int) $r->source_order_id ) ) . '</a>';
 										} else {
 											echo ' <span class="description">(' . esc_html__( 'admin', 'keytill' ) . ')</span>';
 										}
 									} elseif ( $r->source_order_id ) {
-										echo '<a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'devolución #%d', 'keytill' ), (int) $r->source_order_id ) ) . '</a>';
+										echo '<a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'refund #%d', 'keytill' ), (int) $r->source_order_id ) ) . '</a>';
 									} else {
 										echo '—';
 									}
@@ -717,13 +717,13 @@ class KEYTILL_Credit {
 											<input type="hidden" name="action" value="keytill_credit_extend" />
 											<input type="hidden" name="credit_id" value="<?php echo (int) $r->id; ?>" />
 											<?php wp_nonce_field( 'keytill_credit_extend_' . (int) $r->id ); ?>
-											<button class="button button-small"><?php esc_html_e( '+30 días', 'keytill' ); ?></button>
+											<button class="button button-small"><?php esc_html_e( '+30 days', 'keytill' ); ?></button>
 										</form>
-										<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('<?php echo esc_js( __( '¿Anular este crédito?', 'keytill' ) ); ?>');">
+										<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('<?php echo esc_js( __( 'Void this credit?', 'keytill' ) ); ?>');">
 											<input type="hidden" name="action" value="keytill_credit_void" />
 											<input type="hidden" name="credit_id" value="<?php echo (int) $r->id; ?>" />
 											<?php wp_nonce_field( 'keytill_credit_void_' . (int) $r->id ); ?>
-											<button class="button button-small button-link-delete"><?php esc_html_e( 'Anular', 'keytill' ); ?></button>
+											<button class="button button-small button-link-delete"><?php esc_html_e( 'Void', 'keytill' ); ?></button>
 										</form>
 									<?php else : ?>
 										—
@@ -763,7 +763,7 @@ class KEYTILL_Credit {
 	 */
 	public static function handle_issue() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
+			wp_die( esc_html__( 'No permission.', 'keytill' ) );
 		}
 		check_admin_referer( 'keytill_credit_issue' );
 
@@ -796,7 +796,7 @@ class KEYTILL_Credit {
 	public static function handle_void() {
 		$id = isset( $_POST['credit_id'] ) ? absint( $_POST['credit_id'] ) : 0;
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! $id ) {
-			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
+			wp_die( esc_html__( 'No permission.', 'keytill' ) );
 		}
 		check_admin_referer( 'keytill_credit_void_' . $id );
 
@@ -816,7 +816,7 @@ class KEYTILL_Credit {
 	public static function handle_extend() {
 		$id = isset( $_POST['credit_id'] ) ? absint( $_POST['credit_id'] ) : 0;
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! $id ) {
-			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
+			wp_die( esc_html__( 'No permission.', 'keytill' ) );
 		}
 		check_admin_referer( 'keytill_credit_extend_' . $id );
 

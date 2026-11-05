@@ -223,7 +223,7 @@ class KEYTILL_Customers {
 		$id   = absint( $request->get_param( 'id' ) );
 		$user = get_userdata( $id );
 		if ( ! $user || ! in_array( 'customer', (array) $user->roles, true ) ) {
-			return new WP_Error( 'keytill_not_found', __( 'Cliente no encontrado.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Customer not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$payload             = self::payload( $id );
 		$payload['stats']    = self::stats( $id );
@@ -271,7 +271,7 @@ class KEYTILL_Customers {
 		$id   = (int) $id;
 		$user = get_userdata( $id );
 		if ( ! $user || ! in_array( 'customer', (array) $user->roles, true ) ) {
-			return new WP_Error( 'keytill_not_found', __( 'Cliente no encontrado.', 'keytill' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Customer not found.', 'keytill' ), array( 'status' => 404 ) );
 		}
 
 		$name  = trim( (string) ( $data['name'] ?? '' ) );
@@ -281,10 +281,10 @@ class KEYTILL_Customers {
 		$norm  = self::normalize_doc( $doc );
 
 		if ( '' !== $email && ! is_email( $email ) ) {
-			return new WP_Error( 'keytill_bad_email', __( 'El email no es válido.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_email', __( 'The email is not valid.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( '' === $email && '' === $norm ) {
-			return new WP_Error( 'keytill_need_id', __( 'El cliente necesita al menos email o documento.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_need_id', __( 'The customer needs at least an email or a tax ID.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Deduplicación contra OTROS clientes.
@@ -516,10 +516,10 @@ class KEYTILL_Customers {
 		$norm  = self::normalize_doc( $doc );
 
 		if ( '' !== $email && ! is_email( $email ) ) {
-			return new WP_Error( 'keytill_bad_email', __( 'El email no es válido.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_email', __( 'The email is not valid.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( '' === $email && '' === $norm ) {
-			return new WP_Error( 'keytill_need_id', __( 'Para guardar un cliente cargá al menos email o documento.', 'keytill' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_need_id', __( 'To save a customer, enter at least an email or a tax ID.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// --- Deduplicación ---
@@ -595,14 +595,14 @@ class KEYTILL_Customers {
 		$payload = self::payload( $uid );
 		$mismatch = '';
 		if ( 'email' === $matched && '' !== $other_norm && $payload['doc_norm'] !== $other_norm ) {
-			$mismatch = __( 'El documento no coincide con el registrado en ese cliente.', 'keytill' );
+			$mismatch = __( 'The tax ID does not match the one on file for that customer.', 'keytill' );
 		}
 		if ( 'doc' === $matched && '' !== $other_email && strtolower( $payload['email'] ) !== strtolower( $other_email ) ) {
-			$mismatch = __( 'El email no coincide con el registrado en ese cliente.', 'keytill' );
+			$mismatch = __( 'The email does not match the one on file for that customer.', 'keytill' );
 		}
 		$msg = ( 'email' === $matched )
-			? __( 'Ya existe un cliente con ese email.', 'keytill' )
-			: __( 'Ya existe un cliente con ese documento.', 'keytill' );
+			? __( 'A customer with that email already exists.', 'keytill' )
+			: __( 'A customer with that tax ID already exists.', 'keytill' );
 		return new WP_Error(
 			'keytill_customer_exists',
 			trim( $msg . ' ' . $mismatch ),
