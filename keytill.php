@@ -468,7 +468,7 @@ add_action(
 			define( 'DONOTCACHEPAGE', true );
 		}
 		// LiteSpeed Cache: pedir explícitamente no cachear esta respuesta.
-		do_action( 'litespeed_control_set_nocache', 'Keytill: pantalla dinámica por-usuario' );
+		do_action( 'litespeed_control_set_nocache', 'Keytill: per-user dynamic screen' );
 		nocache_headers();
 	},
 	1

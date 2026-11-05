@@ -53,6 +53,27 @@
 	}
 	window.keytillMoney = formatMoney;
 
+	/**
+	 * Texto traducible para las expresiones de Alpine del template.
+	 *
+	 * Las expresiones viven en atributos HTML (x-text, :placeholder), donde no
+	 * se puede llegar a las variables del IIFE: por eso va en window. Acepta
+	 * argumentos de sprintf, así una frase con datos sigue siendo UN solo
+	 * mensaje para el traductor en vez de trozos concatenados.
+	 *
+	 *   x-text="keytillT( 'Available at %s', l.branch )"
+	 *
+	 * tools/make_json.py también lee estas llamadas desde los templates, para
+	 * que sus mensajes entren en el catálogo del navegador.
+	 */
+	window.keytillT = function ( msgid ) {
+		var text = __( msgid, 'keytill' );
+		if ( arguments.length < 2 ) {
+			return text;
+		}
+		return sprintf.apply( null, [ text ].concat( Array.prototype.slice.call( arguments, 1 ) ) );
+	};
+
 	/* --------------------------------------------------------------
 	   Keeper del nonce REST. La pantalla del POS queda abierta muchas
 	   horas: el nonce `wp_rest` caduca (~12–24 h) y la primera escritura

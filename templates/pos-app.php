@@ -79,7 +79,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 				@input="onInput($event)"
 				@keydown.enter="if ($store.pos.touch) { $event.preventDefault(); submitCommand(); }"
 				class="cmd-input"
-				placeholder="código de barras / nombre del producto…"
+				placeholder="<?php echo esc_attr__( 'barcode / product name…', 'keytill' ); ?>"
 				autocomplete="off"
 				spellcheck="false"
 				aria-label="<?php esc_attr_e( 'Command field: scan or search', 'keytill' ); ?>"
@@ -162,7 +162,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 								<span class="mono muted line__code" x-text="l.code"></span>
 								<template x-if="l.badge"><span class="stock-badge" :class="l.badge.cls" x-text="l.badge.label"></span></template>
 								<template x-if="l.disc > 0"><span class="line__disc" x-text="l.discType === 'fixed' ? ('− ' + money(l.disc)) : ('− ' + l.disc + '%')"></span></template>
-								<template x-if="l.branch"><span class="branch-line" x-text="'Disponible en sucursal ' + l.branch"></span></template>
+								<template x-if="l.branch"><span class="branch-line" x-text="keytillT( 'Available at %s', l.branch )"></span></template>
 							</span>
 						</span>
 						<span class="mono line__qty" x-text="l.qty"></span>
@@ -235,7 +235,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			</div>
 			<span class="customer__name" x-text="customer ? customer.name || customer.doc : 'Consumidor final'"></span>
 			<span class="mono muted customer__doc"
-				x-text="customer ? [customer.doc, customer.iva].filter(Boolean).join(' · ') || 'sin datos fiscales' : ($store.pos.touch ? 'sin datos · tocá «Cliente»' : 'sin datos · F4 para cargar')"></span>
+				x-text="customer ? [customer.doc, customer.iva].filter(Boolean).join(' · ') || keytillT( 'no tax details' ) : ($store.pos.touch ? keytillT( 'no details · tap «Customer»' ) : keytillT( 'no details · F4 to add' ))"></span>
 		</div>
 
 		<!-- Estado -->
@@ -302,7 +302,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<input type="search" class="orders__search" placeholder="<?php esc_attr_e( 'Search by number or customer…', 'keytill' ); ?>"
 				x-model="filters.search" @input="onSearch()" @keydown.enter="apply()" autocomplete="off" />
 			<div class="orders__presets">
-				<template x-for="p in [{k:'hoy',l:'Hoy'},{k:'7d',l:'7 días'},{k:'30d',l:'30 días'},{k:'todo',l:'Todo'}]" :key="p.k">
+				<template x-for="p in [{k:'hoy',l:keytillT('Today')},{k:'7d',l:keytillT('7 days')},{k:'30d',l:keytillT('30 days')},{k:'todo',l:keytillT('All')}]" :key="p.k">
 					<button type="button" class="orders__preset" :class="{ 'is-active': preset === p.k }" @click="setPreset(p.k)" x-text="p.l"></button>
 				</template>
 			</div>
@@ -563,7 +563,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 									</template>
 								</td>
 								<td class="mono muted" x-text="r.sku || '—'"></td>
-								<td class="mono muted" x-text="r.type === 'variable' ? 'por variación' : (r.barcode || '—')"></td>
+								<td class="mono muted" x-text="r.type === 'variable' ? keytillT( 'per variation' ) : (r.barcode || '—')"></td>
 								<td class="muted" x-text="r.category || '—'"></td>
 
 								<!-- Precio -->
@@ -591,7 +591,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 									</template>
 									<template x-if="!(r.editable && canManage)">
 										<span class="mono" :class="{ 'prod__oos': !r.in_stock }"
-											x-text="r.type === 'variable' ? '—' : (r.manage_stock ? r.stock_qty : (r.in_stock ? '∞' : 'sin stock'))"></span>
+											x-text="r.type === 'variable' ? '—' : (r.manage_stock ? r.stock_qty : (r.in_stock ? '∞' : keytillT( 'out of stock' )))"></span>
 									</template>
 								</td>
 
@@ -645,7 +645,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 													<td class="mono muted" x-text="v.sku || '—'"></td>
 													<td>
 														<template x-if="canManage">
-															<input type="text" inputmode="numeric" maxlength="12" class="prod__inp mono" placeholder="12 díg."
+															<input type="text" inputmode="numeric" maxlength="12" class="prod__inp mono" placeholder="<?php echo esc_attr__( '12 digits', 'keytill' ); ?>"
 																x-model="v.barcode" @keydown.enter="$event.target.blur()" @blur="saveField(v, 'barcode')" autocomplete="off" />
 														</template>
 														<template x-if="!canManage"><span class="mono muted" x-text="v.barcode || '—'"></span></template>
@@ -667,7 +667,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 																x-model="v._stockStr" @keydown.enter="$event.target.blur()" @blur="saveField(v, 'stock_quantity')" />
 														</template>
 														<template x-if="!canManage">
-															<span class="mono" :class="{ 'prod__oos': !v.in_stock }" x-text="v.manage_stock ? v.stock_qty : (v.in_stock ? '∞' : 'sin stock')"></span>
+															<span class="mono" :class="{ 'prod__oos': !v.in_stock }" x-text="v.manage_stock ? v.stock_qty : (v.in_stock ? '∞' : keytillT( 'out of stock' ))"></span>
 														</template>
 													</td>
 												</tr>
@@ -928,7 +928,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 														<td class="prod__varname" x-text="v.label || '—'"></td>
 														<td><input type="text" class="prod__inp mono" x-model="v.sku" placeholder="—"
 															@keydown.enter="$event.target.blur()" @blur="saveField(v, 'sku')" autocomplete="off" /></td>
-														<td><input type="text" inputmode="numeric" maxlength="12" class="prod__inp prod__inp--code mono" x-model="v.barcode" placeholder="12 díg."
+														<td><input type="text" inputmode="numeric" maxlength="12" class="prod__inp prod__inp--code mono" x-model="v.barcode" placeholder="<?php echo esc_attr__( '12 digits', 'keytill' ); ?>"
 															@keydown.enter="$event.target.blur()" @blur="saveField(v, 'barcode')" autocomplete="off" /></td>
 														<td class="n"><input type="text" inputmode="decimal" class="prod__inp mono" x-model="v.regular_price"
 															@keydown.enter="$event.target.blur()" @blur="saveField(v, 'regular_price')" /></td>
@@ -1312,7 +1312,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 									<div class="cb__move"><span class="cb__move-in">+ <span x-text="money(d.amount)"></span></span><span class="cb__move-c" x-text="d.concept || 'Ingreso'"></span><span class="mono muted" x-text="d.at"></span></div>
 								</template>
 								<template x-for="(w, i) in cash.withdrawals" :key="'w'+i">
-									<div class="cb__move"><span class="cb__move-out">− <span x-text="money(w.amount)"></span></span><span class="cb__move-c" x-text="w.reason || 'Retiro'"></span><span class="mono muted" x-text="w.at"></span></div>
+									<div class="cb__move"><span class="cb__move-out">− <span x-text="money(w.amount)"></span></span><span class="cb__move-c" x-text="w.reason || keytillT( 'Withdrawal' )"></span><span class="mono muted" x-text="w.at"></span></div>
 								</template>
 							</div>
 						</template>
@@ -1357,7 +1357,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 								<template x-for="(m, i) in digital.moves" :key="'m'+i">
 									<div class="cb__move">
 										<span :class="m.kind === 'ingreso' ? 'cb__move-in' : 'cb__move-out'" x-text="(m.kind === 'ingreso' ? '+ ' : '− ') + money(m.amount)"></span>
-										<span class="cb__move-c" x-text="m.concept || (m.kind === 'ingreso' ? 'Ingreso' : 'Retiro')"></span>
+										<span class="cb__move-c" x-text="m.concept || (m.kind === 'ingreso' ? keytillT( 'Deposit' ) : keytillT( 'Withdrawal' ))"></span>
 										<span class="mono muted" x-text="m.at"></span>
 									</div>
 								</template>
@@ -1510,7 +1510,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<div class="pay__head">
 				<span class="pay__title">COBRO</span>
 				<span class="mono pay__hint"
-					x-text="payStage === 'seller' ? 'Elegí vendedor · 1·2·3… o flechas · ENTER' : (payStage === 'credit' ? 'Código de crédito · ENTER valida' : (payStage === 'amount' ? (isCash() ? 'Efectivo · tipeá lo recibido' : (chargeTotal() <= 0 ? 'Sin saldo a cobrar · ENTER confirma' : 'Enter para confirmar')) : (chargeTotal() <= 0 ? 'Bonificado · ENTER confirma' : 'Elegí 1·2·3·4 · C crédito')))"></span>
+					x-text="payStage === 'seller' ? keytillT( 'Choose the salesperson · 1·2·3… or arrows · ENTER' ) : (payStage === 'credit' ? keytillT( 'Credit code · ENTER validates' ) : (payStage === 'amount' ? (isCash() ? keytillT( 'Cash · type what you received' ) : (chargeTotal() <= 0 ? keytillT( 'Nothing left to charge · ENTER confirms' ) : keytillT( 'ENTER to confirm' ))) : (chargeTotal() <= 0 ? keytillT( 'Comped · ENTER confirms' ) : keytillT( 'Choose a method by number · C credit' ))))"></span>
 				<span class="mono pay__esc">ESC volver</span>
 			</div>
 
@@ -1583,7 +1583,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					</div>
 					<div class="pay__pad">
 						<span class="mono pay__pad-label"
-							x-text="payStage === 'amount' ? (isCash() ? 'RECIBIDO' : 'IMPORTE') : 'ESPERANDO MEDIO'"></span>
+							x-text="payStage === 'amount' ? (isCash() ? keytillT( 'TENDERED' ) : keytillT( 'AMOUNT' )) : keytillT( 'WAITING FOR METHOD' )"></span>
 						<span class="mono pay__pad-value"
 							x-text="payStage === 'amount' ? (isCash() ? money(recibido()) : money(chargeTotal())) : '—'"></span>
 					</div>
@@ -1604,7 +1604,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 
 					<div class="pay__enter" x-show="!$store.pos.touch">
 						<kbd class="kbd-brand">ENTER</kbd>
-						<span x-text="payStage === 'amount' ? (vuelto() < 0 ? 'falta efectivo' : 'confirmar venta') : (chargeTotal() <= 0 ? 'confirmar venta' : 'usar el medio resaltado')"></span>
+						<span x-text="payStage === 'amount' ? (vuelto() < 0 ? keytillT( 'not enough cash' ) : keytillT( 'confirm sale' )) : (chargeTotal() <= 0 ? keytillT( 'confirm sale' ) : keytillT( 'use the highlighted method' ))"></span>
 					</div>
 
 					<!-- Acciones táctiles del cobro -->
@@ -2071,7 +2071,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 					<div class="stockfix__item">
 						<div class="stockfix__head">
 							<span class="stockfix__name" x-text="it.name"></span>
-							<span class="mono muted" x-text="'sin stock en ' + it.branch_name + ' (hay ' + it.have + ', pedís ' + it.need + ')'"></span>
+							<span class="mono muted" x-text="keytillT( 'out of stock at %1$s (available %2$s, requested %3$s)', it.branch_name, it.have, it.need )"></span>
 						</div>
 						<div class="stockfix__opts">
 							<button type="button" class="stockfix__opt" :class="{ 'is-on': stockChoiceIs(idx, 'force') }"
@@ -2132,7 +2132,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 	<!-- ================= RETIRO DE EFECTIVO ================= -->
 	<div class="keytill-modal" x-show="mode === 'withdraw'" x-cloak>
 		<div class="keytill-modal__card cash-modal">
-			<span class="modal__title" x-text="withdrawAccount === 'digital' ? 'RETIRO · CAJA DIGITAL' : 'RETIRO · EFECTIVO'"></span>
+			<span class="modal__title" x-text="withdrawAccount === 'digital' ? keytillT( 'WITHDRAWAL · DIGITAL REGISTER' ) : keytillT( 'WITHDRAWAL · CASH' )"></span>
 			<span class="mono modal__sub"><?php esc_html_e( 'Amount and reason · TAB between fields · ENTER confirm · ESC cancel', 'keytill' ); ?></span>
 			<div class="return-method" x-show="$store.pos.canManage" x-cloak>
 				<span class="return-method__label">ORIGEN</span>

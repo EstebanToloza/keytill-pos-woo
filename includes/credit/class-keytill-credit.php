@@ -840,7 +840,7 @@ class KEYTILL_Credit {
 			$base = $row->expires_at ? $row->expires_at : current_time( 'mysql' );
 			$new  = gmdate( 'Y-m-d H:i:s', strtotime( $base . ' +30 days' ) );
 			$wpdb->update( self::table(), array( 'expires_at' => $new, 'updated_at' => current_time( 'mysql' ) ), array( 'id' => $id ), array( '%s', '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			self::log( $id, 'adjust', 0, (float) $row->balance, array( 'channel' => 'admin', 'cajero_id' => get_current_user_id(), 'note' => 'Vencimiento +30 días' ) );
+			self::log( $id, 'adjust', 0, (float) $row->balance, array( 'channel' => 'admin', 'cajero_id' => get_current_user_id(), 'note' => 'Expiry +30 days' ) );
 		}
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=keytill-credits' ) );
 		exit;

@@ -30,8 +30,16 @@ HANDLES = {
     'keytill-cashbank': 'assets/js/pos-cashbank.js',
 }
 
+# Los templates traducen desde las expresiones de Alpine con keytillT(), que
+# vive en pos.js: sus mensajes van al catálogo del handle de la app.
+TEMPLATE_HANDLE = 'keytill-app'
+TEMPLATES = ('templates/pos-app.php',)
+
 # __( 'texto', 'keytill' ) — también dentro de sprintf()
 PAT = re.compile(r"__\(\s*(['\"])((?:\\.|(?!\1)[^\\])*?)\1\s*,\s*['\"]keytill['\"]\s*\)")
+
+# keytillT( 'texto' [, args...] ) en los atributos Alpine de los templates
+PAT_T = re.compile(r"keytillT\(\s*'((?:\\.|[^'\\])*)'")
 
 _ESC = {'n': '\n', 't': '\t', 'r': '\r', 'b': '\b', 'f': '\f', 'v': '\v',
         '0': '\0', '\\': '\\', "'": "'", '"': '"', '\n': ''}
@@ -81,8 +89,15 @@ def main():
     stamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S+00:00')
     total, missing = 0, []
 
+    tpl_ids = set()
+    for rel in TEMPLATES:
+        src = open(os.path.join(ROOT, rel), encoding='utf-8').read()
+        tpl_ids |= {js_unescape(m.group(1)) for m in PAT_T.finditer(src)}
+
     for handle, rel in HANDLES.items():
         ids = msgids(os.path.join(ROOT, rel))
+        if handle == TEMPLATE_HANDLE:
+            ids |= tpl_ids
         msgs = {'': {'domain': 'messages',
                      'lang': LOCALE,
                      'plural-forms': 'nplurals=2; plural=n != 1;'}}

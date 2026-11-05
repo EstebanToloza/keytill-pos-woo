@@ -401,7 +401,7 @@ class KEYTILL_Credit_Web {
 				'order_id'  => $order->get_id(),
 				'channel'   => 'web',
 				'cajero_id' => 0,
-				'note'      => 'Re-débito al pagarse la orden tras un fallo',
+				'note'      => 'Re-debited when the order was paid after a failure',
 			)
 		);
 	}
@@ -437,7 +437,7 @@ class KEYTILL_Credit_Web {
 				'order_id'  => $order->get_id(),
 				'channel'   => 'web',
 				'cajero_id' => 0,
-				'note'      => 'Reintegro por orden ' . $order->get_status(),
+				'note'      => 'Refunded, order ' . $order->get_status(),
 			)
 		);
 

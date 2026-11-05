@@ -180,11 +180,11 @@ class KEYTILL_Labels {
 		$notices = array();
 		if ( $dropped_cap > 0 ) {
 			/* translators: %d: cantidad de productos que no entraron por el tope. */
-			$notices[] = sprintf( _n( '%d producto no entró por el tope del lote.', '%d productos no entraron por el tope del lote.', $dropped_cap, 'keytill' ), $dropped_cap );
+			$notices[] = sprintf( _n( '%d product did not fit within the batch limit.', '%d products did not fit within the batch limit.', $dropped_cap, 'keytill' ), $dropped_cap );
 		}
 		if ( $no_barcode > 0 ) {
 			/* translators: %d: cantidad de productos sin código de barras. */
-			$notices[] = sprintf( _n( '%d producto se salteó por no tener código de barras.', '%d productos se saltearon por no tener código de barras.', $no_barcode, 'keytill' ), $no_barcode );
+			$notices[] = sprintf( _n( '%d product was skipped for having no barcode.', '%d products were skipped for having no barcode.', $no_barcode, 'keytill' ), $no_barcode );
 		}
 
 		self::render_sheet( $units, array( 'qty_control' => false, 'notice' => implode( ' ', $notices ) ) );
@@ -266,7 +266,7 @@ class KEYTILL_Labels {
 		}
 		$title = $qty_control && isset( $opts['code'] )
 			? sprintf( __( 'Labels %1$s (%2$d)', 'keytill' ), $opts['code'], $total )
-			: sprintf( _n( 'Etiquetas (%d)', 'Etiquetas (%d)', $total, 'keytill' ), $total );
+			: sprintf( _n( 'Label (%d)', 'Labels (%d)', $total, 'keytill' ), $total );
 
 		header( 'Content-Type: text/html; charset=utf-8' );
 		?>
@@ -341,7 +341,7 @@ class KEYTILL_Labels {
 			</span>
 			<span class="muted"><?php echo esc_html( sprintf( __( '%1$d labels · %2$s · 3.5 × 3.5 cm', 'keytill' ), $total, isset( $opts['code'] ) ? $opts['code'] : '' ) ); ?></span>
 		<?php else : ?>
-			<span class="muted"><?php echo esc_html( sprintf( _n( '%1$d etiqueta · %2$d producto · 3,5 × 3,5 cm', '%1$d etiquetas · %2$d productos · 3,5 × 3,5 cm', $total, 'keytill' ), $total, count( $units ) ) ); ?></span>
+			<span class="muted"><?php echo esc_html( sprintf( _n( '%1$d label · %2$d product · 3.5 × 3.5 cm', '%1$d labels · %2$d products · 3.5 × 3.5 cm', $total, 'keytill' ), $total, count( $units ) ) ); ?></span>
 		<?php endif; ?>
 	</div>
 	<?php if ( ! empty( $opts['notice'] ) ) : ?>

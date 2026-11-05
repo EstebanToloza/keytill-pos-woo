@@ -83,7 +83,7 @@ class KEYTILL_Settings {
 		);
 	}
 
-	/** Etiqueta de la caja (ej. "CAJA 01"). */
+	/** Etiqueta de la caja (ej. "REGISTER 01"). */
 	public static function register_label() {
 		$v = self::get( 'register_label' );
 		return '' !== $v ? $v : __( 'REGISTER 01', 'keytill' );
@@ -494,7 +494,7 @@ class KEYTILL_Settings {
 				<table class="form-table" role="presentation">
 					<tr>
 						<th scope="row"><label for="keytill_register_label"><?php esc_html_e( 'Register label', 'keytill' ); ?></label></th>
-						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[register_label]" id="keytill_register_label" type="text" class="regular-text" value="<?php echo esc_attr( $opt['register_label'] ); ?>" placeholder="CAJA 01" /></td>
+						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[register_label]" id="keytill_register_label" type="text" class="regular-text" value="<?php echo esc_attr( $opt['register_label'] ); ?>" placeholder="<?php echo esc_attr__( 'REGISTER 01', 'keytill' ); ?>" /></td>
 					</tr>
 				</table>
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-05 19:00\n"
+"POT-Creation-Date: 2026-11-05 19:11\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,6 +24,12 @@ msgstr " (se quitó el descuento general)"
 msgid " · credit %s"
 msgstr " · crédito %s"
 
+msgid "%1$d label · %2$d product · 3.5 × 3.5 cm"
+msgstr "%1$d etiqueta · %2$d producto · 3,5 × 3,5 cm"
+
+msgid "%1$d labels · %2$d products · 3.5 × 3.5 cm"
+msgstr "%1$d etiquetas · %2$d productos · 3,5 × 3,5 cm"
+
 msgid "%1$d labels · %2$s · 3.5 × 3.5 cm"
 msgstr "%1$d etiquetas · %2$s · 3,5 × 3,5 cm"
 
@@ -44,6 +50,18 @@ msgstr "%d borrada(s)"
 
 msgid "%d new"
 msgstr "%d nueva(s)"
+
+msgid "%d product did not fit within the batch limit."
+msgstr "%d producto no entró por el tope del lote."
+
+msgid "%d product was skipped for having no barcode."
+msgstr "%d producto se salteó por no tener código de barras."
+
+msgid "%d products did not fit within the batch limit."
+msgstr "%d productos no entraron por el tope del lote."
+
+msgid "%d products were skipped for having no barcode."
+msgstr "%d productos se saltearon por no tener código de barras."
 
 msgid "%s: no discount"
 msgstr "%s: sin descuento"
@@ -85,13 +103,19 @@ msgid "0 = no limit. Maximum amount a cashier can load on an open-amount gift ca
 msgstr "0 = sin tope. Monto máximo que un cajero puede cargar en una gift card de monto libre en el POS."
 
 msgid "12 digits"
-msgstr "12 dígitos"
+msgstr "12 díg."
 
 msgid "12 digits."
 msgstr "12 dígitos."
 
 msgid "12 digits. Used to scan at the POS and print labels."
 msgstr "12 dígitos. Sirve para escanear en el POS e imprimir etiquetas."
+
+msgid "30 days"
+msgstr "30 días"
+
+msgid "7 days"
+msgstr "7 días"
 
 msgid "A customer with that email already exists."
 msgstr "Ya existe un cliente con ese email."
@@ -276,6 +300,9 @@ msgstr "Ventas en efectivo"
 msgid "Cash to return from the drawer"
 msgstr "Efectivo a devolver del cajón"
 
+msgid "Cash · type what you received"
+msgstr "Efectivo · tipeá lo recibido"
+
 msgid "Cashier"
 msgstr "Cajero"
 
@@ -296,6 +323,9 @@ msgstr "Elegí un rango de fechas (Desde y Hasta) para exportar."
 
 msgid "Choose a location."
 msgstr "Elegí una sucursal."
+
+msgid "Choose a method by number · C credit"
+msgstr "Elegí el medio por número · C crédito"
 
 msgid "Choose a payment method for the remainder"
 msgstr "Elegí un medio de pago para el resto"
@@ -338,6 +368,9 @@ msgstr "Elegí la sucursal de la caja"
 
 msgid "Choose the register's location."
 msgstr "Elegí la sucursal de la caja."
+
+msgid "Choose the salesperson · 1·2·3… or arrows · ENTER"
+msgstr "Elegí vendedor · 1·2·3… o flechas · ENTER"
 
 msgid "Choose where each item comes from"
 msgstr "Elegí de dónde descontar cada prenda"
@@ -383,6 +416,9 @@ msgstr "Bonificado"
 
 msgid "Comped (100%)"
 msgstr "Bonificado (100%)"
+
+msgid "Comped · ENTER confirms"
+msgstr "Bonificado · ENTER confirma"
 
 msgid "Confirm and charge"
 msgstr "Confirmar y cobrar"
@@ -515,6 +551,9 @@ msgstr "Crédito %1$s · aplica %2$s"
 
 msgid "Credit code does not exist."
 msgstr "Código de crédito inexistente."
+
+msgid "Credit code · ENTER validates"
+msgstr "Código de crédito · ENTER valida"
 
 msgid "Credit not found"
 msgstr "Crédito no encontrado"
@@ -671,6 +710,9 @@ msgstr "Descargar CSV para Excel"
 
 msgid "E.g. birthday gift"
 msgstr "Ej: regalo cumpleaños"
+
+msgid "ENTER to confirm"
+msgstr "Enter para confirmar"
 
 msgid "Edit product"
 msgstr "Editar producto"
@@ -915,11 +957,17 @@ msgstr "Keytill POS necesita WooCommerce activo para funcionar."
 msgid "Keytill — Full screen"
 msgstr "Keytill — Pantalla completa"
 
+msgid "Label (%d)"
+msgstr "Etiqueta (%d)"
+
 msgid "Labels"
 msgstr "Etiquetas"
 
 msgid "Labels %1$s (%2$d)"
 msgstr "Etiquetas %1$s (%2$d)"
+
+msgid "Labels (%d)"
+msgstr "Etiquetas (%d)"
 
 msgid "Line removed: %s"
 msgstr "Línea quitada: %s"
@@ -1164,6 +1212,9 @@ msgstr "Documento no válido como factura. ¡Gracias por su compra!"
 msgid "Note (optional)"
 msgstr "Nota (opcional)"
 
+msgid "Nothing left to charge · ENTER confirms"
+msgstr "Sin saldo a cobrar · ENTER confirma"
+
 msgid "Nothing was generated: resolve the leftover variations first."
 msgstr "No se generó nada: primero resolvé las variaciones que sobran."
 
@@ -1403,6 +1454,9 @@ msgstr "Actualizar"
 
 msgid "Refund"
 msgstr "Devolución"
+
+msgid "Refund #%s"
+msgstr "Devolución #%s"
 
 msgid "Refund for sale #%s"
 msgstr "Devolución de la venta #%s"
@@ -1710,6 +1764,9 @@ msgstr "Montos sugeridos separados por coma. Se ofrecen como opciones rápidas e
 msgid "TAB switches % / amount · ENTER apply · ESC cancel"
 msgstr "TAB cambia % / monto · ENTER aplica · ESC cancela"
 
+msgid "TENDERED"
+msgstr "RECIBIDO"
+
 msgid "TOTAL"
 msgstr "TOTAL"
 
@@ -1893,6 +1950,9 @@ msgstr "Hacia"
 msgid "To save a customer, enter at least an email or a tax ID."
 msgstr "Para guardar un cliente cargá al menos email o documento."
 
+msgid "Today"
+msgstr "Hoy"
+
 msgid "Too many variations (max %d). Reduce values or create them in WooCommerce."
 msgstr "Demasiadas variaciones (máx %d). Reducí valores o cargalas en Woo."
 
@@ -1989,11 +2049,20 @@ msgstr "Anulado"
 msgid "Voucher %s"
 msgstr "Voucher %s"
 
+msgid "WAITING FOR METHOD"
+msgstr "ESPERANDO MEDIO"
+
 msgid "WARNING: the credit %2$s could not be re-debited for %1$s when the order was paid (insufficient balance). Please review manually."
 msgstr "ATENCIÓN: no se pudo re-debitar el crédito %2$s por %1$s al pagarse la orden (saldo insuficiente). Revisar manualmente."
 
 msgid "WHICH ITEM?"
 msgstr "¿QUÉ PRENDA?"
+
+msgid "WITHDRAWAL · CASH"
+msgstr "RETIRO · EFECTIVO"
+
+msgid "WITHDRAWAL · DIGITAL REGISTER"
+msgstr "RETIRO · CAJA DIGITAL"
 
 msgid "Walk-in customer"
 msgstr "Consumidor final"
@@ -2103,6 +2172,9 @@ msgstr "volver"
 msgid "back to opening"
 msgstr "volver a apertura"
 
+msgid "barcode / product name…"
+msgstr "código de barras / nombre del producto…"
+
 msgid "cash count"
 msgstr "arqueo de efectivo"
 
@@ -2114,6 +2186,9 @@ msgstr "cerrar caja"
 
 msgid "closed"
 msgstr "cerrada"
+
+msgid "confirm sale"
+msgstr "confirmar venta"
 
 msgid "continue"
 msgstr "continuar"
@@ -2157,6 +2232,12 @@ msgstr "movimientos"
 msgid "net"
 msgstr "neto"
 
+msgid "no details · F4 to add"
+msgstr "sin datos · F4 para cargar"
+
+msgid "no details · tap «Customer»"
+msgstr "sin datos · tocá «Cliente»"
+
 msgid "no expiry"
 msgstr "sin venc."
 
@@ -2166,11 +2247,17 @@ msgstr "sin imagen"
 msgid "no price set"
 msgstr "sin precio cargado"
 
+msgid "no tax details"
+msgstr "sin datos fiscales"
+
 msgid "no values yet"
 msgstr "sin valores aún"
 
 msgid "not available for sale"
 msgstr "no disponible para la venta"
+
+msgid "not enough cash"
+msgstr "falta efectivo"
 
 msgid "not managed"
 msgstr "sin gestionar"
@@ -2195,6 +2282,9 @@ msgstr "pedidos"
 
 msgid "out of stock"
 msgstr "sin stock"
+
+msgid "out of stock at %1$s (available %2$s, requested %3$s)"
+msgstr "sin stock en %1$s (hay %2$s, pedís %3$s)"
 
 msgid "per variation"
 msgstr "por variación"
@@ -2243,6 +2333,9 @@ msgstr "total"
 
 msgid "total spent"
 msgstr "total gastado"
+
+msgid "use the highlighted method"
+msgstr "usar el medio resaltado"
 
 msgid "use this customer"
 msgstr "usar este cliente"

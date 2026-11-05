@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-05 19:00\n"
+"POT-Creation-Date: 2026-11-05 19:11\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,6 +24,12 @@ msgstr ""
 msgid " · credit %s"
 msgstr ""
 
+msgid "%1$d label · %2$d product · 3.5 × 3.5 cm"
+msgstr ""
+
+msgid "%1$d labels · %2$d products · 3.5 × 3.5 cm"
+msgstr ""
+
 msgid "%1$d labels · %2$s · 3.5 × 3.5 cm"
 msgstr ""
 
@@ -43,6 +49,18 @@ msgid "%d deleted"
 msgstr ""
 
 msgid "%d new"
+msgstr ""
+
+msgid "%d product did not fit within the batch limit."
+msgstr ""
+
+msgid "%d product was skipped for having no barcode."
+msgstr ""
+
+msgid "%d products did not fit within the batch limit."
+msgstr ""
+
+msgid "%d products were skipped for having no barcode."
 msgstr ""
 
 msgid "%s: no discount"
@@ -91,6 +109,12 @@ msgid "12 digits."
 msgstr ""
 
 msgid "12 digits. Used to scan at the POS and print labels."
+msgstr ""
+
+msgid "30 days"
+msgstr ""
+
+msgid "7 days"
 msgstr ""
 
 msgid "A customer with that email already exists."
@@ -276,6 +300,9 @@ msgstr ""
 msgid "Cash to return from the drawer"
 msgstr ""
 
+msgid "Cash · type what you received"
+msgstr ""
+
 msgid "Cashier"
 msgstr ""
 
@@ -295,6 +322,9 @@ msgid "Choose a date range (From and To) to export."
 msgstr ""
 
 msgid "Choose a location."
+msgstr ""
+
+msgid "Choose a method by number · C credit"
 msgstr ""
 
 msgid "Choose a payment method for the remainder"
@@ -337,6 +367,9 @@ msgid "Choose the register's location"
 msgstr ""
 
 msgid "Choose the register's location."
+msgstr ""
+
+msgid "Choose the salesperson · 1·2·3… or arrows · ENTER"
 msgstr ""
 
 msgid "Choose where each item comes from"
@@ -382,6 +415,9 @@ msgid "Comped"
 msgstr ""
 
 msgid "Comped (100%)"
+msgstr ""
+
+msgid "Comped · ENTER confirms"
 msgstr ""
 
 msgid "Confirm and charge"
@@ -514,6 +550,9 @@ msgid "Credit %1$s · applies %2$s"
 msgstr ""
 
 msgid "Credit code does not exist."
+msgstr ""
+
+msgid "Credit code · ENTER validates"
 msgstr ""
 
 msgid "Credit not found"
@@ -670,6 +709,9 @@ msgid "Download CSV for Excel"
 msgstr ""
 
 msgid "E.g. birthday gift"
+msgstr ""
+
+msgid "ENTER to confirm"
 msgstr ""
 
 msgid "Edit product"
@@ -915,10 +957,16 @@ msgstr ""
 msgid "Keytill — Full screen"
 msgstr ""
 
+msgid "Label (%d)"
+msgstr ""
+
 msgid "Labels"
 msgstr ""
 
 msgid "Labels %1$s (%2$d)"
+msgstr ""
+
+msgid "Labels (%d)"
 msgstr ""
 
 msgid "Line removed: %s"
@@ -1164,6 +1212,9 @@ msgstr ""
 msgid "Note (optional)"
 msgstr ""
 
+msgid "Nothing left to charge · ENTER confirms"
+msgstr ""
+
 msgid "Nothing was generated: resolve the leftover variations first."
 msgstr ""
 
@@ -1402,6 +1453,9 @@ msgid "Refresh"
 msgstr ""
 
 msgid "Refund"
+msgstr ""
+
+msgid "Refund #%s"
 msgstr ""
 
 msgid "Refund for sale #%s"
@@ -1710,6 +1764,9 @@ msgstr ""
 msgid "TAB switches % / amount · ENTER apply · ESC cancel"
 msgstr ""
 
+msgid "TENDERED"
+msgstr ""
+
 msgid "TOTAL"
 msgstr ""
 
@@ -1893,6 +1950,9 @@ msgstr ""
 msgid "To save a customer, enter at least an email or a tax ID."
 msgstr ""
 
+msgid "Today"
+msgstr ""
+
 msgid "Too many variations (max %d). Reduce values or create them in WooCommerce."
 msgstr ""
 
@@ -1989,10 +2049,19 @@ msgstr ""
 msgid "Voucher %s"
 msgstr ""
 
+msgid "WAITING FOR METHOD"
+msgstr ""
+
 msgid "WARNING: the credit %2$s could not be re-debited for %1$s when the order was paid (insufficient balance). Please review manually."
 msgstr ""
 
 msgid "WHICH ITEM?"
+msgstr ""
+
+msgid "WITHDRAWAL · CASH"
+msgstr ""
+
+msgid "WITHDRAWAL · DIGITAL REGISTER"
 msgstr ""
 
 msgid "Walk-in customer"
@@ -2103,6 +2172,9 @@ msgstr ""
 msgid "back to opening"
 msgstr ""
 
+msgid "barcode / product name…"
+msgstr ""
+
 msgid "cash count"
 msgstr ""
 
@@ -2113,6 +2185,9 @@ msgid "close register"
 msgstr ""
 
 msgid "closed"
+msgstr ""
+
+msgid "confirm sale"
 msgstr ""
 
 msgid "continue"
@@ -2157,6 +2232,12 @@ msgstr ""
 msgid "net"
 msgstr ""
 
+msgid "no details · F4 to add"
+msgstr ""
+
+msgid "no details · tap «Customer»"
+msgstr ""
+
 msgid "no expiry"
 msgstr ""
 
@@ -2166,10 +2247,16 @@ msgstr ""
 msgid "no price set"
 msgstr ""
 
+msgid "no tax details"
+msgstr ""
+
 msgid "no values yet"
 msgstr ""
 
 msgid "not available for sale"
+msgstr ""
+
+msgid "not enough cash"
 msgstr ""
 
 msgid "not managed"
@@ -2194,6 +2281,9 @@ msgid "orders"
 msgstr ""
 
 msgid "out of stock"
+msgstr ""
+
+msgid "out of stock at %1$s (available %2$s, requested %3$s)"
 msgstr ""
 
 msgid "per variation"
@@ -2242,6 +2332,9 @@ msgid "total"
 msgstr ""
 
 msgid "total spent"
+msgstr ""
+
+msgid "use the highlighted method"
 msgstr ""
 
 msgid "use this customer"

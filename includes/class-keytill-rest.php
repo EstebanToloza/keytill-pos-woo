@@ -2838,7 +2838,7 @@ class KEYTILL_REST {
 					'type'         => 'devolucion',
 					'account'      => $acc,
 					'amount'       => round( $amt, 2 ),
-					'detail'       => 'Devolución #' . $o->get_order_number(),
+					'detail'       => sprintf( __( 'Refund #%s', 'keytill' ), $o->get_order_number() ),
 					'order_id'     => 0,
 					'verification' => '',
 				);

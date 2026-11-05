@@ -13,14 +13,14 @@ defined( 'ABSPATH' ) || exit;
 class KEYTILL_CLI {
 
 	/**
-	 * Carga los productos demo del prototipo. Idempotente: si el SKU ya existe,
-	 * actualiza el producto en vez de duplicarlo.
+	 * Loads the demo products. Idempotent: if the SKU already exists the product
+	 * is updated instead of duplicated.
 	 *
 	 * ## OPTIONS
 	 *
 	 * [--force]
-	 * : Reescribe nombre/precio/stock/categoría de los productos ya existentes.
-	 *   Sin este flag, los existentes se dejan intactos (solo informa).
+	 * : Overwrite name/price/stock/category of products that already exist.
+	 *   Without this flag existing products are left untouched (just reported).
 	 *
 	 * ## EXAMPLES
 	 *
@@ -34,7 +34,7 @@ class KEYTILL_CLI {
 	 */
 	public function seed_demo( $args, $assoc_args ) {
 		if ( ! function_exists( 'wc_get_product' ) ) {
-			WP_CLI::error( 'WooCommerce no está activo.' );
+			WP_CLI::error( 'WooCommerce is not active.' );
 		}
 
 		require_once KEYTILL_DIR . 'includes/keytill-demo-products.php';
@@ -51,7 +51,7 @@ class KEYTILL_CLI {
 
 			if ( $existing_id && ! $force ) {
 				++$skipped;
-				WP_CLI::log( "· ya existe (SKU {$sku}): {$data['name']}" );
+				WP_CLI::log( "· already exists (SKU {$sku}): {$data['name']}" );
 				continue;
 			}
 
@@ -71,16 +71,16 @@ class KEYTILL_CLI {
 
 			if ( $existing_id ) {
 				++$updated;
-				WP_CLI::log( "↻ actualizado (SKU {$sku}): {$data['name']}" );
+				WP_CLI::log( "↻ updated (SKU {$sku}): {$data['name']}" );
 			} else {
 				++$created;
-				WP_CLI::log( "＋ creado (SKU {$sku}): {$data['name']}  ·  stock {$data['stock']}" );
+				WP_CLI::log( "＋ created (SKU {$sku}): {$data['name']}  ·  stock {$data['stock']}" );
 			}
 		}
 
 		WP_CLI::success(
 			sprintf(
-				'Seed demo listo — %d creados, %d actualizados, %d sin tocar (total catálogo: %d).',
+				'Demo seed done — %d created, %d updated, %d left untouched (catalog total: %d).',
 				$created,
 				$updated,
 				$skipped,

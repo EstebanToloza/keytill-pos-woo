@@ -1,5 +1,5 @@
 {
- "translation-revision-date": "2026-11-05 22:00:35+00:00",
+ "translation-revision-date": "2026-11-05 22:11:15+00:00",
  "generator": "keytill tools/make_json.py",
  "domain": "messages",
  "locale_data": {
@@ -33,14 +33,32 @@
    "%s: out of stock": [
     "%s: sin stock"
    ],
+   "30 days": [
+    "30 días"
+   ],
+   "7 days": [
+    "7 días"
+   ],
    "A customer with those details already exists.": [
     "Ya existe un cliente con esos datos."
+   ],
+   "AMOUNT": [
+    "MONTO"
+   ],
+   "All": [
+    "Todos"
    ],
    "Available at %s": [
     "Disponible en sucursal %s"
    ],
    "Camera permission denied. Enable it in the browser and retry.": [
     "Permiso de cámara denegado. Habilitalo en el navegador y reintentá."
+   ],
+   "Cash · type what you received": [
+    "Efectivo · tipeá lo recibido"
+   ],
+   "Choose a method by number · C credit": [
+    "Elegí el medio por número · C crédito"
    ],
    "Choose a payment method for the remainder": [
     "Elegí un medio de pago para el resto"
@@ -51,11 +69,17 @@
    "Choose the register's location": [
     "Elegí la sucursal de la caja"
    ],
+   "Choose the salesperson · 1·2·3… or arrows · ENTER": [
+    "Elegí vendedor · 1·2·3… o flechas · ENTER"
+   ],
    "Choose where each item comes from": [
     "Elegí de dónde descontar cada prenda"
    ],
    "Comped": [
     "Bonificado"
+   ],
+   "Comped · ENTER confirms": [
+    "Bonificado · ENTER confirma"
    ],
    "Could not load the camera reader.": [
     "No se pudo cargar el lector de cámara."
@@ -78,6 +102,9 @@
    "Credit %1$s · applies %2$s": [
     "Crédito %1$s · aplica %2$s"
    ],
+   "Credit code · ENTER validates": [
+    "Código de crédito · ENTER valida"
+   ],
    "Credit not found": [
     "Crédito no encontrado"
    ],
@@ -86,6 +113,9 @@
    ],
    "Customer: %s": [
     "Cliente: %s"
+   ],
+   "Deposit": [
+    "Ingreso"
    ],
    "Digital register open": [
     "Caja digital abierta"
@@ -104,6 +134,9 @@
    ],
    "Discount %s%%": [
     "Descuento %s%%"
+   ],
+   "ENTER to confirm": [
+    "Enter para confirmar"
    ],
    "Empty cart: nothing to charge": [
     "Carrito vacío: nada que cobrar"
@@ -180,6 +213,9 @@
    "Not enough cash": [
     "Efectivo insuficiente"
    ],
+   "Nothing left to charge · ENTER confirms": [
+    "Sin saldo a cobrar · ENTER confirma"
+   ],
    "Only the manager can close the register": [
     "Solo el encargado puede cerrar la caja"
    ],
@@ -243,6 +279,9 @@
    "Store credit": [
     "Crédito en tienda"
    ],
+   "TENDERED": [
+    "RECIBIDO"
+   ],
    "The camera needs a secure connection (HTTPS).": [
     "La cámara necesita una conexión segura (HTTPS)."
    ],
@@ -261,20 +300,59 @@
    "This device/browser does not allow camera use.": [
     "Este dispositivo/navegador no permite usar la cámara."
    ],
+   "Today": [
+    "Hoy"
+   ],
+   "WAITING FOR METHOD": [
+    "ESPERANDO MEDIO"
+   ],
+   "WITHDRAWAL · CASH": [
+    "RETIRO · EFECTIVO"
+   ],
+   "WITHDRAWAL · DIGITAL REGISTER": [
+    "RETIRO · CAJA DIGITAL"
+   ],
    "Walk-in customer": [
     "Consumidor final"
+   ],
+   "Withdrawal": [
+    "Retiro"
    ],
    "Withdrawal %s": [
     "Retiro %s"
    ],
+   "confirm sale": [
+    "confirmar venta"
+   ],
    "max %s": [
     "máx %s"
+   ],
+   "no details · F4 to add": [
+    "sin datos · F4 para cargar"
+   ],
+   "no details · tap «Customer»": [
+    "sin datos · tocá «Cliente»"
+   ],
+   "no tax details": [
+    "sin datos fiscales"
+   ],
+   "not enough cash": [
+    "falta efectivo"
    ],
    "out of stock": [
     "sin stock"
    ],
+   "out of stock at %1$s (available %2$s, requested %3$s)": [
+    "sin stock en %1$s (hay %2$s, pedís %3$s)"
+   ],
+   "per variation": [
+    "por variación"
+   ],
    "stock %s": [
     "stock %s"
+   ],
+   "use the highlighted method": [
+    "usar el medio resaltado"
    ]
   }
  }
