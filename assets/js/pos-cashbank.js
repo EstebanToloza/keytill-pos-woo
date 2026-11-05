@@ -24,7 +24,8 @@
 		} ).then( function ( r ) { return r.json().then( function ( d ) { return { ok: r.ok, status: r.status, data: d }; } ); } );
 	}
 
-	var fmt = new Intl.NumberFormat( 'es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2 } );
+	// Formato de precio: lo provee pos.js segun la config de WooCommerce.
+	function fmtMoney( n ) { return window.keytillMoney ? window.keytillMoney( n ) : String( Number( n ) || 0 ); }
 
 	function fmtDate( d ) {
 		var m = ( '0' + ( d.getMonth() + 1 ) ).slice( -2 );
@@ -85,7 +86,7 @@
 				} ).catch( function () { self.loading = false; self.error = 'No se pudo cargar.'; } );
 			},
 
-			money: function ( n ) { return fmt.format( Number( n ) || 0 ); },
+			money: function ( n ) { return fmtMoney( Number( n ) || 0 ); },
 
 			/* ---------- caja digital: abrir / cerrar ---------- */
 			openDigital: function () {

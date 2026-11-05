@@ -62,9 +62,9 @@
 		} );
 	}
 
+	// Formato de precio: lo provee pos.js según la config de WooCommerce.
 	function money( n ) {
-		var v = Number( n ) || 0;
-		return '$ ' + v.toLocaleString( 'es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 } );
+		return window.keytillMoney ? window.keytillMoney( n ) : String( Number( n ) || 0 );
 	}
 
 	function keytillProducts() {

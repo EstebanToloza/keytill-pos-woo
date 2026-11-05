@@ -3,7 +3,7 @@
    Pantalla de venta en Alpine, portada del prototipo
    (reference/POS Venta.dc.html). Comportamiento fiel:
    campo de comando siempre enfocado, re-foco por evento tras cada
-   acción, prefijo N*, carrito por teclado, cobro y formato es-AR.
+   acción, prefijo N*, carrito por teclado, cobro y formato de precio segun WooCommerce.
 
    Extras "esenciales" únicamente: sin beep ni panel de actividad/reloj.
    Lookup híbrido: catálogo precargado (escaneo instantáneo) + re-sync
@@ -14,6 +14,33 @@
 
 	var API = window.wpApiSettings || { root: '/wp-json/', nonce: '' };
 	var CONFIG = window.keytillConfig || { canManage: false };
+
+	/**
+	 * Formatea un importe según la configuración de precios de WooCommerce
+	 * (símbolo, decimales, separadores y posición), para que el POS muestre los
+	 * importes igual que la tienda en cualquier país/moneda.
+	 * Se expone como window.keytillMoney para reusarlo en las otras pestañas.
+	 */
+	function formatMoney( n ) {
+		var v = Number( n ) || 0;
+		var neg = v < 0;
+		var dec = ( CONFIG.decimals === undefined || CONFIG.decimals === null ) ? 2 : parseInt( CONFIG.decimals, 10 );
+		var dSep = ( CONFIG.decimalSep === undefined ) ? '.' : CONFIG.decimalSep;
+		var tSep = ( CONFIG.thousandSep === undefined ) ? ',' : CONFIG.thousandSep;
+		var sym = CONFIG.symbol || '$';
+		var parts = Math.abs( v ).toFixed( dec ).split( '.' );
+		parts[ 0 ] = parts[ 0 ].replace( /\B(?=(\d{3})+(?!\d))/g, tSep );
+		var num = parts.join( dSep );
+		var out;
+		switch ( CONFIG.currencyPos ) {
+			case 'right':       out = num + sym; break;
+			case 'right_space': out = num + ' ' + sym; break;
+			case 'left_space':  out = sym + ' ' + num; break;
+			default:            out = sym + num; // 'left'
+		}
+		return ( neg ? '-' : '' ) + out;
+	}
+	window.keytillMoney = formatMoney;
 
 	/* --------------------------------------------------------------
 	   Keeper del nonce REST. La pantalla del POS queda abierta muchas
@@ -535,10 +562,7 @@
 
 			/* ---------------- helpers ---------------- */
 			money: function ( n ) {
-				return '$ ' + new Intl.NumberFormat( 'es-AR', {
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-				} ).format( n || 0 );
+				return formatMoney( n );
 			},
 
 			// Stock disponible de un producto: número, o null = ilimitado

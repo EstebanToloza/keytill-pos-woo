@@ -588,6 +588,14 @@ function keytill_enqueue_assets() {
 			'sellers'      => KEYTILL_Sellers::front(),
 			'branches'     => KEYTILL_Branches::front(),
 			'ordersExport' => KEYTILL_Export::url(),
+			// Formato de precio: se toma de WooCommerce para que el POS muestre los
+			// importes igual que la tienda, en cualquier país/moneda.
+			'currency'     => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',
+			'symbol'       => function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol() ) : '$',
+			'decimals'     => function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2,
+			'decimalSep'   => function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '.',
+			'thousandSep'  => function_exists( 'wc_get_price_thousand_separator' ) ? wc_get_price_thousand_separator() : ',',
+			'currencyPos'  => get_option( 'woocommerce_currency_pos', 'left' ),
 		)
 	);
 }
