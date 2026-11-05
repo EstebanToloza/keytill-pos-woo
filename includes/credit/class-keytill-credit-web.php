@@ -16,9 +16,9 @@
  *   el POS: debitar antes de cobrar, revertir si el pago falla).
  * - Si la orden pasa a `failed`/`cancelled`, se **re-acredita** el saldo.
  *
- * Frontera limpia: este módulo solo usa la API pública de {@see HMPOS_Credit}.
+ * Frontera limpia: este módulo solo usa la API pública de {@see KEYTILL_Credit}.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Integración del crédito con el checkout web de WooCommerce.
  */
-class HMPOS_Credit_Web {
+class KEYTILL_Credit_Web {
 
 	/**
 	 * Base para el id del cupón virtual (evita colisión con posts reales).
@@ -35,22 +35,22 @@ class HMPOS_Credit_Web {
 	const COUPON_ID_BASE = 1000000000;
 
 	/** Meta en la orden: id del crédito canjeado. */
-	const META_ID = '_hmpos_credit_id';
+	const META_ID = '_keytill_credit_id';
 
 	/** Meta en la orden: código del crédito canjeado. */
-	const META_CODE = '_hmpos_credit_code';
+	const META_CODE = '_keytill_credit_code';
 
 	/** Meta en la orden: monto canjeado. */
-	const META_USED = '_hmpos_credit_used';
+	const META_USED = '_keytill_credit_used';
 
 	/** Meta en la orden: canal del canje. */
-	const META_CHANNEL = '_hmpos_credit_channel';
+	const META_CHANNEL = '_keytill_credit_channel';
 
 	/** Meta en la orden: estado del canje ('reserved' | 'released'). */
-	const META_STATE = '_hmpos_credit_state';
+	const META_STATE = '_keytill_credit_state';
 
 	/** Meta en la orden: marca de faltante (no se pudo re-debitar al pagar). */
-	const META_SHORTFALL = '_hmpos_credit_shortfall';
+	const META_SHORTFALL = '_keytill_credit_shortfall';
 
 	/**
 	 * Engancha los filtros/acciones de Woo.
@@ -96,7 +96,7 @@ class HMPOS_Credit_Web {
 	 * @return bool
 	 */
 	public static function is_credit_code( $code ) {
-		$code = HMPOS_Credit::normalize_code( $code );
+		$code = KEYTILL_Credit::normalize_code( $code );
 		return (bool) preg_match( '/^HM-[A-Z0-9]{4}-[A-Z0-9]{4}$/', $code );
 	}
 
@@ -117,7 +117,7 @@ class HMPOS_Credit_Web {
 		if ( ! self::is_credit_code( $code ) ) {
 			return $data;
 		}
-		$credit = HMPOS_Credit::get_by_code( $code );
+		$credit = KEYTILL_Credit::get_by_code( $code );
 		if ( ! $credit ) {
 			return $data; // No existe: que Woo diga "el cupón no existe".
 		}
@@ -127,7 +127,7 @@ class HMPOS_Credit_Web {
 
 		return array(
 			'id'                         => self::COUPON_ID_BASE + (int) $credit->id,
-			'code'                       => HMPOS_Credit::normalize_code( $code ),
+			'code'                       => KEYTILL_Credit::normalize_code( $code ),
 			'amount'                     => $amount,
 			'discount_type'              => 'fixed_cart',
 			'individual_use'             => false,
@@ -144,8 +144,8 @@ class HMPOS_Credit_Web {
 			'excluded_product_categories' => array(),
 			'date_expires'               => null, // El vencimiento lo validamos nosotros.
 			'meta_data'                  => array(
-				'_hmpos_credit'    => 1,
-				'_hmpos_credit_id' => (int) $credit->id,
+				'_keytill_credit'    => 1,
+				'_keytill_credit_id' => (int) $credit->id,
 			),
 		);
 	}
@@ -164,9 +164,9 @@ class HMPOS_Credit_Web {
 		if ( ! self::is_our_coupon( $coupon ) ) {
 			return $valid;
 		}
-		$credit = HMPOS_Credit::get_by_code( $coupon->get_code() );
-		if ( ! HMPOS_Credit::is_redeemable( $credit ) ) {
-			throw new Exception( esc_html( HMPOS_Credit::reason_not_redeemable( $credit ) ) );
+		$credit = KEYTILL_Credit::get_by_code( $coupon->get_code() );
+		if ( ! KEYTILL_Credit::is_redeemable( $credit ) ) {
+			throw new Exception( esc_html( KEYTILL_Credit::reason_not_redeemable( $credit ) ) );
 		}
 		return $valid;
 	}
@@ -181,7 +181,7 @@ class HMPOS_Credit_Web {
 	public static function coupon_label( $label, $coupon ) {
 		if ( self::is_our_coupon( $coupon ) ) {
 			/* translators: %s: código del crédito. */
-			return sprintf( __( 'Crédito en tienda (%s)', 'hm-pos' ), $coupon->get_code() );
+			return sprintf( __( 'Crédito en tienda (%s)', 'keytill' ), $coupon->get_code() );
 		}
 		return $label;
 	}
@@ -196,7 +196,7 @@ class HMPOS_Credit_Web {
 		if ( ! $coupon instanceof WC_Coupon ) {
 			return false;
 		}
-		if ( 1 === (int) $coupon->get_meta( '_hmpos_credit' ) ) {
+		if ( 1 === (int) $coupon->get_meta( '_keytill_credit' ) ) {
 			return true;
 		}
 		return self::is_credit_code( $coupon->get_code() );
@@ -236,7 +236,7 @@ class HMPOS_Credit_Web {
 		$error = self::reserve( $order );
 		if ( $error ) {
 			throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException(
-				'hmpos_credit_unavailable',
+				'keytill_credit_unavailable',
 				esc_html( $error ),
 				409
 			);
@@ -264,7 +264,7 @@ class HMPOS_Credit_Web {
 			if ( ! self::is_credit_code( $code ) ) {
 				continue;
 			}
-			$credit = HMPOS_Credit::get_by_code( $code );
+			$credit = KEYTILL_Credit::get_by_code( $code );
 			if ( ! $credit ) {
 				continue;
 			}
@@ -279,10 +279,10 @@ class HMPOS_Credit_Web {
 				continue;
 			}
 
-			$balance = HMPOS_Credit::debit( (int) $credit->id, $used );
+			$balance = KEYTILL_Credit::debit( (int) $credit->id, $used );
 			if ( false === $balance ) {
 				// Se agotó/venció entre la aplicación y el pago: abortar.
-				return HMPOS_Credit::reason_not_redeemable( HMPOS_Credit::get( (int) $credit->id ) );
+				return KEYTILL_Credit::reason_not_redeemable( KEYTILL_Credit::get( (int) $credit->id ) );
 			}
 
 			$order->update_meta_data( self::META_ID, (int) $credit->id );
@@ -292,7 +292,7 @@ class HMPOS_Credit_Web {
 			$order->update_meta_data( self::META_STATE, 'reserved' );
 			$order->save();
 
-			HMPOS_Credit::log(
+			KEYTILL_Credit::log(
 				(int) $credit->id,
 				'redeem',
 				-1 * $used,
@@ -308,7 +308,7 @@ class HMPOS_Credit_Web {
 			$order->add_order_note(
 				sprintf(
 					/* translators: 1: monto, 2: código de crédito. */
-					__( 'Crédito en tienda aplicado: %1$s (código %2$s).', 'hm-pos' ),
+					__( 'Crédito en tienda aplicado: %1$s (código %2$s).', 'keytill' ),
 					wp_strip_all_tags( wc_price( $used ) ),
 					$code
 				)
@@ -366,7 +366,7 @@ class HMPOS_Credit_Web {
 		}
 		$order = $r['order'];
 
-		$balance = HMPOS_Credit::debit( $r['credit_id'], $r['used'] );
+		$balance = KEYTILL_Credit::debit( $r['credit_id'], $r['used'] );
 		if ( false === $balance ) {
 			// La orden quedó pagada pero el saldo ya no alcanza (se gastó mientras
 			// estaba liberada). No se puede corregir en silencio: se marca para que
@@ -376,7 +376,7 @@ class HMPOS_Credit_Web {
 			$order->add_order_note(
 				sprintf(
 					/* translators: 1: monto, 2: código. */
-					__( 'ATENCIÓN: no se pudo re-debitar el crédito %2$s por %1$s al pagarse la orden (saldo insuficiente). Revisar manualmente.', 'hm-pos' ),
+					__( 'ATENCIÓN: no se pudo re-debitar el crédito %2$s por %1$s al pagarse la orden (saldo insuficiente). Revisar manualmente.', 'keytill' ),
 					wp_strip_all_tags( wc_price( $r['used'] ) ),
 					(string) $order->get_meta( self::META_CODE )
 				)
@@ -388,7 +388,7 @@ class HMPOS_Credit_Web {
 		$order->delete_meta_data( self::META_SHORTFALL );
 		$order->save();
 
-		HMPOS_Credit::log(
+		KEYTILL_Credit::log(
 			$r['credit_id'],
 			'redeem',
 			-1 * $r['used'],
@@ -416,7 +416,7 @@ class HMPOS_Credit_Web {
 		}
 		$order = $r['order'];
 
-		$balance = HMPOS_Credit::credit_back( $r['credit_id'], $r['used'] );
+		$balance = KEYTILL_Credit::credit_back( $r['credit_id'], $r['used'] );
 		if ( false === $balance ) {
 			return;
 		}
@@ -424,7 +424,7 @@ class HMPOS_Credit_Web {
 		$order->update_meta_data( self::META_STATE, 'released' );
 		$order->save();
 
-		HMPOS_Credit::log(
+		KEYTILL_Credit::log(
 			$r['credit_id'],
 			'reissue',
 			$r['used'],
@@ -440,7 +440,7 @@ class HMPOS_Credit_Web {
 		$order->add_order_note(
 			sprintf(
 				/* translators: 1: monto, 2: código de crédito. */
-				__( 'Crédito en tienda reintegrado: %1$s (código %2$s) por orden no completada.', 'hm-pos' ),
+				__( 'Crédito en tienda reintegrado: %1$s (código %2$s) por orden no completada.', 'keytill' ),
 				wp_strip_all_tags( wc_price( $r['used'] ) ),
 				(string) $order->get_meta( self::META_CODE )
 			)

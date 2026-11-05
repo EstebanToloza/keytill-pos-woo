@@ -8,20 +8,20 @@
  * uno en un rango de fechas.
  *
  * Los vendedores NO son usuarios de WordPress: son solo etiquetas de la venta.
- * Se guardan en una opción (`hmpos_sellers`) como lista de {id, name, active}.
- * En cada orden se registra `_hmpos_seller_id` + `_hmpos_seller` (nombre
+ * Se guardan en una opción (`keytill_sellers`) como lista de {id, name, active}.
+ * En cada orden se registra `_keytill_seller_id` + `_keytill_seller` (nombre
  * "congelado" al momento de la venta, para preservar el histórico si luego se
  * renombra o se quita el vendedor).
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Sellers {
+class KEYTILL_Sellers {
 
 	/** Opción con la lista de vendedores. */
-	const OPTION = 'hmpos_sellers';
+	const OPTION = 'keytill_sellers';
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menus' ), 10 );
@@ -84,7 +84,7 @@ class HMPOS_Sellers {
 	 * ------------------------------------------------------------------ */
 
 	public static function register_settings() {
-		register_setting( 'hmpos_sellers_group', self::OPTION, array( __CLASS__, 'sanitize' ) );
+		register_setting( 'keytill_sellers_group', self::OPTION, array( __CLASS__, 'sanitize' ) );
 	}
 
 	/**
@@ -128,19 +128,19 @@ class HMPOS_Sellers {
 
 	public static function register_menus() {
 		add_submenu_page(
-			HMPOS_Settings::MENU,
-			__( 'Vendedores', 'hm-pos' ),
-			__( 'Vendedores', 'hm-pos' ),
+			KEYTILL_Settings::MENU,
+			__( 'Vendedores', 'keytill' ),
+			__( 'Vendedores', 'keytill' ),
 			'manage_woocommerce',
-			'hmpos-sellers',
+			'keytill-sellers',
 			array( __CLASS__, 'render_manage' )
 		);
 		add_submenu_page(
-			HMPOS_Settings::MENU,
-			__( 'Ventas por vendedor', 'hm-pos' ),
-			__( 'Ventas x vendedor', 'hm-pos' ),
+			KEYTILL_Settings::MENU,
+			__( 'Ventas por vendedor', 'keytill' ),
+			__( 'Ventas x vendedor', 'keytill' ),
 			'manage_woocommerce',
-			'hmpos-seller-report',
+			'keytill-seller-report',
 			array( __CLASS__, 'render_report' )
 		);
 	}
@@ -150,17 +150,17 @@ class HMPOS_Sellers {
 		$rows = self::all();
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Vendedores', 'hm-pos' ); ?></h1>
+			<h1><?php esc_html_e( 'Vendedores', 'keytill' ); ?></h1>
 			<p class="description">
-				<?php esc_html_e( 'Vendedores que atienden en el mostrador. Se eligen al confirmar la venta para saber cuánto vendió cada uno. No son usuarios del sistema. Para quitar uno, vaciá su nombre y guardá (las ventas ya registradas conservan el nombre).', 'hm-pos' ); ?>
+				<?php esc_html_e( 'Vendedores que atienden en el mostrador. Se eligen al confirmar la venta para saber cuánto vendió cada uno. No son usuarios del sistema. Para quitar uno, vaciá su nombre y guardá (las ventas ya registradas conservan el nombre).', 'keytill' ); ?>
 			</p>
 			<form method="post" action="options.php">
-				<?php settings_fields( 'hmpos_sellers_group' ); ?>
+				<?php settings_fields( 'keytill_sellers_group' ); ?>
 				<table class="widefat striped" style="max-width:640px;margin-top:12px">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'Nombre', 'hm-pos' ); ?></th>
-							<th style="width:90px;text-align:center"><?php esc_html_e( 'Activo', 'hm-pos' ); ?></th>
+							<th><?php esc_html_e( 'Nombre', 'keytill' ); ?></th>
+							<th style="width:90px;text-align:center"><?php esc_html_e( 'Activo', 'keytill' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -185,7 +185,7 @@ class HMPOS_Sellers {
 							?>
 							<tr>
 								<td>
-									<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][name]" value="" placeholder="<?php esc_attr_e( 'Nuevo vendedor…', 'hm-pos' ); ?>" />
+									<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][name]" value="" placeholder="<?php esc_attr_e( 'Nuevo vendedor…', 'keytill' ); ?>" />
 								</td>
 								<td style="text-align:center">
 									<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][active]" value="1" checked />
@@ -218,29 +218,29 @@ class HMPOS_Sellers {
 		}
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Ventas por vendedor', 'hm-pos' ); ?></h1>
+			<h1><?php esc_html_e( 'Ventas por vendedor', 'keytill' ); ?></h1>
 			<form method="get" style="margin:12px 0">
-				<input type="hidden" name="page" value="hmpos-seller-report" />
-				<label><?php esc_html_e( 'Desde', 'hm-pos' ); ?>
+				<input type="hidden" name="page" value="keytill-seller-report" />
+				<label><?php esc_html_e( 'Desde', 'keytill' ); ?>
 					<input type="date" name="from" value="<?php echo esc_attr( $from ); ?>" />
 				</label>
-				<label style="margin-left:8px"><?php esc_html_e( 'Hasta', 'hm-pos' ); ?>
+				<label style="margin-left:8px"><?php esc_html_e( 'Hasta', 'keytill' ); ?>
 					<input type="date" name="to" value="<?php echo esc_attr( $to ); ?>" />
 				</label>
-				<?php submit_button( __( 'Filtrar', 'hm-pos' ), 'secondary', '', false ); ?>
+				<?php submit_button( __( 'Filtrar', 'keytill' ), 'secondary', '', false ); ?>
 			</form>
 
 			<table class="widefat striped" style="max-width:640px">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'Vendedor', 'hm-pos' ); ?></th>
-						<th style="width:120px;text-align:right"><?php esc_html_e( 'N° ventas', 'hm-pos' ); ?></th>
-						<th style="width:160px;text-align:right"><?php esc_html_e( 'Total neto', 'hm-pos' ); ?></th>
+						<th><?php esc_html_e( 'Vendedor', 'keytill' ); ?></th>
+						<th style="width:120px;text-align:right"><?php esc_html_e( 'N° ventas', 'keytill' ); ?></th>
+						<th style="width:160px;text-align:right"><?php esc_html_e( 'Total neto', 'keytill' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php if ( empty( $data ) ) : ?>
-						<tr><td colspan="3"><?php esc_html_e( 'Sin ventas en el rango elegido.', 'hm-pos' ); ?></td></tr>
+						<tr><td colspan="3"><?php esc_html_e( 'Sin ventas en el rango elegido.', 'keytill' ); ?></td></tr>
 					<?php else : ?>
 						<?php foreach ( $data as $d ) : ?>
 							<tr>
@@ -254,7 +254,7 @@ class HMPOS_Sellers {
 				<?php if ( ! empty( $data ) ) : ?>
 					<tfoot>
 						<tr>
-							<th><?php esc_html_e( 'Total', 'hm-pos' ); ?></th>
+							<th><?php esc_html_e( 'Total', 'keytill' ); ?></th>
 							<th style="text-align:right"><?php echo (int) $count; ?></th>
 							<th style="text-align:right"><?php echo wp_kses_post( wc_price( $total ) ); ?></th>
 						</tr>
@@ -262,7 +262,7 @@ class HMPOS_Sellers {
 				<?php endif; ?>
 			</table>
 			<p class="description" style="margin-top:10px">
-				<?php esc_html_e( 'Total neto = ventas del POS (completadas) menos devoluciones, en el rango. Las ventas sin vendedor asignado se agrupan como «(sin vendedor)».', 'hm-pos' ); ?>
+				<?php esc_html_e( 'Total neto = ventas del POS (completadas) menos devoluciones, en el rango. Las ventas sin vendedor asignado se agrupan como «(sin vendedor)».', 'keytill' ); ?>
 			</p>
 		</div>
 		<?php
@@ -307,14 +307,14 @@ class HMPOS_Sellers {
 
 		$rows = array();
 		foreach ( (array) $orders as $o ) {
-			if ( ! $o instanceof WC_Order || 'hmpos' !== $o->get_created_via() ) {
+			if ( ! $o instanceof WC_Order || 'keytill' !== $o->get_created_via() ) {
 				continue;
 			}
-			$sid   = (string) $o->get_meta( '_hmpos_seller_id' );
-			$snap  = (string) $o->get_meta( '_hmpos_seller' );
+			$sid   = (string) $o->get_meta( '_keytill_seller_id' );
+			$snap  = (string) $o->get_meta( '_keytill_seller' );
 			$key   = '' !== $sid ? $sid : ( '' !== $snap ? 'name:' . $snap : '__none__' );
 			$name  = '' !== $sid ? self::name_of( $sid ) : '';
-			$label = '' !== $name ? $name : ( '' !== $snap ? $snap : __( '(sin vendedor)', 'hm-pos' ) );
+			$label = '' !== $name ? $name : ( '' !== $snap ? $snap : __( '(sin vendedor)', 'keytill' ) );
 
 			$net = (float) $o->get_total() - (float) $o->get_total_refunded();
 

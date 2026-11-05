@@ -8,21 +8,21 @@
  * siendo el de WooCommerce).
  *
  * Las sucursales NO son entidades de WooCommerce: se guardan en una opción
- * (`hmpos_branches`) como lista de {id, name, active}. En cada producto se
- * registra la sucursal elegida en el meta `_hmpos_branch_id`.
+ * (`keytill_branches`) como lista de {id, name, active}. En cada producto se
+ * registra la sucursal elegida en el meta `_keytill_branch_id`.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Branches {
+class KEYTILL_Branches {
 
 	/** Opción con la lista de sucursales. */
-	const OPTION = 'hmpos_branches';
+	const OPTION = 'keytill_branches';
 
 	/** Meta del producto con la sucursal asignada. */
-	const META = '_hmpos_branch_id';
+	const META = '_keytill_branch_id';
 
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_menus' ), 10 );
@@ -91,7 +91,7 @@ class HMPOS_Branches {
 	 * ------------------------------------------------------------------ */
 
 	public static function register_settings() {
-		register_setting( 'hmpos_branches_group', self::OPTION, array( __CLASS__, 'sanitize' ) );
+		register_setting( 'keytill_branches_group', self::OPTION, array( __CLASS__, 'sanitize' ) );
 	}
 
 	/**
@@ -137,11 +137,11 @@ class HMPOS_Branches {
 
 	public static function register_menus() {
 		add_submenu_page(
-			HMPOS_Settings::MENU,
-			__( 'Sucursales', 'hm-pos' ),
-			__( 'Sucursales', 'hm-pos' ),
+			KEYTILL_Settings::MENU,
+			__( 'Sucursales', 'keytill' ),
+			__( 'Sucursales', 'keytill' ),
 			'manage_woocommerce',
-			'hmpos-branches',
+			'keytill-branches',
 			array( __CLASS__, 'render_manage' )
 		);
 	}
@@ -151,18 +151,18 @@ class HMPOS_Branches {
 		$rows = self::all();
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Sucursales', 'hm-pos' ); ?></h1>
+			<h1><?php esc_html_e( 'Sucursales', 'keytill' ); ?></h1>
 			<p class="description">
-				<?php esc_html_e( 'Locales del negocio. El stock se lleva por sucursal (se carga en el editor de productos). "Prioridad web": orden en que las ventas de la tienda online descuentan stock (menor número = primero; si se agota, pasa a la siguiente). Para quitar una sucursal, vaciá su nombre y guardá.', 'hm-pos' ); ?>
+				<?php esc_html_e( 'Locales del negocio. El stock se lleva por sucursal (se carga en el editor de productos). "Prioridad web": orden en que las ventas de la tienda online descuentan stock (menor número = primero; si se agota, pasa a la siguiente). Para quitar una sucursal, vaciá su nombre y guardá.', 'keytill' ); ?>
 			</p>
 			<form method="post" action="options.php">
-				<?php settings_fields( 'hmpos_branches_group' ); ?>
+				<?php settings_fields( 'keytill_branches_group' ); ?>
 				<table class="widefat striped" style="max-width:640px;margin-top:12px">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'Nombre', 'hm-pos' ); ?></th>
-							<th style="width:120px;text-align:center"><?php esc_html_e( 'Prioridad web', 'hm-pos' ); ?></th>
-							<th style="width:90px;text-align:center"><?php esc_html_e( 'Activa', 'hm-pos' ); ?></th>
+							<th><?php esc_html_e( 'Nombre', 'keytill' ); ?></th>
+							<th style="width:120px;text-align:center"><?php esc_html_e( 'Prioridad web', 'keytill' ); ?></th>
+							<th style="width:90px;text-align:center"><?php esc_html_e( 'Activa', 'keytill' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -190,7 +190,7 @@ class HMPOS_Branches {
 							?>
 							<tr>
 								<td>
-									<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][name]" value="" placeholder="<?php esc_attr_e( 'Nueva sucursal…', 'hm-pos' ); ?>" />
+									<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][name]" value="" placeholder="<?php esc_attr_e( 'Nueva sucursal…', 'keytill' ); ?>" />
 								</td>
 								<td style="text-align:center">
 									<input type="number" min="0" style="width:70px" name="<?php echo esc_attr( self::OPTION ); ?>[new<?php echo (int) $k; ?>][web_priority]" value="0" />

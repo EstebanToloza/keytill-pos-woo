@@ -7,18 +7,18 @@
  * 3,5×3,5 cm de un producto/variación, con su código de barras Code 128, el
  * nombre, los atributos (color/talle) y el número debajo.
  *
- * Ruta: GET al front con ?hmpos_labels=<product_id>&qty=<n>&_wpnonce=<nonce>.
+ * Ruta: GET al front con ?keytill_labels=<product_id>&qty=<n>&_wpnonce=<nonce>.
  * Requiere capability del POS o poder editar órdenes, y un nonce por-producto.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Labels {
+class KEYTILL_Labels {
 
 	/** Query var que dispara la impresión de etiquetas. */
-	const QV = 'hmpos_labels';
+	const QV = 'keytill_labels';
 
 	/** Tope de etiquetas por producto (evita hojas gigantes por error). */
 	const MAX_QTY = 1000;
@@ -30,7 +30,7 @@ class HMPOS_Labels {
 	const MAX_TOTAL = 20000;
 
 	/** Acción de nonce del lote (impresión de varios productos a la vez). */
-	const BATCH_NONCE = 'hmpos_labels_batch';
+	const BATCH_NONCE = 'keytill_labels_batch';
 
 	public static function init() {
 		add_action( 'template_redirect', array( __CLASS__, 'maybe_render' ) );
@@ -43,7 +43,7 @@ class HMPOS_Labels {
 	 * @return string
 	 */
 	private static function nonce_action( $id ) {
-		return 'hmpos_labels_' . (int) $id;
+		return 'keytill_labels_' . (int) $id;
 	}
 
 	/** URL destino del formulario de lote (POST). El nonce va en el form. */
@@ -76,13 +76,13 @@ class HMPOS_Labels {
 
 	/** ¿Puede imprimir? (operar el POS o editar productos). */
 	private static function can_print() {
-		return current_user_can( HMPOS_CAP ) || current_user_can( 'edit_shop_orders' );
+		return current_user_can( KEYTILL_CAP ) || current_user_can( 'edit_shop_orders' );
 	}
 
 	/**
 	 * Si la request pide etiquetas, valida y renderiza; corta. Dos modos:
-	 *  - individual: ?hmpos_labels=<id>&qty=<n>&_wpnonce (GET, nonce por-producto).
-	 *  - lote:       ?hmpos_labels=batch + POST items[<id>]=<qty> + _wpnonce de lote.
+	 *  - individual: ?keytill_labels=<id>&qty=<n>&_wpnonce (GET, nonce por-producto).
+	 *  - lote:       ?keytill_labels=batch + POST items[<id>]=<qty> + _wpnonce de lote.
 	 */
 	public static function maybe_render() {
 		if ( ! isset( $_GET[ self::QV ] ) ) {
@@ -90,7 +90,7 @@ class HMPOS_Labels {
 		}
 		// El permiso (capability) se chequea SIEMPRE antes del nonce.
 		if ( ! self::can_print() ) {
-			wp_die( esc_html__( 'No tenés permiso para imprimir etiquetas.', 'hm-pos' ), 403 );
+			wp_die( esc_html__( 'No tenés permiso para imprimir etiquetas.', 'keytill' ), 403 );
 		}
 
 		if ( 'batch' === $_GET[ self::QV ] ) {
@@ -104,15 +104,15 @@ class HMPOS_Labels {
 		}
 		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, self::nonce_action( $id ) ) ) {
-			wp_die( esc_html__( 'El enlace de etiquetas venció. Reabrilo desde el producto.', 'hm-pos' ), 403 );
+			wp_die( esc_html__( 'El enlace de etiquetas venció. Reabrilo desde el producto.', 'keytill' ), 403 );
 		}
 		$product = wc_get_product( $id );
 		if ( ! $product ) {
-			wp_die( esc_html__( 'Producto no encontrado.', 'hm-pos' ), 404 );
+			wp_die( esc_html__( 'Producto no encontrado.', 'keytill' ), 404 );
 		}
-		$code = (string) $product->get_meta( '_hmpos_barcode' );
+		$code = (string) $product->get_meta( '_keytill_barcode' );
 		if ( '' === $code ) {
-			wp_die( esc_html__( 'Este producto no tiene código de barras cargado.', 'hm-pos' ), 400 );
+			wp_die( esc_html__( 'Este producto no tiene código de barras cargado.', 'keytill' ), 400 );
 		}
 		$qty = isset( $_GET['qty'] ) ? absint( $_GET['qty'] ) : 1;
 		$qty = max( 1, min( self::MAX_QTY, $qty ) );
@@ -129,11 +129,11 @@ class HMPOS_Labels {
 	private static function render_batch() {
 		$nonce = isset( $_POST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, self::BATCH_NONCE ) ) {
-			wp_die( esc_html__( 'La sesión de etiquetas venció. Volvé a generarlas desde el POS.', 'hm-pos' ), 403 );
+			wp_die( esc_html__( 'La sesión de etiquetas venció. Volvé a generarlas desde el POS.', 'keytill' ), 403 );
 		}
 		$items = isset( $_POST['items'] ) && is_array( $_POST['items'] ) ? wp_unslash( $_POST['items'] ) : array();
 		if ( empty( $items ) ) {
-			wp_die( esc_html__( 'No seleccionaste ningún producto para imprimir.', 'hm-pos' ), 400 );
+			wp_die( esc_html__( 'No seleccionaste ningún producto para imprimir.', 'keytill' ), 400 );
 		}
 
 		$units       = array();
@@ -155,7 +155,7 @@ class HMPOS_Labels {
 			if ( ! $product ) {
 				continue;
 			}
-			$code = (string) $product->get_meta( '_hmpos_barcode' );
+			$code = (string) $product->get_meta( '_keytill_barcode' );
 			if ( '' === $code ) {
 				$no_barcode++;
 				continue; // sin código de barras: no se puede imprimir.
@@ -173,18 +173,18 @@ class HMPOS_Labels {
 		}
 
 		if ( empty( $units ) ) {
-			wp_die( esc_html__( 'Ninguno de los productos seleccionados tiene código de barras cargado.', 'hm-pos' ), 400 );
+			wp_die( esc_html__( 'Ninguno de los productos seleccionados tiene código de barras cargado.', 'keytill' ), 400 );
 		}
 
 		// Aviso visible (no se imprime) si algo quedó afuera por topes o sin código.
 		$notices = array();
 		if ( $dropped_cap > 0 ) {
 			/* translators: %d: cantidad de productos que no entraron por el tope. */
-			$notices[] = sprintf( _n( '%d producto no entró por el tope del lote.', '%d productos no entraron por el tope del lote.', $dropped_cap, 'hm-pos' ), $dropped_cap );
+			$notices[] = sprintf( _n( '%d producto no entró por el tope del lote.', '%d productos no entraron por el tope del lote.', $dropped_cap, 'keytill' ), $dropped_cap );
 		}
 		if ( $no_barcode > 0 ) {
 			/* translators: %d: cantidad de productos sin código de barras. */
-			$notices[] = sprintf( _n( '%d producto se salteó por no tener código de barras.', '%d productos se saltearon por no tener código de barras.', $no_barcode, 'hm-pos' ), $no_barcode );
+			$notices[] = sprintf( _n( '%d producto se salteó por no tener código de barras.', '%d productos se saltearon por no tener código de barras.', $no_barcode, 'keytill' ), $no_barcode );
 		}
 
 		self::render_sheet( $units, array( 'qty_control' => false, 'notice' => implode( ' ', $notices ) ) );
@@ -226,7 +226,7 @@ class HMPOS_Labels {
 		$title  = $parent ? $parent->get_name() : $product->get_name();
 
 		// Atributos a mostrar (nombres de taxonomía) según Ajustes; null = todos.
-		$only = class_exists( 'HMPOS_Settings' ) ? HMPOS_Settings::label_attributes() : null;
+		$only = class_exists( 'KEYTILL_Settings' ) ? KEYTILL_Settings::label_attributes() : null;
 
 		$subs = array();
 		foreach ( $product->get_variation_attributes() as $key => $value ) {
@@ -265,8 +265,8 @@ class HMPOS_Labels {
 			$total += (int) $u['qty'];
 		}
 		$title = $qty_control && isset( $opts['code'] )
-			? sprintf( __( 'Etiquetas %1$s (%2$d)', 'hm-pos' ), $opts['code'], $total )
-			: sprintf( _n( 'Etiquetas (%d)', 'Etiquetas (%d)', $total, 'hm-pos' ), $total );
+			? sprintf( __( 'Etiquetas %1$s (%2$d)', 'keytill' ), $opts['code'], $total )
+			: sprintf( _n( 'Etiquetas (%d)', 'Etiquetas (%d)', $total, 'keytill' ), $total );
 
 		header( 'Content-Type: text/html; charset=utf-8' );
 		?>
@@ -321,27 +321,27 @@ class HMPOS_Labels {
 	}
 </style>
 <!-- Tamaño de página conmutable (A4/A3) por JS. -->
-<style id="hmpos-pagesize">@page{ size:A4; margin:0; }</style>
+<style id="keytill-pagesize">@page{ size:A4; margin:0; }</style>
 </head>
 <body class="<?php echo empty( $opts['notice'] ) ? '' : 'has-notice'; ?>">
 	<div class="toolbar">
-		<button type="button" onclick="window.print()"><?php esc_html_e( 'Imprimir / Guardar PDF', 'hm-pos' ); ?></button>
+		<button type="button" onclick="window.print()"><?php esc_html_e( 'Imprimir / Guardar PDF', 'keytill' ); ?></button>
 		<span class="paperbox">
-			<label for="hmpos-paper"><?php esc_html_e( 'Hoja', 'hm-pos' ); ?></label>
-			<select id="hmpos-paper" onchange="hmposSetPaper(this.value)">
+			<label for="keytill-paper"><?php esc_html_e( 'Hoja', 'keytill' ); ?></label>
+			<select id="keytill-paper" onchange="keytillSetPaper(this.value)">
 				<option value="A4">A4</option>
 				<option value="A3">A3</option>
 			</select>
 		</span>
 		<?php if ( $qty_control ) : ?>
 			<span class="qtybox">
-				<label for="hmpos-qty"><?php esc_html_e( 'Cantidad', 'hm-pos' ); ?></label>
-				<input id="hmpos-qty" type="number" min="1" max="<?php echo (int) self::MAX_QTY; ?>" value="<?php echo (int) $total; ?>" />
-				<button type="button" onclick="hmposSetQty(document.getElementById('hmpos-qty').value)"><?php esc_html_e( 'Actualizar', 'hm-pos' ); ?></button>
+				<label for="keytill-qty"><?php esc_html_e( 'Cantidad', 'keytill' ); ?></label>
+				<input id="keytill-qty" type="number" min="1" max="<?php echo (int) self::MAX_QTY; ?>" value="<?php echo (int) $total; ?>" />
+				<button type="button" onclick="keytillSetQty(document.getElementById('keytill-qty').value)"><?php esc_html_e( 'Actualizar', 'keytill' ); ?></button>
 			</span>
-			<span class="muted"><?php echo esc_html( sprintf( __( '%1$d etiquetas · %2$s · 3,5 × 3,5 cm', 'hm-pos' ), $total, isset( $opts['code'] ) ? $opts['code'] : '' ) ); ?></span>
+			<span class="muted"><?php echo esc_html( sprintf( __( '%1$d etiquetas · %2$s · 3,5 × 3,5 cm', 'keytill' ), $total, isset( $opts['code'] ) ? $opts['code'] : '' ) ); ?></span>
 		<?php else : ?>
-			<span class="muted"><?php echo esc_html( sprintf( _n( '%1$d etiqueta · %2$d producto · 3,5 × 3,5 cm', '%1$d etiquetas · %2$d productos · 3,5 × 3,5 cm', $total, 'hm-pos' ), $total, count( $units ) ) ); ?></span>
+			<span class="muted"><?php echo esc_html( sprintf( _n( '%1$d etiqueta · %2$d producto · 3,5 × 3,5 cm', '%1$d etiquetas · %2$d productos · 3,5 × 3,5 cm', $total, 'keytill' ), $total, count( $units ) ) ); ?></span>
 		<?php endif; ?>
 	</div>
 	<?php if ( ! empty( $opts['notice'] ) ) : ?>
@@ -350,16 +350,16 @@ class HMPOS_Labels {
 	<script>
 		// Conmuta el tamaño de hoja (A4/A3) sin recargar: cambia la regla @page, el
 		// ancho de la hoja y re-pagina la grilla. Recuerda la elección.
-		function hmposSetPaper( v ){
+		function keytillSetPaper( v ){
 			v = ( v === 'A3' ) ? 'A3' : 'A4';
-			var st = document.getElementById( 'hmpos-pagesize' );
+			var st = document.getElementById( 'keytill-pagesize' );
 			if ( st ) { st.textContent = '@page{ size:' + v + '; margin:0; }'; }
 			document.body.classList.toggle( 'is-a3', v === 'A3' );
-			try { localStorage.setItem( 'hmpos_label_paper', v ); } catch ( e ) {}
-			if ( window.hmposPaginate ) { window.hmposPaginate( v ); }
+			try { localStorage.setItem( 'keytill_label_paper', v ); } catch ( e ) {}
+			if ( window.keytillPaginate ) { window.keytillPaginate( v ); }
 		}
 		<?php if ( $qty_control ) : ?>
-		function hmposSetQty( n ){
+		function keytillSetQty( n ){
 			var q = Math.max( 1, Math.min( <?php echo (int) self::MAX_QTY; ?>, parseInt( n, 10 ) || 1 ) );
 			var u = new URL( window.location.href );
 			u.searchParams.set( 'qty', q );
@@ -369,7 +369,7 @@ class HMPOS_Labels {
 	</script>
 	<div class="wrap">
 		<!-- Depósito plano de etiquetas: JS las reparte en hojas de grilla fija. -->
-		<div id="hmpos-pool" hidden>
+		<div id="keytill-pool" hidden>
 			<?php
 			foreach ( $units as $u ) :
 				for ( $i = 0; $i < (int) $u['qty']; $i++ ) :
@@ -387,21 +387,21 @@ class HMPOS_Labels {
 			endforeach;
 			?>
 		</div>
-		<div id="hmpos-pages"></div>
+		<div id="keytill-pages"></div>
 	</div>
 	<script>
 		// Grilla fija por hoja: MISMA cantidad y MISMA posición en todas las hojas,
 		// para poder apilarlas y cortarlas juntas en la guillotina. Cada etiqueta
 		// mide 35 mm; los cupos por hoja se calculan con margen de 8 mm.
 		( function(){
-			var pool = document.getElementById( 'hmpos-pool' );
+			var pool = document.getElementById( 'keytill-pool' );
 			var LABELS = Array.prototype.map.call( pool.children, function ( el ) { return el.outerHTML; } );
 			if ( pool.parentNode ) { pool.parentNode.removeChild( pool ); }
 			var GRID = { A4: { cols: 5, rows: 7 }, A3: { cols: 7, rows: 10 } };
-			window.hmposPaginate = function ( paper ){
+			window.keytillPaginate = function ( paper ){
 				var g = GRID[ paper ] || GRID.A4;
 				var per = g.cols * g.rows;
-				var pages = document.getElementById( 'hmpos-pages' );
+				var pages = document.getElementById( 'keytill-pages' );
 				if ( ! pages ) { return; }
 				var html = '';
 				for ( var i = 0; i < LABELS.length; i += per ) {
@@ -412,10 +412,10 @@ class HMPOS_Labels {
 			};
 			// Aplica la hoja recordada (dispara la paginación inicial).
 			var v = 'A4';
-			try { v = localStorage.getItem( 'hmpos_label_paper' ) || 'A4'; } catch ( e ) {}
-			var sel = document.getElementById( 'hmpos-paper' );
+			try { v = localStorage.getItem( 'keytill_label_paper' ) || 'A4'; } catch ( e ) {}
+			var sel = document.getElementById( 'keytill-paper' );
 			if ( sel ) { sel.value = v; }
-			hmposSetPaper( v );
+			keytillSetPaper( v );
 		} )();
 		window.addEventListener( 'load', function(){ setTimeout( function(){ window.print(); }, 250 ); } );
 	</script>

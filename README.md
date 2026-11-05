@@ -1,6 +1,6 @@
-# HM Sport POS (`hm-pos`)
+# Keytill POS (`keytill`)
 
-Punto de venta de mostrador para **HM Sport**, como plugin de WordPress sobre el **mismo WooCommerce** de la tienda. Pantalla completa, operado por teclado, para el rol **cajero**. Las ventas son órdenes de Woo reales: stock, catálogo y clientes quedan **unificados con la web**.
+Punto de venta de mostrador para **Keytill**, como plugin de WordPress sobre el **mismo WooCommerce** de la tienda. Pantalla completa, operado por teclado, para el rol **cajero**. Las ventas son órdenes de Woo reales: stock, catálogo y clientes quedan **unificados con la web**.
 
 - **Stack:** PHP + WooCommerce · **Alpine.js** (vendorizado local, sin build) · CSS plano + `tokens.css`. Sin frameworks JS, sin bundler, sin SQL directo (todo con las clases CRUD de Woo).
 - **Compatibilidad:** WooCommerce **HPOS** (custom order tables) declarada.
@@ -28,17 +28,17 @@ Este repositorio **es el plugin**: se clona (o se copia) dentro de `wp-content/p
 
 ```bash
 cd wp-content/plugins
-git clone git@github.com:EstebanToloza/POS-woo.git hm-pos
+git clone git@github.com:EstebanToloza/POS-woo.git keytill
 ```
 
 Después, en el sitio:
 
-1. **Activar** el plugin *HM Sport POS*. Al activarse crea el rol **`cajero`** (capability `hmpos_operate`) y el rol **`encargado`** (`hmpos_operate` + `hmpos_manage` + `upload_files`); el administrador recibe ambas capabilities.
-2. Crear una página **"Caja"** con el shortcode `[hm_pos]` y asignarle el template **"HM POS — Pantalla completa"**.
+1. **Activar** el plugin *Keytill POS*. Al activarse crea el rol **`cajero`** (capability `keytill_operate`) y el rol **`encargado`** (`keytill_operate` + `keytill_manage` + `upload_files`); el administrador recibe ambas capabilities.
+2. Crear una página **"Caja"** con el shortcode `[keytill]` y asignarle el template **"HM POS — Pantalla completa"**.
 3. Crear un usuario con rol **cajero** (o encargado) e ingresar a esa página.
-4. *(Opcional, demo)* Cargar catálogo de prueba: `wp hmpos seed-demo` (idempotente; `--force` reescribe stock/precios).
+4. *(Opcional, demo)* Cargar catálogo de prueba: `wp keytill seed-demo` (idempotente; `--force` reescribe stock/precios).
 
-Un usuario sin `hmpos_operate` ve un aviso de acceso; el cajero ve el POS a pantalla completa.
+Un usuario sin `keytill_operate` ve un aviso de acceso; el cajero ve el POS a pantalla completa.
 
 > No hay paso de build: Alpine está vendorizado en `assets/js/alpine.min.js` y el CSS es plano. Editás y recargás.
 
@@ -46,11 +46,11 @@ Un usuario sin `hmpos_operate` ve un aviso de acceso; el cajero ve el POS a pant
 
 ## Roles
 
-- **Cajero** (`hmpos_operate`): vende, hace devoluciones, opera la caja, gestiona clientes y **ve/busca** las pestañas de la consola.
-- **Encargado** (`hmpos_operate` + `hmpos_manage` + `upload_files`): además **edita/crea productos** (precio, stock, activo, editor completo, variaciones, imágenes/galería) y acciones administrativas.
+- **Cajero** (`keytill_operate`): vende, hace devoluciones, opera la caja, gestiona clientes y **ve/busca** las pestañas de la consola.
+- **Encargado** (`keytill_operate` + `keytill_manage` + `upload_files`): además **edita/crea productos** (precio, stock, activo, editor completo, variaciones, imágenes/galería) y acciones administrativas.
 - **Administrador:** tiene ambas capabilities.
 
-La migración de roles es idempotente (option `hmpos_roles_version`), se aplica en `init` para instalaciones ya activas.
+La migración de roles es idempotente (option `keytill_roles_version`), se aplica en `init` para instalaciones ya activas.
 
 ---
 
@@ -66,7 +66,7 @@ El POS es una **consola con pestañas** — Venta · Pedidos · Productos · Cli
 
 ### Editor de productos
 
-Alta y edición de productos sin entrar al backend de Woo (requiere `hmpos_manage`):
+Alta y edición de productos sin entrar al backend de Woo (requiere `keytill_manage`):
 
 - **Simples:** nombre, SKU, categoría, precio + precio de oferta, stock, activo, descripción corta/larga e **imagen principal** (se sube al media library desde el POS).
 - **Variables (talles/colores):** con **atributos globales `pa_` reutilizables**. El editor **levanta los atributos que ya existan en el sitio** y todo es **aditivo y no destructivo** (nunca borra ni renombra atributos/términos globales). Flujo: elegir/crear atributos + sus valores → **generar la grilla** de variaciones → editar SKU/precio/stock por variación (+ borrar variación).
@@ -134,7 +134,7 @@ El plugin trae un **manual de operatoria** para el personal (para el handoff), s
 
 - **Admin → "Manual (POS)"** (visible también para el rol cajero).
 - Enlace **"Manual ↗"** en la barra del POS.
-- URL directa `?hmpos_manual=1` (gateada por permiso).
+- URL directa `?keytill_manual=1` (gateada por permiso).
 
 Cubre las 13 operatorias paso a paso + referencia de teclas. Imprimible (Ctrl/Cmd + P) para dejar una copia en la caja.
 
@@ -143,20 +143,20 @@ Cubre las 13 operatorias paso a paso + referencia de teclas. Imprimible (Ctrl/Cm
 ## Estructura del código
 
 ```
-hm-pos.php                      Bootstrap: header, activación (roles/caps), HPOS, shortcode [hm_pos],
+keytill.php                      Bootstrap: header, activación (roles/caps), HPOS, shortcode [keytill],
                                 gate de acceso, template en blanco, encolado de assets, registro REST/CLI.
 includes/
-  class-hmpos-rest.php          API REST hmpos/v1 (productos, órdenes, caja, crédito, consola admin).
-  class-hmpos-cash.php          Arqueo de caja (CPT hmpos_cash_session).
-  class-hmpos-customers.php     Clientes (usuarios WP rol customer); el POS no manda emails.
-  class-hmpos-print.php         Comprobante interno imprimible (HTML A4).
-  class-hmpos-manual.php        Manual de mostrador (página autocontenida).
-  class-hmpos-cli.php           Comando `wp hmpos seed-demo` (solo bajo WP-CLI).
-  hmpos-demo-products.php       Catálogo demo (18 productos) que usa el seeder.
+  class-keytill-rest.php          API REST keytill/v1 (productos, órdenes, caja, crédito, consola admin).
+  class-keytill-cash.php          Arqueo de caja (CPT keytill_cash_session).
+  class-keytill-customers.php     Clientes (usuarios WP rol customer); el POS no manda emails.
+  class-keytill-print.php         Comprobante interno imprimible (HTML A4).
+  class-keytill-manual.php        Manual de mostrador (página autocontenida).
+  class-keytill-cli.php           Comando `wp keytill seed-demo` (solo bajo WP-CLI).
+  keytill-demo-products.php       Catálogo demo (18 productos) que usa el seeder.
   credito/
-    class-hmpos-credit.php          Motor de crédito en tienda (tablas propias, emisión/canje atómico, ledger).
-    class-hmpos-credit-web.php      Canje en el checkout web (cupón virtual + reserva atómica).
-    class-hmpos-credit-product.php  Gift cards como producto.
+    class-keytill-credit.php          Motor de crédito en tienda (tablas propias, emisión/canje atómico, ledger).
+    class-keytill-credit-web.php      Canje en el checkout web (cupón virtual + reserva atómica).
+    class-keytill-credit-product.php  Gift cards como producto.
 templates/
   blank-fullscreen.php          Página en blanco (sin header/footer del theme).
   pos-app.php                   Markup de la consola (Alpine).
@@ -171,9 +171,9 @@ assets/
   js/pos-customers.js           Pestaña Clientes.
 ```
 
-### API REST (`hmpos/v1`)
+### API REST (`keytill/v1`)
 
-Mismo origen, autenticada con nonce `X-WP-Nonce`. Permisos: lectura = `hmpos_operate`, escritura de productos = `hmpos_manage`.
+Mismo origen, autenticada con nonce `X-WP-Nonce`. Permisos: lectura = `keytill_operate`, escritura de productos = `keytill_manage`.
 
 - **Catálogo/venta:** `GET /products`, `POST /orders`, `GET /orders/lookup`, `POST /orders/refund`.
 - **Consola · Pedidos:** `GET /orders/list`, `GET /orders/filters`, `GET /orders/{id}`.
@@ -183,15 +183,15 @@ Mismo origen, autenticada con nonce `X-WP-Nonce`. Permisos: lectura = `hmpos_ope
 
 ### Marcas en Woo
 
-Órdenes del POS: `created_via = hmpos`, meta `_hmpos`, `_hmpos_cajero_*`, `_hmpos_session`, etc. El crédito en tienda usa tablas propias (`wp_hmpos_credits`, `wp_hmpos_credit_ledger`). La sesión de caja es el CPT `hmpos_cash_session`.
+Órdenes del POS: `created_via = keytill`, meta `_keytill`, `_keytill_cajero_*`, `_keytill_session`, etc. El crédito en tienda usa tablas propias (`wp_keytill_credits`, `wp_keytill_credit_ledger`). La sesión de caja es el CPT `keytill_cash_session`.
 
 ---
 
 ## Desarrollo
 
-- **Sin build.** Alpine está vendorizado y el CSS es plano; se edita y se recarga. Al versionar assets se usa la constante `HMPOS_VERSION` (subir la versión al cambiar JS/CSS para bustear caché); la versión de Alpine está hardcodeada en el `wp_enqueue_script` (actualizarla a mano si se cambia el vendor).
+- **Sin build.** Alpine está vendorizado y el CSS es plano; se edita y se recarga. Al versionar assets se usa la constante `KEYTILL_VERSION` (subir la versión al cambiar JS/CSS para bustear caché); la versión de Alpine está hardcodeada en el `wp_enqueue_script` (actualizarla a mano si se cambia el vendor).
 - **Seguridad:** todo endpoint valida capability + nonce, sanea la entrada y escapa la salida. Sin SQL directo salvo el módulo de crédito (tablas propias con `$wpdb->prepare`).
-- **Seeder demo:** `wp hmpos seed-demo` solo se carga bajo WP-CLI. Es una herramienta de desarrollo; evaluar si debe viajar a producción.
+- **Seeder demo:** `wp keytill seed-demo` solo se carga bajo WP-CLI. Es una herramienta de desarrollo; evaluar si debe viajar a producción.
 - Las notas internas de arquitectura, plan y estado (`PLAN.md` / `STATUS.md`) se mantienen en el repositorio privado del proyecto, no en este.
 
 ---
@@ -208,4 +208,4 @@ Incluye: venta, cobro (efectivo/tarjeta/transferencia/QR con vuelto), cliente fi
 
 ## Licencia
 
-Plugin a medida para **HM Sport** — uso privado. Sin licencia pública.
+Plugin a medida para **Keytill** — uso privado. Sin licencia pública.

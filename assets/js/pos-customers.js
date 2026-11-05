@@ -1,7 +1,7 @@
 /* ============================================================
-   HM Sport POS — pos-customers.js
+   Keytill POS — pos-customers.js
    Pestaña "Clientes" de la consola. Componente Alpine independiente
-   (hmposCustomers) montado en su vista; lee $store.pos para saber si
+   (keytillCustomers) montado en su vista; lee $store.pos para saber si
    está activa. Lista paginada + búsqueda + detalle (edición + estadísticas
    + historial de compras) + alta. Clientes = usuarios WP rol customer,
    unificados con la web. El POS NO manda emails. Permiso: operate.
@@ -11,7 +11,7 @@
 
 	var API = window.wpApiSettings || { root: '/wp-json/', nonce: '' };
 
-	// Debe coincidir con HMPOS_Customers::fiscal_options() (default primero).
+	// Debe coincidir con KEYTILL_Customers::fiscal_options() (default primero).
 	var FISCAL = [ 'Consumidor Final', 'Responsable Inscripto', 'Monotributista', 'Exento', 'No Responsable' ];
 
 	function qs( obj ) {
@@ -48,7 +48,7 @@
 		return null;
 	}
 
-	function hmposCustomers() {
+	function keytillCustomers() {
 		return {
 			items: [],
 			total: 0,
@@ -79,7 +79,7 @@
 			init: function () {
 				var self = this;
 				this._onView = function ( e ) { if ( e.detail === 'clientes' ) { self.ensureLoaded(); } };
-				window.addEventListener( 'hmpos:view', this._onView );
+				window.addEventListener( 'keytill:view', this._onView );
 				if ( this.$store.pos.view === 'clientes' ) { this.ensureLoaded(); }
 			},
 
@@ -95,7 +95,7 @@
 				this.error = '';
 				var params = { page: page || 1, per_page: this.perPage };
 				if ( this.search !== '' ) { params.search = this.search; }
-				getJSON( API.root + 'hmpos/v1/customers/list?' + qs( params ) )
+				getJSON( API.root + 'keytill/v1/customers/list?' + qs( params ) )
 					.then( function ( d ) {
 						self.loading = false;
 						self.items = ( d && d.items ) || [];
@@ -124,7 +124,7 @@
 				this.selected = null;
 				this.saveError = '';
 				this.saveConflict = null;
-				getJSON( API.root + 'hmpos/v1/customers/' + id )
+				getJSON( API.root + 'keytill/v1/customers/' + id )
 					.then( function ( d ) { self.detailLoading = false; self.selected = d; } )
 					.catch( function () { self.detailLoading = false; self.error = 'No se pudo abrir el cliente.'; } );
 			},
@@ -138,7 +138,7 @@
 				this.saveBusy = true;
 				this.saveError = '';
 				this.saveConflict = null;
-				sendJSON( API.root + 'hmpos/v1/customers/' + c.id, 'PATCH', {
+				sendJSON( API.root + 'keytill/v1/customers/' + c.id, 'PATCH', {
 					name: c.name, email: c.email, doc: c.doc, iva: c.iva,
 					phone: c.phone || '', birthdate: c.birthdate || ''
 				} ).then( function ( res ) {
@@ -172,7 +172,7 @@
 				this.createBusy = true;
 				this.createError = '';
 				this.createConflict = null;
-				sendJSON( API.root + 'hmpos/v1/customers', 'POST', {
+				sendJSON( API.root + 'keytill/v1/customers', 'POST', {
 					name: p.name.trim(), email: p.email.trim(), doc: p.doc.trim(), iva: p.iva,
 					phone: ( p.phone || '' ).trim(), birthdate: p.birthdate || ''
 				} ).then( function ( res ) {
@@ -202,6 +202,6 @@
 	}
 
 	document.addEventListener( 'alpine:init', function () {
-		window.Alpine.data( 'hmposCustomers', hmposCustomers );
+		window.Alpine.data( 'keytillCustomers', keytillCustomers );
 	} );
 }() );

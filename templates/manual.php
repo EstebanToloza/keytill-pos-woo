@@ -1,10 +1,10 @@
 <?php
 /**
  * Manual de operatoria de mostrador — página autocontenida (sin theme).
- * La sirve HMPOS_Manual::maybe_render() en `?hmpos_manual=1`. Contenido
+ * La sirve KEYTILL_Manual::maybe_render() en `?keytill_manual=1`. Contenido
  * estático (HTML+CSS+un poco de JS para el tema claro/oscuro); no recibe datos.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Manual de Mostrador · HM Sport POS</title>
+<title>Manual de Mostrador · Keytill POS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -200,7 +200,7 @@ defined( 'ABSPATH' ) || exit;
   <div class="mast__in">
     <div class="brandbar">
       <div class="brandbar__id">
-        <span class="logo">HM SPORT</span>
+        <span class="logo">KEYTILL</span>
         <span class="kicker">POS &middot; Manual de mostrador</span>
       </div>
       <button class="theme-btn" id="themeToggle" type="button" aria-label="Cambiar tema">
@@ -529,7 +529,7 @@ defined( 'ABSPATH' ) || exit;
         </ol>
 
         <div class="note"><span class="note__tag">Histórico · dónde ver los cierres</span>
-          <p>En el panel de WordPress → menú <strong>HM Sport POS</strong>: <strong>Cajas (POS)</strong> (física) y <strong>Caja digital</strong>. Cada período se lista con sus totales; al hacer clic en la <strong>fecha de apertura</strong> se abre el <strong>detalle</strong> (movimientos con su motivo, desglose por medio y transferencias con su verificación).</p>
+          <p>En el panel de WordPress → menú <strong>Keytill POS</strong>: <strong>Cajas (POS)</strong> (física) y <strong>Caja digital</strong>. Cada período se lista con sus totales; al hacer clic en la <strong>fecha de apertura</strong> se abre el <strong>detalle</strong> (movimientos con su motivo, desglose por medio y transferencias con su verificación).</p>
         </div>
       </section>
 
@@ -569,7 +569,7 @@ defined( 'ABSPATH' ) || exit;
       <div><h4>Sin emails</h4><p>El POS <strong>no envía ningún email</strong>: ni al crear clientes ni al cerrar ventas. Eso es solo para la tienda web.</p></div>
       <div><h4>Navegador</h4><p>Usar <strong>Google Chrome</strong> a pantalla completa. La caja debe estar abierta para poder vender.</p></div>
     </div>
-    <p style="margin-top:24px;color:var(--ink-faint);font-family:var(--font-mono);font-size:12px;letter-spacing:.04em">HM SPORT · POS de mostrador · Manual de operatoria</p>
+    <p style="margin-top:24px;color:var(--ink-faint);font-family:var(--font-mono);font-size:12px;letter-spacing:.04em">KEYTILL · POS de mostrador · Manual de operatoria</p>
   </div>
 </footer>
 
@@ -585,14 +585,14 @@ defined( 'ABSPATH' ) || exit;
       label.textContent = dark ? 'Claro' : 'Oscuro';
     }
     var saved;
-    try { saved = localStorage.getItem('hmpos-manual-theme'); } catch(e){}
+    try { saved = localStorage.getItem('keytill-manual-theme'); } catch(e){}
     apply(saved || 'system');
     btn.addEventListener('click', function () {
       var cur = root.getAttribute('data-theme');
       var isDark = cur==='dark' || (!cur && window.matchMedia('(prefers-color-scheme:dark)').matches);
       var next = isDark ? 'light' : 'dark';
       apply(next);
-      try { localStorage.setItem('hmpos-manual-theme', next); } catch(e){}
+      try { localStorage.setItem('keytill-manual-theme', next); } catch(e){}
     });
   })();
 </script>

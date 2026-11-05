@@ -18,24 +18,24 @@
  * Los cobros/devoluciones se DERIVAN de las órdenes del POS por fecha + medio (no
  * se postean a mano), así el saldo siempre es coherente con las ventas reales.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Cash_Digital {
+class KEYTILL_Cash_Digital {
 
 	/** CPT de cada período de la caja digital. */
-	const CPT = 'hmpos_digital_sess';
+	const CPT = 'keytill_digital_sess';
 
 	/** Opción: saldo del último cierre (apertura del próximo período). */
-	const LAST_BALANCE = 'hmpos_digital_last_balance';
+	const LAST_BALANCE = 'keytill_digital_last_balance';
 
 	/** Opción: fecha/hora del último cierre (inicio del próximo período). */
-	const LAST_CLOSE = 'hmpos_digital_last_close';
+	const LAST_CLOSE = 'keytill_digital_last_close';
 
 	/** Opción-bandera: ya se cargó alguna vez el saldo inicial. */
-	const SEEDED = 'hmpos_digital_seeded';
+	const SEEDED = 'keytill_digital_seeded';
 
 	public static function init() {
 		add_action( 'init', array( __CLASS__, 'register_cpt' ) );
@@ -55,13 +55,13 @@ class HMPOS_Cash_Digital {
 			self::CPT,
 			array(
 				'labels'              => array(
-					'name'          => __( 'Caja digital', 'hm-pos' ),
-					'singular_name' => __( 'Período de caja digital', 'hm-pos' ),
-					'menu_name'     => __( 'Caja digital', 'hm-pos' ),
+					'name'          => __( 'Caja digital', 'keytill' ),
+					'singular_name' => __( 'Período de caja digital', 'keytill' ),
+					'menu_name'     => __( 'Caja digital', 'keytill' ),
 				),
 				'public'              => false,
 				'show_ui'             => true,
-				'show_in_menu'        => 'hmpos', // submenú de "HM POS"
+				'show_in_menu'        => 'keytill', // submenú de "HM POS"
 				'show_in_rest'        => false,
 				'menu_icon'           => 'dashicons-bank',
 				'exclude_from_search' => true,
@@ -81,20 +81,20 @@ class HMPOS_Cash_Digital {
 
 	public static function admin_columns( $cols ) {
 		return array(
-			'apertura' => __( 'Apertura', 'hm-pos' ),
-			'cierre'   => __( 'Cierre', 'hm-pos' ),
-			'abrio'    => __( 'Abrió', 'hm-pos' ),
-			'estado'   => __( 'Estado', 'hm-pos' ),
-			'inicial'  => __( 'Saldo inicial', 'hm-pos' ),
-			'cobros'   => __( 'Cobros', 'hm-pos' ),
-			'ingresos' => __( 'Ingresos', 'hm-pos' ),
-			'retiros'  => __( 'Retiros', 'hm-pos' ),
-			'saldo'    => __( 'Saldo', 'hm-pos' ),
+			'apertura' => __( 'Apertura', 'keytill' ),
+			'cierre'   => __( 'Cierre', 'keytill' ),
+			'abrio'    => __( 'Abrió', 'keytill' ),
+			'estado'   => __( 'Estado', 'keytill' ),
+			'inicial'  => __( 'Saldo inicial', 'keytill' ),
+			'cobros'   => __( 'Cobros', 'keytill' ),
+			'ingresos' => __( 'Ingresos', 'keytill' ),
+			'retiros'  => __( 'Retiros', 'keytill' ),
+			'saldo'    => __( 'Saldo', 'keytill' ),
 		);
 	}
 
 	public static function admin_column( $col, $post_id ) {
-		$open = 'open' === get_post_meta( $post_id, '_hmpos_status', true );
+		$open = 'open' === get_post_meta( $post_id, '_keytill_status', true );
 		// Para períodos cerrados usamos el snapshot guardado al cerrar (rápido);
 		// para el abierto, se calcula en vivo.
 		$get = function ( $meta_key, $summary_key ) use ( $post_id, $open ) {
@@ -107,39 +107,39 @@ class HMPOS_Cash_Digital {
 		switch ( $col ) {
 			case 'apertura':
 				$link = get_edit_post_link( $post_id );
-				$txt  = self::fmt_date( get_post_meta( $post_id, '_hmpos_opened_at', true ) );
+				$txt  = self::fmt_date( get_post_meta( $post_id, '_keytill_opened_at', true ) );
 				echo $link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					? '<a href="' . esc_url( $link ) . '" title="' . esc_attr__( 'Ver detalle', 'hm-pos' ) . '"><strong>' . esc_html( $txt ) . '</strong></a>'
+					? '<a href="' . esc_url( $link ) . '" title="' . esc_attr__( 'Ver detalle', 'keytill' ) . '"><strong>' . esc_html( $txt ) . '</strong></a>'
 					: esc_html( $txt );
 				break;
 			case 'cierre':
-				echo esc_html( self::fmt_date( get_post_meta( $post_id, '_hmpos_closed_at', true ) ) );
+				echo esc_html( self::fmt_date( get_post_meta( $post_id, '_keytill_closed_at', true ) ) );
 				break;
 			case 'abrio':
-				$by = (int) get_post_meta( $post_id, '_hmpos_opened_by', true );
+				$by = (int) get_post_meta( $post_id, '_keytill_opened_by', true );
 				echo esc_html( $by ? self::user_label( $by ) : '—' );
 				break;
 			case 'estado':
 				printf(
 					'<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-weight:600;%s">%s</span>',
 					$open ? 'background:#e1f7ef;color:#15805f' : 'background:#eef1f6;color:#50607a', // phpcs:ignore
-					esc_html( $open ? __( 'Abierta', 'hm-pos' ) : __( 'Cerrada', 'hm-pos' ) )
+					esc_html( $open ? __( 'Abierta', 'keytill' ) : __( 'Cerrada', 'keytill' ) )
 				);
 				break;
 			case 'inicial':
-				echo wp_kses_post( self::fmt( get_post_meta( $post_id, '_hmpos_opening_balance', true ) ) );
+				echo wp_kses_post( self::fmt( get_post_meta( $post_id, '_keytill_opening_balance', true ) ) );
 				break;
 			case 'cobros':
-				echo wp_kses_post( self::fmt( $get( '_hmpos_sum_sales', 'sales' ) ) );
+				echo wp_kses_post( self::fmt( $get( '_keytill_sum_sales', 'sales' ) ) );
 				break;
 			case 'ingresos':
-				echo wp_kses_post( self::fmt( $get( '_hmpos_sum_ingresos', 'ingresos' ) ) );
+				echo wp_kses_post( self::fmt( $get( '_keytill_sum_ingresos', 'ingresos' ) ) );
 				break;
 			case 'retiros':
-				echo wp_kses_post( self::fmt( $get( '_hmpos_sum_retiros', 'retiros' ) ) );
+				echo wp_kses_post( self::fmt( $get( '_keytill_sum_retiros', 'retiros' ) ) );
 				break;
 			case 'saldo':
-				$v = $open ? self::compute_summary( $post_id )['balance'] : (float) get_post_meta( $post_id, '_hmpos_closing_balance', true );
+				$v = $open ? self::compute_summary( $post_id )['balance'] : (float) get_post_meta( $post_id, '_keytill_closing_balance', true );
 				echo '<strong>' . wp_kses_post( self::fmt( $v ) ) . '</strong>';
 				break;
 		}
@@ -162,7 +162,7 @@ class HMPOS_Cash_Digital {
 
 	/** Caja de detalle del período (movimientos con motivo + transferencias). */
 	public static function add_detail_metabox() {
-		add_meta_box( 'hmpos_digital_detail', __( 'Detalle del período', 'hm-pos' ), array( __CLASS__, 'render_detail' ), self::CPT, 'normal', 'high' );
+		add_meta_box( 'keytill_digital_detail', __( 'Detalle del período', 'keytill' ), array( __CLASS__, 'render_detail' ), self::CPT, 'normal', 'high' );
 	}
 
 	public static function render_detail( $post ) {
@@ -171,24 +171,24 @@ class HMPOS_Cash_Digital {
 
 		echo '<table class="widefat" style="max-width:420px;margin-bottom:16px"><tbody>';
 		$rows = array(
-			array( __( 'Saldo inicial', 'hm-pos' ), self::fmt( $s['opening'] ) ),
-			array( __( 'Cobros (no-efectivo)', 'hm-pos' ), self::fmt( $s['sales'] ) ),
-			array( __( 'Devoluciones', 'hm-pos' ), '− ' . self::fmt( $s['refunds'] ) ),
-			array( __( 'Ingresos', 'hm-pos' ), self::fmt( $s['ingresos'] ) ),
-			array( __( 'Retiros', 'hm-pos' ), '− ' . self::fmt( $s['retiros'] ) ),
+			array( __( 'Saldo inicial', 'keytill' ), self::fmt( $s['opening'] ) ),
+			array( __( 'Cobros (no-efectivo)', 'keytill' ), self::fmt( $s['sales'] ) ),
+			array( __( 'Devoluciones', 'keytill' ), '− ' . self::fmt( $s['refunds'] ) ),
+			array( __( 'Ingresos', 'keytill' ), self::fmt( $s['ingresos'] ) ),
+			array( __( 'Retiros', 'keytill' ), '− ' . self::fmt( $s['retiros'] ) ),
 		);
 		foreach ( $rows as $r ) {
 			printf( '<tr><td>%s</td><td style="text-align:right">%s</td></tr>', esc_html( $r[0] ), wp_kses_post( $r[1] ) );
 		}
-		printf( '<tr><td><strong>%s</strong></td><td style="text-align:right"><strong>%s</strong></td></tr>', esc_html__( 'Saldo', 'hm-pos' ), wp_kses_post( self::fmt( $s['balance'] ) ) );
+		printf( '<tr><td><strong>%s</strong></td><td style="text-align:right"><strong>%s</strong></td></tr>', esc_html__( 'Saldo', 'keytill' ), wp_kses_post( self::fmt( $s['balance'] ) ) );
 		echo '</tbody></table>';
 
-		echo '<h3>' . esc_html__( 'Movimientos manuales', 'hm-pos' ) . '</h3>';
+		echo '<h3>' . esc_html__( 'Movimientos manuales', 'keytill' ) . '</h3>';
 		if ( empty( $s['moves'] ) ) {
-			echo '<p>' . esc_html__( 'Sin movimientos manuales en el período.', 'hm-pos' ) . '</p>';
+			echo '<p>' . esc_html__( 'Sin movimientos manuales en el período.', 'keytill' ) . '</p>';
 		} else {
 			echo '<table class="widefat striped"><thead><tr>';
-			foreach ( array( __( 'Fecha', 'hm-pos' ), __( 'Tipo', 'hm-pos' ), __( 'Concepto', 'hm-pos' ), __( 'Monto', 'hm-pos' ), __( 'Usuario', 'hm-pos' ) ) as $h ) {
+			foreach ( array( __( 'Fecha', 'keytill' ), __( 'Tipo', 'keytill' ), __( 'Concepto', 'keytill' ), __( 'Monto', 'keytill' ), __( 'Usuario', 'keytill' ) ) as $h ) {
 				echo '<th>' . esc_html( $h ) . '</th>';
 			}
 			echo '</tr></thead><tbody>';
@@ -197,7 +197,7 @@ class HMPOS_Cash_Digital {
 				printf(
 					'<tr><td>%s</td><td>%s</td><td>%s</td><td style="text-align:right">%s%s</td><td>%s</td></tr>',
 					esc_html( self::fmt_date( $m['at'] ) ),
-					esc_html( $ingreso ? __( 'Ingreso', 'hm-pos' ) : __( 'Retiro', 'hm-pos' ) ),
+					esc_html( $ingreso ? __( 'Ingreso', 'keytill' ) : __( 'Retiro', 'keytill' ) ),
 					esc_html( '' !== $m['concept'] ? $m['concept'] : '—' ),
 					$ingreso ? '' : '− ',
 					wp_kses_post( self::fmt( $m['amount'] ) ),
@@ -207,17 +207,17 @@ class HMPOS_Cash_Digital {
 			echo '</tbody></table>';
 		}
 
-		echo '<h3>' . esc_html__( 'Transferencias del período', 'hm-pos' ) . '</h3>';
+		echo '<h3>' . esc_html__( 'Transferencias del período', 'keytill' ) . '</h3>';
 		if ( empty( $s['transfers'] ) ) {
-			echo '<p>' . esc_html__( 'Sin transferencias en el período.', 'hm-pos' ) . '</p>';
+			echo '<p>' . esc_html__( 'Sin transferencias en el período.', 'keytill' ) . '</p>';
 		} else {
 			echo '<table class="widefat striped"><thead><tr>';
-			foreach ( array( __( 'Fecha', 'hm-pos' ), __( 'Venta', 'hm-pos' ), __( 'Cliente', 'hm-pos' ), __( 'Monto', 'hm-pos' ), __( 'Verificación', 'hm-pos' ) ) as $h ) {
+			foreach ( array( __( 'Fecha', 'keytill' ), __( 'Venta', 'keytill' ), __( 'Cliente', 'keytill' ), __( 'Monto', 'keytill' ), __( 'Verificación', 'keytill' ) ) as $h ) {
 				echo '<th>' . esc_html( $h ) . '</th>';
 			}
 			echo '</tr></thead><tbody>';
 			foreach ( $s['transfers'] as $tx ) {
-				$vl = 'verificada' === $tx['verification'] ? __( 'Verificada', 'hm-pos' ) : ( 'no_llego' === $tx['verification'] ? __( 'No llegó', 'hm-pos' ) : __( 'Pendiente', 'hm-pos' ) );
+				$vl = 'verificada' === $tx['verification'] ? __( 'Verificada', 'keytill' ) : ( 'no_llego' === $tx['verification'] ? __( 'No llegó', 'keytill' ) : __( 'Pendiente', 'keytill' ) );
 				printf(
 					'<tr><td>%s</td><td>#%s</td><td>%s</td><td style="text-align:right">%s</td><td>%s</td></tr>',
 					esc_html( $tx['date'] ),
@@ -243,7 +243,7 @@ class HMPOS_Cash_Digital {
 				'post_status'    => 'publish',
 				'posts_per_page' => 1,
 				'fields'         => 'ids',
-				'meta_key'       => '_hmpos_status', // phpcs:ignore WordPress.DB.SlowDBQuery
+				'meta_key'       => '_keytill_status', // phpcs:ignore WordPress.DB.SlowDBQuery
 				'meta_value'     => 'open',          // phpcs:ignore WordPress.DB.SlowDBQuery
 			)
 		);
@@ -251,7 +251,7 @@ class HMPOS_Cash_Digital {
 	}
 
 	public static function is_open( $id ) {
-		return 'open' === get_post_meta( (int) $id, '_hmpos_status', true );
+		return 'open' === get_post_meta( (int) $id, '_keytill_status', true );
 	}
 
 	/** ¿Ya se inicializó la caja digital alguna vez? */
@@ -275,7 +275,7 @@ class HMPOS_Cash_Digital {
 	 */
 	public static function open_session( $user_id, $initial = null ) {
 		if ( self::get_open_session_id() ) {
-			return new WP_Error( 'hmpos_digital_open', __( 'La caja digital ya está abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_digital_open', __( 'La caja digital ya está abierta.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		if ( self::is_seeded() ) {
@@ -287,7 +287,7 @@ class HMPOS_Cash_Digital {
 			$period_from = $last ? gmdate( 'Y-m-d H:i:s', strtotime( $last . ' UTC' ) + 1 ) : current_time( 'mysql', true );
 		} else {
 			if ( null === $initial ) {
-				return new WP_Error( 'hmpos_digital_seed', __( 'Cargá el saldo inicial de la caja digital (solo la primera vez).', 'hm-pos' ), array( 'status' => 400 ) );
+				return new WP_Error( 'keytill_digital_seed', __( 'Cargá el saldo inicial de la caja digital (solo la primera vez).', 'keytill' ), array( 'status' => 400 ) );
 			}
 			$opening     = round( (float) $initial, 2 );
 			$period_from = current_time( 'mysql', true ); // GMT
@@ -297,7 +297,7 @@ class HMPOS_Cash_Digital {
 			array(
 				'post_type'   => self::CPT,
 				'post_status' => 'publish',
-				'post_title'  => sprintf( __( 'Caja digital %s', 'hm-pos' ), wp_date( 'd/m/Y H:i' ) ),
+				'post_title'  => sprintf( __( 'Caja digital %s', 'keytill' ), wp_date( 'd/m/Y H:i' ) ),
 			),
 			true
 		);
@@ -305,12 +305,12 @@ class HMPOS_Cash_Digital {
 			return $id;
 		}
 
-		update_post_meta( $id, '_hmpos_status', 'open' );
-		update_post_meta( $id, '_hmpos_opened_by', (int) $user_id );
-		update_post_meta( $id, '_hmpos_opened_at', current_time( 'mysql' ) );
-		update_post_meta( $id, '_hmpos_period_from', $period_from ); // desde acá cuentan las ventas
-		update_post_meta( $id, '_hmpos_opening_balance', $opening );
-		update_post_meta( $id, '_hmpos_moves', array() );
+		update_post_meta( $id, '_keytill_status', 'open' );
+		update_post_meta( $id, '_keytill_opened_by', (int) $user_id );
+		update_post_meta( $id, '_keytill_opened_at', current_time( 'mysql' ) );
+		update_post_meta( $id, '_keytill_period_from', $period_from ); // desde acá cuentan las ventas
+		update_post_meta( $id, '_keytill_opening_balance', $opening );
+		update_post_meta( $id, '_keytill_moves', array() );
 		update_option( self::SEEDED, 1 );
 
 		return self::payload( $id );
@@ -327,15 +327,15 @@ class HMPOS_Cash_Digital {
 	 */
 	public static function add_move( $id, $kind, $amount, $concept ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'hmpos_digital_closed', __( 'La caja digital no está abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_digital_closed', __( 'La caja digital no está abierta.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$kind   = ( 'ingreso' === $kind ) ? 'ingreso' : 'retiro';
 		$amount = round( (float) $amount, 2 );
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'hmpos_bad_amount', __( 'Monto inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_amount', __( 'Monto inválido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		$uid    = get_current_user_id();
-		$list   = get_post_meta( $id, '_hmpos_moves', true );
+		$list   = get_post_meta( $id, '_keytill_moves', true );
 		$list   = is_array( $list ) ? $list : array();
 		$list[] = array(
 			'kind'    => $kind,
@@ -345,7 +345,7 @@ class HMPOS_Cash_Digital {
 			'user_id' => (int) $uid,
 			'user'    => $uid ? self::user_label( $uid ) : '',
 		);
-		update_post_meta( $id, '_hmpos_moves', $list );
+		update_post_meta( $id, '_keytill_moves', $list );
 		return self::payload( $id );
 	}
 
@@ -357,22 +357,22 @@ class HMPOS_Cash_Digital {
 	 */
 	public static function close_session( $id ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'hmpos_digital_closed', __( 'La caja digital no está abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_digital_closed', __( 'La caja digital no está abierta.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$gmt = current_time( 'mysql', true );                               // borde del período (GMT)
-		update_post_meta( $id, '_hmpos_period_to', $gmt );
-		update_post_meta( $id, '_hmpos_closed_at', current_time( 'mysql' ) ); // para mostrar (local)
+		update_post_meta( $id, '_keytill_period_to', $gmt );
+		update_post_meta( $id, '_keytill_closed_at', current_time( 'mysql' ) ); // para mostrar (local)
 
 		$summary = self::compute_summary( $id );
 		$closing = $summary['balance'];
 
-		update_post_meta( $id, '_hmpos_status', 'closed' );
-		update_post_meta( $id, '_hmpos_closing_balance', $closing );
+		update_post_meta( $id, '_keytill_status', 'closed' );
+		update_post_meta( $id, '_keytill_closing_balance', $closing );
 		// Snapshot para el historial del admin (evita recalcular al listar).
-		update_post_meta( $id, '_hmpos_sum_sales', $summary['sales'] );
-		update_post_meta( $id, '_hmpos_sum_refunds', $summary['refunds'] );
-		update_post_meta( $id, '_hmpos_sum_ingresos', $summary['ingresos'] );
-		update_post_meta( $id, '_hmpos_sum_retiros', $summary['retiros'] );
+		update_post_meta( $id, '_keytill_sum_sales', $summary['sales'] );
+		update_post_meta( $id, '_keytill_sum_refunds', $summary['refunds'] );
+		update_post_meta( $id, '_keytill_sum_ingresos', $summary['ingresos'] );
+		update_post_meta( $id, '_keytill_sum_retiros', $summary['retiros'] );
 
 		update_option( self::LAST_BALANCE, $closing );
 		update_option( self::LAST_CLOSE, $gmt );
@@ -392,9 +392,9 @@ class HMPOS_Cash_Digital {
 	 * @return array
 	 */
 	public static function compute_summary( $id ) {
-		$opening = (float) get_post_meta( $id, '_hmpos_opening_balance', true );
-		$from    = (string) get_post_meta( $id, '_hmpos_period_from', true ); // GMT
-		$end     = (string) get_post_meta( $id, '_hmpos_period_to', true );   // GMT (si cerró)
+		$opening = (float) get_post_meta( $id, '_keytill_opening_balance', true );
+		$from    = (string) get_post_meta( $id, '_keytill_period_from', true ); // GMT
+		$end     = (string) get_post_meta( $id, '_keytill_period_to', true );   // GMT (si cerró)
 		if ( '' === $end ) {
 			$end = current_time( 'mysql', true ); // GMT ahora
 		}
@@ -409,7 +409,7 @@ class HMPOS_Cash_Digital {
 			if ( 'efectivo' === $pm || 'credito' === $pm ) {
 				continue; // no es dinero de la cuenta digital
 			}
-			$charged = round( (float) $o->get_total() - (float) $o->get_meta( '_hmpos_credit_used' ), 2 );
+			$charged = round( (float) $o->get_total() - (float) $o->get_meta( '_keytill_credit_used' ), 2 );
 			if ( $charged <= 0 ) {
 				continue;
 			}
@@ -432,7 +432,7 @@ class HMPOS_Cash_Digital {
 			);
 		}
 
-		$moves    = get_post_meta( $id, '_hmpos_moves', true );
+		$moves    = get_post_meta( $id, '_keytill_moves', true );
 		$moves    = is_array( $moves ) ? $moves : array();
 		$ingresos = 0.0;
 		$retiros  = 0.0;
@@ -474,7 +474,7 @@ class HMPOS_Cash_Digital {
 		);
 		$out = array();
 		foreach ( (array) $orders as $o ) {
-			if ( $o instanceof WC_Order && 'hmpos' === $o->get_created_via() ) {
+			if ( $o instanceof WC_Order && 'keytill' === $o->get_created_via() ) {
 				$out[] = $o;
 			}
 		}
@@ -488,8 +488,8 @@ class HMPOS_Cash_Digital {
 	private static function order_digital_refund( $order ) {
 		$sum = 0.0;
 		foreach ( $order->get_refunds() as $refund ) {
-			if ( 'transferencia' === $refund->get_meta( '_hmpos_refund_method' ) ) {
-				$stored = (float) $refund->get_meta( '_hmpos_digital_refund' );
+			if ( 'transferencia' === $refund->get_meta( '_keytill_refund_method' ) ) {
+				$stored = (float) $refund->get_meta( '_keytill_digital_refund' );
 				$sum   += $stored > 0 ? $stored : abs( (float) $refund->get_total() );
 			}
 		}
@@ -502,7 +502,7 @@ class HMPOS_Cash_Digital {
 
 	/** Estado de verificación de una venta ('pendiente' | 'verificada' | 'no_llego'). */
 	public static function verification_of( $order_id ) {
-		$v = get_post_meta( (int) $order_id, '_hmpos_transfer_check', true );
+		$v = get_post_meta( (int) $order_id, '_keytill_transfer_check', true );
 		return in_array( $v, array( 'verificada', 'no_llego' ), true ) ? $v : 'pendiente';
 	}
 
@@ -510,9 +510,9 @@ class HMPOS_Cash_Digital {
 	public static function set_verification( $order_id, $status ) {
 		$status = in_array( $status, array( 'verificada', 'no_llego', 'pendiente' ), true ) ? $status : 'pendiente';
 		if ( 'pendiente' === $status ) {
-			delete_post_meta( (int) $order_id, '_hmpos_transfer_check' );
+			delete_post_meta( (int) $order_id, '_keytill_transfer_check' );
 		} else {
-			update_post_meta( (int) $order_id, '_hmpos_transfer_check', $status );
+			update_post_meta( (int) $order_id, '_keytill_transfer_check', $status );
 		}
 		return $status;
 	}
@@ -526,16 +526,16 @@ class HMPOS_Cash_Digital {
 		if ( ! $id ) {
 			return array( 'open' => false, 'seeded' => self::is_seeded(), 'last_balance' => (float) get_option( self::LAST_BALANCE, 0 ) );
 		}
-		$status  = get_post_meta( $id, '_hmpos_status', true );
+		$status  = get_post_meta( $id, '_keytill_status', true );
 		$summary = self::compute_summary( $id );
-		$by      = (int) get_post_meta( $id, '_hmpos_opened_by', true );
+		$by      = (int) get_post_meta( $id, '_keytill_opened_by', true );
 
 		$payload = array(
 			'open'        => 'open' === $status,
 			'seeded'      => true,
 			'session_id'  => $id,
 			'status'      => $status,
-			'opened_at'   => get_post_meta( $id, '_hmpos_opened_at', true ),
+			'opened_at'   => get_post_meta( $id, '_keytill_opened_at', true ),
 			'opened_by'   => $by ? self::user_label( $by ) : '',
 			'opening'     => $summary['opening'],
 			'sales'       => $summary['sales'],
@@ -548,8 +548,8 @@ class HMPOS_Cash_Digital {
 			'moves'       => $summary['moves'],
 		);
 		if ( 'closed' === $status ) {
-			$payload['closed_at']       = get_post_meta( $id, '_hmpos_closed_at', true );
-			$payload['closing_balance'] = (float) get_post_meta( $id, '_hmpos_closing_balance', true );
+			$payload['closed_at']       = get_post_meta( $id, '_keytill_closed_at', true );
+			$payload['closing_balance'] = (float) get_post_meta( $id, '_keytill_closing_balance', true );
 		}
 		return $payload;
 	}
@@ -561,7 +561,7 @@ class HMPOS_Cash_Digital {
 	}
 
 	private static function order_customer( $order ) {
-		$name = $order->get_meta( '_hmpos_customer_name' );
+		$name = $order->get_meta( '_keytill_customer_name' );
 		if ( '' === $name ) {
 			$name = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
 		}

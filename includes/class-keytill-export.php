@@ -2,7 +2,7 @@
 /**
  * Exportación de pedidos a CSV (para análisis en Excel).
  *
- * Descarga vía GET al front: ?hmpos_export=orders&<filtros>&_wpnonce=…
+ * Descarga vía GET al front: ?keytill_export=orders&<filtros>&_wpnonce=…
  * Requiere la capability del POS + un nonce. Genera UNA FILA POR PRODUCTO
  * VENDIDO (línea de pedido), con vendedor, cajero, medio de pago, etc., para
  * poder pivotear (qué vendedor vendió más, qué producto se vendió más, …).
@@ -10,18 +10,18 @@
  * Formato pensado para Excel en español: separador «;», decimales con coma y
  * BOM UTF-8 (para que respete los acentos).
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Export {
+class KEYTILL_Export {
 
 	/** Query var que dispara la descarga. */
-	const QV = 'hmpos_export';
+	const QV = 'keytill_export';
 
 	/** Acción del nonce. */
-	const NONCE = 'hmpos_export_orders';
+	const NONCE = 'keytill_export_orders';
 
 	public static function init() {
 		add_action( 'template_redirect', array( __CLASS__, 'maybe_render' ) );
@@ -40,7 +40,7 @@ class HMPOS_Export {
 
 	/** ¿Puede exportar? Misma barrera que operar el POS o gestionar pedidos. */
 	private static function can_export() {
-		return current_user_can( HMPOS_CAP ) || current_user_can( 'edit_shop_orders' );
+		return current_user_can( KEYTILL_CAP ) || current_user_can( 'edit_shop_orders' );
 	}
 
 	/**
@@ -51,14 +51,14 @@ class HMPOS_Export {
 			return;
 		}
 		if ( ! self::can_export() ) {
-			wp_die( esc_html__( 'No tenés permiso para exportar.', 'hm-pos' ), 403 );
+			wp_die( esc_html__( 'No tenés permiso para exportar.', 'keytill' ), 403 );
 		}
 		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, self::NONCE ) ) {
-			wp_die( esc_html__( 'El enlace de exportación venció. Volvé a generarlo desde el POS.', 'hm-pos' ), 403 );
+			wp_die( esc_html__( 'El enlace de exportación venció. Volvé a generarlo desde el POS.', 'keytill' ), 403 );
 		}
 		if ( ! function_exists( 'wc_get_orders' ) ) {
-			wp_die( esc_html__( 'WooCommerce no está disponible.', 'hm-pos' ), 500 );
+			wp_die( esc_html__( 'WooCommerce no está disponible.', 'keytill' ), 500 );
 		}
 
 		self::stream_csv();
@@ -98,13 +98,13 @@ class HMPOS_Export {
 		$meta_query = array();
 		$origin     = sanitize_key( $g( 'origin' ) );
 		if ( 'pos' === $origin ) {
-			$meta_query[] = array( 'key' => '_hmpos', 'compare' => 'EXISTS' );
+			$meta_query[] = array( 'key' => '_keytill', 'compare' => 'EXISTS' );
 		} elseif ( 'web' === $origin ) {
-			$meta_query[] = array( 'key' => '_hmpos', 'compare' => 'NOT EXISTS' );
+			$meta_query[] = array( 'key' => '_keytill', 'compare' => 'NOT EXISTS' );
 		}
 		$cajero = (int) $g( 'cajero_id' );
 		if ( $cajero ) {
-			$meta_query[] = array( 'key' => '_hmpos_cajero_id', 'value' => $cajero );
+			$meta_query[] = array( 'key' => '_keytill_cajero_id', 'value' => $cajero );
 		}
 		if ( $meta_query ) {
 			$args['meta_query'] = $meta_query; // phpcs:ignore WordPress.DB.SlowDBQuery
@@ -114,7 +114,7 @@ class HMPOS_Export {
 		$from = $g( 'date_from' );
 		$to   = $g( 'date_to' );
 		if ( '' === $from || '' === $to ) {
-			wp_die( esc_html__( 'Elegí un rango de fechas (Desde y Hasta) para exportar.', 'hm-pos' ), 400 );
+			wp_die( esc_html__( 'Elegí un rango de fechas (Desde y Hasta) para exportar.', 'keytill' ), 400 );
 		}
 		$args['date_created'] = strtotime( $from . ' 00:00:00' ) . '...' . strtotime( $to . ' 23:59:59' );
 		$search = trim( $g( 'search' ) );
@@ -147,21 +147,21 @@ class HMPOS_Export {
 		fwrite( $out, "\xEF\xBB\xBF" ); // BOM UTF-8 para Excel.
 
 		$cols = array(
-			__( 'Pedido', 'hm-pos' ),
-			__( 'Fecha', 'hm-pos' ),
-			__( 'Estado', 'hm-pos' ),
-			__( 'Origen', 'hm-pos' ),
-			__( 'Cliente', 'hm-pos' ),
-			__( 'DNI/CUIT', 'hm-pos' ),
-			__( 'Vendedor', 'hm-pos' ),
-			__( 'Cajero', 'hm-pos' ),
-			__( 'Medio de pago', 'hm-pos' ),
-			__( 'Producto', 'hm-pos' ),
-			__( 'Variación', 'hm-pos' ),
-			__( 'Cantidad', 'hm-pos' ),
-			__( 'Precio unit.', 'hm-pos' ),
-			__( 'Importe', 'hm-pos' ),
-			__( 'Total pedido', 'hm-pos' ),
+			__( 'Pedido', 'keytill' ),
+			__( 'Fecha', 'keytill' ),
+			__( 'Estado', 'keytill' ),
+			__( 'Origen', 'keytill' ),
+			__( 'Cliente', 'keytill' ),
+			__( 'DNI/CUIT', 'keytill' ),
+			__( 'Vendedor', 'keytill' ),
+			__( 'Cajero', 'keytill' ),
+			__( 'Medio de pago', 'keytill' ),
+			__( 'Producto', 'keytill' ),
+			__( 'Variación', 'keytill' ),
+			__( 'Cantidad', 'keytill' ),
+			__( 'Precio unit.', 'keytill' ),
+			__( 'Importe', 'keytill' ),
+			__( 'Total pedido', 'keytill' ),
 		);
 		fputcsv( $out, $cols, ';' );
 
@@ -185,22 +185,22 @@ class HMPOS_Export {
 			$date      = $o->get_date_created() ? $o->get_date_created()->date_i18n( 'Y-m-d H:i' ) : '';
 			$st_key    = 'wc-' . $o->get_status();
 			$st        = isset( $statuses[ $st_key ] ) ? $statuses[ $st_key ] : $o->get_status();
-			$is_pos    = 'hmpos' === $o->get_created_via();
-			$origin_lb = $is_pos ? 'POS' : __( 'Web', 'hm-pos' );
+			$is_pos    = 'keytill' === $o->get_created_via();
+			$origin_lb = $is_pos ? 'POS' : __( 'Web', 'keytill' );
 
-			$cust = (string) $o->get_meta( '_hmpos_customer_name' );
+			$cust = (string) $o->get_meta( '_keytill_customer_name' );
 			if ( '' === $cust ) {
 				$cust = trim( $o->get_billing_first_name() . ' ' . $o->get_billing_last_name() );
 			}
-			$doc = (string) $o->get_meta( '_hmpos_customer_doc' );
+			$doc = (string) $o->get_meta( '_keytill_customer_doc' );
 
-			$seller = (string) $o->get_meta( '_hmpos_seller' );
+			$seller = (string) $o->get_meta( '_keytill_seller' );
 			if ( '' === $seller ) {
-				$sid    = (string) $o->get_meta( '_hmpos_seller_id' );
-				$seller = ( '' !== $sid && class_exists( 'HMPOS_Sellers' ) ) ? HMPOS_Sellers::name_of( $sid ) : '';
+				$sid    = (string) $o->get_meta( '_keytill_seller_id' );
+				$seller = ( '' !== $sid && class_exists( 'KEYTILL_Sellers' ) ) ? KEYTILL_Sellers::name_of( $sid ) : '';
 			}
 
-			$cashier = self::cashier_name( (int) $o->get_meta( '_hmpos_cajero_id' ) );
+			$cashier = self::cashier_name( (int) $o->get_meta( '_keytill_cajero_id' ) );
 			$pay     = $o->get_payment_method_title();
 			$o_total = self::num( (float) $o->get_total() );
 

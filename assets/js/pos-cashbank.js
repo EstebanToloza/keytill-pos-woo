@@ -1,9 +1,9 @@
 /* ============================================================
-   HM Sport POS — pos-cashbank.js
+   Keytill POS — pos-cashbank.js
    Pestaña "Caja / Banco" (solo gestión). Muestra la caja física y la
    caja digital (cuenta bancaria única) con su saldo vivo, los movimientos
    y la lista de transferencias con el tilde de verificación.
-   Componente Alpine independiente (hmposCashBank).
+   Componente Alpine independiente (keytillCashBank).
    ============================================================ */
 ( function () {
 	'use strict';
@@ -42,7 +42,7 @@
 		return p.join( '&' );
 	}
 
-	function hmposCashBank() {
+	function keytillCashBank() {
 		return {
 			loading: true,
 			error: '',
@@ -67,7 +67,7 @@
 				this.load();
 				this.loadLedger();
 				// Recarga al entrar a la pestaña.
-				window.addEventListener( 'hmpos:view', function ( e ) {
+				window.addEventListener( 'keytill:view', function ( e ) {
 					if ( e.detail === 'cajabanco' ) { self.load(); self.loadLedger(); }
 				} );
 			},
@@ -77,7 +77,7 @@
 				this.loading = true;
 				this.error = '';
 				// Cache-buster: evita que un caché del hosting sirva un estado viejo.
-				getJSON( API.root + 'hmpos/v1/cashbank/summary?_=' + Date.now() ).then( function ( d ) {
+				getJSON( API.root + 'keytill/v1/cashbank/summary?_=' + Date.now() ).then( function ( d ) {
 					self.loading = false;
 					if ( ! d || d.code ) { self.error = ( d && d.message ) || 'No se pudo cargar.'; return; }
 					self.cash = d.cash || null;
@@ -108,7 +108,7 @@
 				this.busy = true;
 				this.error = '';
 				var body = ( initial === null || initial === undefined ) ? {} : { initial: initial };
-				sendJSON( API.root + 'hmpos/v1/digital/open', 'POST', body ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/digital/open', 'POST', body ).then( function ( res ) {
 					self.busy = false;
 					if ( ! res.ok ) {
 						self.error = ( res.data && res.data.message ) || 'No se pudo abrir la caja digital.';
@@ -124,7 +124,7 @@
 				var self = this;
 				this.busy = true;
 				this.error = '';
-				sendJSON( API.root + 'hmpos/v1/digital/close', 'POST', {} ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/digital/close', 'POST', {} ).then( function ( res ) {
 					self.busy = false;
 					if ( ! res.ok ) { self.error = ( res.data && res.data.message ) || 'No se pudo cerrar la caja digital.'; return; }
 					self.load();
@@ -143,7 +143,7 @@
 				var self = this;
 				m.busy = true;
 				m.error = '';
-				sendJSON( API.root + 'hmpos/v1/cash/move', 'POST', {
+				sendJSON( API.root + 'keytill/v1/cash/move', 'POST', {
 					account: m.account, kind: m.kind, amount: amount, concept: m.concept
 				} ).then( function ( res ) {
 					m.busy = false;
@@ -161,7 +161,7 @@
 			setVerify: function ( tx, status ) {
 				var self = this;
 				var next = ( tx.verification === status ) ? 'pendiente' : status; // tocar de nuevo = volver a pendiente
-				sendJSON( API.root + 'hmpos/v1/digital/verify', 'POST', { order_id: tx.order_id, status: next } ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/digital/verify', 'POST', { order_id: tx.order_id, status: next } ).then( function ( res ) {
 					if ( res.ok && res.data ) { tx.verification = res.data.verification; }
 				} ).catch( function () {} );
 			},
@@ -179,7 +179,7 @@
 					from: this.lf.from, to: this.lf.to, origen: this.lf.origen,
 					movement: this.lf.movement, type: this.lf.type, account: this.lf.account
 				} );
-				getJSON( API.root + 'hmpos/v1/cashbank/ledger?' + query + '&_=' + Date.now() ).then( function ( d ) {
+				getJSON( API.root + 'keytill/v1/cashbank/ledger?' + query + '&_=' + Date.now() ).then( function ( d ) {
 					self.ledger.loading = false;
 					if ( ! d || d.code ) { return; }
 					self.ledger.rows = d.rows || [];
@@ -242,6 +242,6 @@
 	}
 
 	document.addEventListener( 'alpine:init', function () {
-		window.Alpine.data( 'hmposCashBank', hmposCashBank );
+		window.Alpine.data( 'keytillCashBank', keytillCashBank );
 	} );
 }() );

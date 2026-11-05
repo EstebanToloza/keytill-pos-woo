@@ -6,7 +6,7 @@
  * `stock` se agrega acá para tener estados representativos:
  * un par en stock bajo y uno en cero para probar esos badges.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @return array<int,array{code:string,name:string,cat:string,price:int,stock:int}>
  */
-function hmpos_demo_products() {
+function keytill_demo_products() {
 	return array(
 		array( 'code' => '7791001', 'name' => 'Camiseta Titular Réplica 25/26', 'cat' => 'Indumentaria', 'price' => 89900, 'stock' => 24 ),
 		array( 'code' => '7791002', 'name' => 'Short Entrenamiento Dry', 'cat' => 'Indumentaria', 'price' => 34500, 'stock' => 40 ),

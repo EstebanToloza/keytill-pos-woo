@@ -1,5 +1,5 @@
 /* ============================================================
-   HM Sport — Design Tokens
+   Keytill — Design Tokens
    Fuente de verdad de estilos para el POS y el theme.
    Cambiá la marca o una fuente ACÁ y se propaga a todo.
    ============================================================ */
@@ -9,7 +9,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap');
 
 :root{
-  /* --- MARCA (Site Kit de Elementor de HM Sport) --- */
+  /* --- MARCA (Site Kit de Elementor de Keytill) --- */
   --brand:#00255A;        /* navy — acción y estructura */
   --brand-600:#001B44;
   --brand-700:#00122F;

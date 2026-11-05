@@ -1,7 +1,7 @@
 /* ============================================================
-   HM Sport POS — pos-products.js
+   Keytill POS — pos-products.js
    Pestaña "Productos" de la consola. Componente Alpine independiente
-   (hmposProducts) montado en su vista; lee $store.pos para saber si
+   (keytillProducts) montado en su vista; lee $store.pos para saber si
    está activa y si el usuario puede gestionar (canManage).
    Edición rápida inline de precio / stock / activo (solo gestión) +
    alta simple. Variaciones se expanden por fila (lazy). Imágenes,
@@ -54,8 +54,8 @@
 	// Envía; si el nonce venció, lo refresca una vez y reintenta.
 	function sendJSON( url, method, body ) {
 		return doSend( url, method, body ).then( function ( res ) {
-			if ( ! isNonceError( res ) || typeof window.hmposRefreshNonce !== 'function' ) { return res; }
-			return window.hmposRefreshNonce( true ).then( function ( ok ) {
+			if ( ! isNonceError( res ) || typeof window.keytillRefreshNonce !== 'function' ) { return res; }
+			return window.keytillRefreshNonce( true ).then( function ( ok ) {
 				if ( ! ok ) { return withSessionMsg( res ); } // sesión expirada de verdad.
 				return doSend( url, method, body ).then( withSessionMsg );
 			} );
@@ -67,7 +67,7 @@
 		return '$ ' + v.toLocaleString( 'es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 } );
 	}
 
-	function hmposProducts() {
+	function keytillProducts() {
 		return {
 			items: [],
 			total: 0,
@@ -99,7 +99,7 @@
 			uploadBusy: false,
 			form: null,
 			// sucursales activas, para el select del editor y el stock por sucursal
-			branches: ( window.hmposConfig || {} ).branches || [],
+			branches: ( window.keytillConfig || {} ).branches || [],
 			// stock por sucursal de una variación (popover) y diálogo de "mover stock"
 			stockPop: { open: false, id: 0, name: '', draft: {}, busy: false, error: '', legacy: false, current: 0 },
 			moveBox: { open: false, id: 0, name: '', from: '', to: '', qty: '', busy: false, error: '' },
@@ -116,7 +116,7 @@
 			init: function () {
 				var self = this;
 				this._onView = function ( e ) { if ( e.detail === 'productos' ) { self.ensureLoaded(); } };
-				window.addEventListener( 'hmpos:view', this._onView );
+				window.addEventListener( 'keytill:view', this._onView );
 				if ( this.$store.pos.view === 'productos' ) { this.ensureLoaded(); }
 			},
 
@@ -131,7 +131,7 @@
 
 			loadMeta: function () {
 				var self = this;
-				getJSON( API.root + 'hmpos/v1/admin/products/meta' )
+				getJSON( API.root + 'keytill/v1/admin/products/meta' )
 					.then( function ( d ) { if ( d && d.categories ) { self.meta = d; } } )
 					.catch( function () {} );
 			},
@@ -150,7 +150,7 @@
 				this.error = '';
 				this.expanded = {};
 				var params = Object.assign( { page: page || 1, per_page: this.perPage }, this.cleanFilters() );
-				getJSON( API.root + 'hmpos/v1/admin/products?' + qs( params ) )
+				getJSON( API.root + 'keytill/v1/admin/products?' + qs( params ) )
 					.then( function ( d ) {
 						self.loading = false;
 						self.items = ( ( d && d.items ) || [] ).map( self.decorate );
@@ -196,7 +196,7 @@
 				var self = this;
 				this.scanBusy = true;
 				this.error = '';
-				sendJSON( API.root + 'hmpos/v1/admin/scan-product', 'POST', { code: code } ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/admin/scan-product', 'POST', { code: code } ).then( function ( res ) {
 					self.scanBusy = false;
 					if ( ! res.ok ) { self.error = ( res.data && res.data.message ) || 'No se pudo procesar el código.'; return; }
 					var d = res.data || {};
@@ -231,7 +231,7 @@
 				}
 				var self = this;
 				this.expanded[ r.id ] = { loading: true, error: '', rows: [] };
-				getJSON( API.root + 'hmpos/v1/admin/products/' + r.id )
+				getJSON( API.root + 'keytill/v1/admin/products/' + r.id )
 					.then( function ( d ) {
 						var rows = ( ( d && d.variations ) || [] ).map( self.decorate );
 						self.expanded[ r.id ] = { loading: false, error: '', rows: rows };
@@ -243,7 +243,7 @@
 			// Avisa a la vista de venta que el catálogo cambió (así refresca su copia
 			// en memoria en vez de mostrar datos viejos por el throttle de 30 s).
 			_catalogDirty: function () {
-				try { window.dispatchEvent( new CustomEvent( 'hmpos:catalog-dirty' ) ); } catch ( e ) {}
+				try { window.dispatchEvent( new CustomEvent( 'keytill:catalog-dirty' ) ); } catch ( e ) {}
 			},
 
 			saveField: function ( r, field ) {
@@ -291,7 +291,7 @@
 				var self = this;
 				r._saving = true;
 				r._saved = false;
-				sendJSON( API.root + 'hmpos/v1/admin/products/' + r.id, 'PATCH', body )
+				sendJSON( API.root + 'keytill/v1/admin/products/' + r.id, 'PATCH', body )
 					.then( function ( res ) {
 						r._saving = false;
 						if ( ! res.ok ) {
@@ -434,7 +434,7 @@
 				else { body.ids = Object.keys( this.branchSel ).map( function ( k ) { return parseInt( k, 10 ); } ); }
 				this.branchBusy = true;
 				this.error = '';
-				sendJSON( API.root + 'hmpos/v1/admin/products/bulk-branch', 'POST', body ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/admin/products/bulk-branch', 'POST', body ).then( function ( res ) {
 					self.branchBusy = false;
 					if ( ! res.ok ) { self.error = ( res.data && res.data.message ) || 'No se pudo asignar la sucursal.'; return; }
 					self._catalogDirty();
@@ -491,7 +491,7 @@
 
 			// Genera las etiquetas del lote: POST (nuevo tab) con items[<id>]=<qty>.
 			confirmLabelsBatch: function () {
-				var cfg = window.hmposConfig || {};
+				var cfg = window.keytillConfig || {};
 				if ( ! cfg.labelsBatch || ! cfg.labelsNonce ) { this.error = 'No se pudo iniciar la impresión.'; return; }
 				var rows = this.labelSelRows();
 				if ( ! rows.length ) { return; }
@@ -599,7 +599,7 @@
 				this.editorOpen = true;
 				this.editorBusy = true;
 				this.ensureAttributes();
-				getJSON( API.root + 'hmpos/v1/admin/products/' + row.id )
+				getJSON( API.root + 'keytill/v1/admin/products/' + row.id )
 					.then( function ( d ) {
 						self.editorBusy = false;
 						if ( ! d || d.id === undefined ) { self.editorError = 'No se pudo cargar el producto.'; return; }
@@ -649,7 +649,7 @@
 				var self = this, sp = this.stockPop;
 				if ( sp.busy ) { return; }
 				sp.busy = true; sp.error = '';
-				sendJSON( API.root + 'hmpos/v1/admin/products/' + sp.id, 'PATCH', { branch_stock: sp.draft } ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/admin/products/' + sp.id, 'PATCH', { branch_stock: sp.draft } ).then( function ( res ) {
 					sp.busy = false;
 					if ( ! res.ok ) { sp.error = ( res.data && res.data.message ) || 'No se pudo guardar.'; return; }
 					var v = ( self.form.variations || [] ).find( function ( x ) { return x.id === sp.id; } );
@@ -672,7 +672,7 @@
 				if ( mb.from === mb.to ) { mb.error = 'Elegí sucursales distintas.'; return; }
 				if ( qty <= 0 ) { mb.error = 'Cantidad inválida.'; return; }
 				mb.busy = true; mb.error = '';
-				sendJSON( API.root + 'hmpos/v1/admin/products/' + mb.id + '/move-stock', 'POST', { from: mb.from, to: mb.to, qty: qty } ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/admin/products/' + mb.id + '/move-stock', 'POST', { from: mb.from, to: mb.to, qty: qty } ).then( function ( res ) {
 					mb.busy = false;
 					if ( ! res.ok ) { mb.error = ( res.data && res.data.message ) || 'No se pudo mover el stock.'; return; }
 					// Refresca donde corresponda: form simple, fila de variación y/o popover.
@@ -717,7 +717,7 @@
 			ensureAttributes: function () {
 				if ( this.attributesLoaded ) { return; }
 				var self = this;
-				getJSON( API.root + 'hmpos/v1/admin/attributes' )
+				getJSON( API.root + 'keytill/v1/admin/attributes' )
 					.then( function ( d ) {
 						self.attributes = ( d && d.attributes ) || [];
 						self.attributesLoaded = true;
@@ -775,7 +775,7 @@
 				var self = this;
 				this.genBusy = true;
 				this.editorError = '';
-				sendJSON( API.root + 'hmpos/v1/admin/attributes', 'POST', { name: name } ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/admin/attributes', 'POST', { name: name } ).then( function ( res ) {
 					self.genBusy = false;
 					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo crear el atributo.'; return; }
 					var cat = res.data;
@@ -797,7 +797,7 @@
 				var self = this;
 				this.genBusy = true;
 				this.editorError = '';
-				sendJSON( API.root + 'hmpos/v1/admin/attributes/' + row.attrId + '/terms', 'POST', { name: name } ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/admin/attributes/' + row.attrId + '/terms', 'POST', { name: name } ).then( function ( res ) {
 					self.genBusy = false;
 					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo crear el valor.'; return; }
 					var t = res.data;
@@ -826,7 +826,7 @@
 				this.editorError = '';
 				var body = { attributes: attrs };
 				if ( prune ) { body.prune = true; }
-				sendJSON( API.root + 'hmpos/v1/admin/products/' + this.form.id + '/variations', 'POST', body ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/admin/products/' + this.form.id + '/variations', 'POST', body ).then( function ( res ) {
 					self.genBusy = false;
 					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudieron generar las variaciones.'; return; }
 					// El backend detectó variaciones que ya no corresponden a los
@@ -861,7 +861,7 @@
 				var id = this.form.id;
 				this.genBusy = true;
 				this.editorError = '';
-				sendJSON( API.root + 'hmpos/v1/admin/products/' + id, 'DELETE', {} ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/admin/products/' + id, 'DELETE', {} ).then( function ( res ) {
 					self.genBusy = false;
 					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo borrar el producto.'; return; }
 					self.items = self.items.filter( function ( x ) { return x.id !== id; } );
@@ -878,7 +878,7 @@
 				if ( ! window.confirm( '¿Borrar la variación "' + ( v.label || '' ) + '"?' ) ) { return; }
 				var self = this;
 				this.genBusy = true;
-				sendJSON( API.root + 'hmpos/v1/admin/products/' + v.id, 'DELETE', {} ).then( function ( res ) {
+				sendJSON( API.root + 'keytill/v1/admin/products/' + v.id, 'DELETE', {} ).then( function ( res ) {
 					self.genBusy = false;
 					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo borrar.'; return; }
 					self.form.variations = self.form.variations.filter( function ( x ) { return x.id !== v.id; } );
@@ -904,7 +904,7 @@
 				this.editorError = '';
 				var fd = new FormData();
 				fd.append( 'file', file );
-				fetch( API.root + 'hmpos/v1/admin/media', {
+				fetch( API.root + 'keytill/v1/admin/media', {
 					method: 'POST', headers: { 'X-WP-Nonce': API.nonce }, credentials: 'same-origin', body: fd
 				} ).then( function ( r ) {
 					return r.json().then( function ( d ) { return { ok: r.ok, data: d }; } );
@@ -933,7 +933,7 @@
 					chain = chain.then( function () {
 						var fd = new FormData();
 						fd.append( 'file', file );
-						return fetch( API.root + 'hmpos/v1/admin/media', {
+						return fetch( API.root + 'keytill/v1/admin/media', {
 							method: 'POST', headers: { 'X-WP-Nonce': API.nonce }, credentials: 'same-origin', body: fd
 						} ).then( function ( r ) {
 							return r.json().then( function ( d ) { return { ok: r.ok, data: d }; } );
@@ -989,7 +989,7 @@
 					body.type = 'variable';
 				}
 				var isCreate = this.editorMode === 'create';
-				var url = isCreate ? API.root + 'hmpos/v1/admin/products' : API.root + 'hmpos/v1/admin/products/' + f.id;
+				var url = isCreate ? API.root + 'keytill/v1/admin/products' : API.root + 'keytill/v1/admin/products/' + f.id;
 				sendJSON( url, isCreate ? 'POST' : 'PATCH', body ).then( function ( res ) {
 					self.editorBusy = false;
 					if ( res.status === 409 ) { self.editorError = ( res.data && res.data.message ) || 'Ya existe otro producto con ese SKU.'; return; }
@@ -1017,6 +1017,6 @@
 	}
 
 	document.addEventListener( 'alpine:init', function () {
-		window.Alpine.data( 'hmposProducts', hmposProducts );
+		window.Alpine.data( 'keytillProducts', keytillProducts );
 	} );
 }() );

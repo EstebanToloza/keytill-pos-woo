@@ -14,24 +14,24 @@
  * POS NO mandan email. Los emails de WooCommerce son solo para la tienda web.
  * - Alta: se usa wp_insert_user() directo (no wc_create_new_customer()), que
  *   no dispara el email de "cuenta nueva".
- * - Órdenes: se filtran los emails de WooCommerce para órdenes created_via=hmpos.
+ * - Órdenes: se filtran los emails de WooCommerce para órdenes created_via=keytill.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Customers {
+class KEYTILL_Customers {
 
-	const NS = 'hmpos/v1';
+	const NS = 'keytill/v1';
 
 	/** Meta de usuario: documento tal como se tipeó (display) y normalizado (dedup). */
-	const META_DOC      = 'hmpos_doc';
-	const META_DOC_NORM = 'hmpos_doc_norm';
+	const META_DOC      = 'keytill_doc';
+	const META_DOC_NORM = 'keytill_doc_norm';
 	/** Meta de usuario: condición fiscal (una etiqueta de la lista fija). */
-	const META_IVA = 'hmpos_iva';
+	const META_IVA = 'keytill_iva';
 	/** Meta de usuario: fecha de nacimiento (Y-m-d). El teléfono va en billing_phone. */
-	const META_BIRTH = 'hmpos_birthdate';
+	const META_BIRTH = 'keytill_birthdate';
 
 	/**
 	 * Condiciones fiscales admitidas (lista estándar AR). La primera es el default.
@@ -57,7 +57,7 @@ class HMPOS_Customers {
 	}
 
 	/* ================================================================== *
-	 * Supresión de emails para el POS (órdenes created_via=hmpos)
+	 * Supresión de emails para el POS (órdenes created_via=keytill)
 	 * ================================================================== */
 
 	/**
@@ -89,13 +89,13 @@ class HMPOS_Customers {
 	 * @return bool
 	 */
 	public static function suppress_pos_order_email( $enabled, $object ) {
-		if ( $object instanceof WC_Abstract_Order && 'hmpos' === $object->get_created_via() ) {
+		if ( $object instanceof WC_Abstract_Order && 'keytill' === $object->get_created_via() ) {
 			return false;
 		}
 		// Refund: su created_via puede venir vacío; mirar la orden padre.
 		if ( $object instanceof WC_Order_Refund ) {
 			$parent = wc_get_order( $object->get_parent_id() );
-			if ( $parent && 'hmpos' === $parent->get_created_via() ) {
+			if ( $parent && 'keytill' === $parent->get_created_via() ) {
 				return false;
 			}
 		}
@@ -114,7 +114,7 @@ class HMPOS_Customers {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'rest_search' ),
-					'permission_callback' => array( 'HMPOS_REST', 'can_operate' ),
+					'permission_callback' => array( 'KEYTILL_REST', 'can_operate' ),
 					'args'                => array(
 						'q' => array(
 							'type'              => 'string',
@@ -126,7 +126,7 @@ class HMPOS_Customers {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => array( __CLASS__, 'rest_create' ),
-					'permission_callback' => array( 'HMPOS_REST', 'can_operate' ),
+					'permission_callback' => array( 'KEYTILL_REST', 'can_operate' ),
 				),
 			)
 		);
@@ -138,7 +138,7 @@ class HMPOS_Customers {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( __CLASS__, 'rest_list' ),
-				'permission_callback' => array( 'HMPOS_REST', 'can_operate' ),
+				'permission_callback' => array( 'KEYTILL_REST', 'can_operate' ),
 			)
 		);
 
@@ -150,13 +150,13 @@ class HMPOS_Customers {
 				array(
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( __CLASS__, 'rest_detail' ),
-					'permission_callback' => array( 'HMPOS_REST', 'can_operate' ),
+					'permission_callback' => array( 'KEYTILL_REST', 'can_operate' ),
 					'args'                => array( 'id' => array( 'sanitize_callback' => 'absint' ) ),
 				),
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( __CLASS__, 'rest_update' ),
-					'permission_callback' => array( 'HMPOS_REST', 'can_operate' ),
+					'permission_callback' => array( 'KEYTILL_REST', 'can_operate' ),
 					'args'                => array( 'id' => array( 'sanitize_callback' => 'absint' ) ),
 				),
 			)
@@ -225,7 +225,7 @@ class HMPOS_Customers {
 		$id   = absint( $request->get_param( 'id' ) );
 		$user = get_userdata( $id );
 		if ( ! $user || ! in_array( 'customer', (array) $user->roles, true ) ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Cliente no encontrado.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Cliente no encontrado.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$payload             = self::payload( $id );
 		$payload['stats']    = self::stats( $id );
@@ -273,7 +273,7 @@ class HMPOS_Customers {
 		$id   = (int) $id;
 		$user = get_userdata( $id );
 		if ( ! $user || ! in_array( 'customer', (array) $user->roles, true ) ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Cliente no encontrado.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Cliente no encontrado.', 'keytill' ), array( 'status' => 404 ) );
 		}
 
 		$name  = trim( (string) ( $data['name'] ?? '' ) );
@@ -283,10 +283,10 @@ class HMPOS_Customers {
 		$norm  = self::normalize_doc( $doc );
 
 		if ( '' !== $email && ! is_email( $email ) ) {
-			return new WP_Error( 'hmpos_bad_email', __( 'El email no es válido.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_email', __( 'El email no es válido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( '' === $email && '' === $norm ) {
-			return new WP_Error( 'hmpos_need_id', __( 'El cliente necesita al menos email o DNI.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_need_id', __( 'El cliente necesita al menos email o DNI.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Deduplicación contra OTROS clientes.
@@ -326,7 +326,7 @@ class HMPOS_Customers {
 		remove_filter( 'send_password_change_email', '__return_false' );
 
 		if ( is_wp_error( $res ) ) {
-			return new WP_Error( 'hmpos_update_fail', $res->get_error_message(), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_update_fail', $res->get_error_message(), array( 'status' => 500 ) );
 		}
 
 		update_user_meta( $id, self::META_DOC, $doc );
@@ -406,8 +406,8 @@ class HMPOS_Customers {
 				'total_f'      => html_entity_decode( wp_strip_all_tags( wc_price( $o->get_total(), array( 'currency' => $o->get_currency() ) ) ), ENT_QUOTES, 'UTF-8' ),
 				'status'       => $o->get_status(),
 				'status_label' => wc_get_order_status_name( $o->get_status() ),
-				'origin'       => $o->get_meta( '_hmpos' ) ? 'pos' : 'web',
-				'print_url'    => 'pos' === ( $o->get_meta( '_hmpos' ) ? 'pos' : 'web' ) ? HMPOS_Print::print_url( $o->get_id() ) : '',
+				'origin'       => $o->get_meta( '_keytill' ) ? 'pos' : 'web',
+				'print_url'    => 'pos' === ( $o->get_meta( '_keytill' ) ? 'pos' : 'web' ) ? KEYTILL_Print::print_url( $o->get_id() ) : '',
 			);
 		}
 		return $out;
@@ -518,10 +518,10 @@ class HMPOS_Customers {
 		$norm  = self::normalize_doc( $doc );
 
 		if ( '' !== $email && ! is_email( $email ) ) {
-			return new WP_Error( 'hmpos_bad_email', __( 'El email no es válido.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_email', __( 'El email no es válido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( '' === $email && '' === $norm ) {
-			return new WP_Error( 'hmpos_need_id', __( 'Para guardar un cliente cargá al menos email o DNI.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_need_id', __( 'Para guardar un cliente cargá al menos email o DNI.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// --- Deduplicación ---
@@ -558,7 +558,7 @@ class HMPOS_Customers {
 			)
 		);
 		if ( is_wp_error( $uid ) ) {
-			return new WP_Error( 'hmpos_create_fail', $uid->get_error_message(), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_create_fail', $uid->get_error_message(), array( 'status' => 500 ) );
 		}
 
 		// Meta propia + billing (para que se vea completo en Woo → Clientes).
@@ -597,16 +597,16 @@ class HMPOS_Customers {
 		$payload = self::payload( $uid );
 		$mismatch = '';
 		if ( 'email' === $matched && '' !== $other_norm && $payload['doc_norm'] !== $other_norm ) {
-			$mismatch = __( 'El DNI no coincide con el registrado en ese cliente.', 'hm-pos' );
+			$mismatch = __( 'El DNI no coincide con el registrado en ese cliente.', 'keytill' );
 		}
 		if ( 'doc' === $matched && '' !== $other_email && strtolower( $payload['email'] ) !== strtolower( $other_email ) ) {
-			$mismatch = __( 'El email no coincide con el registrado en ese cliente.', 'hm-pos' );
+			$mismatch = __( 'El email no coincide con el registrado en ese cliente.', 'keytill' );
 		}
 		$msg = ( 'email' === $matched )
-			? __( 'Ya existe un cliente con ese email.', 'hm-pos' )
-			: __( 'Ya existe un cliente con ese DNI.', 'hm-pos' );
+			? __( 'Ya existe un cliente con ese email.', 'keytill' )
+			: __( 'Ya existe un cliente con ese DNI.', 'keytill' );
 		return new WP_Error(
-			'hmpos_customer_exists',
+			'keytill_customer_exists',
 			trim( $msg . ' ' . $mismatch ),
 			array(
 				'status'   => 409,
@@ -645,10 +645,10 @@ class HMPOS_Customers {
 			$order->set_billing_email( $p['email'] );
 		}
 		// Meta que ya usa el comprobante y el flujo fiscal.
-		$order->update_meta_data( '_hmpos_customer_id', $customer_id );
-		$order->update_meta_data( '_hmpos_customer_name', $p['name'] );
-		$order->update_meta_data( '_hmpos_customer_doc', $p['doc'] );
-		$order->update_meta_data( '_hmpos_customer_iva', $p['iva'] );
+		$order->update_meta_data( '_keytill_customer_id', $customer_id );
+		$order->update_meta_data( '_keytill_customer_name', $p['name'] );
+		$order->update_meta_data( '_keytill_customer_doc', $p['doc'] );
+		$order->update_meta_data( '_keytill_customer_iva', $p['iva'] );
 		return true;
 	}
 

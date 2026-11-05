@@ -1,5 +1,5 @@
 /* ============================================================
-   HM Sport POS — pos.css
+   Keytill POS — pos.css
    Pantalla de venta. Consume SOLO tokens.css.
    Lenguaje visual portado del prototipo: superficies ink en headers,
    números en mono tabular, mint como acento moderado, navy para acciones.
@@ -8,8 +8,8 @@
 [x-cloak] { display: none !important; }
 
 /* --- Reset de pantalla completa (template en blanco) --- */
-html.hmpos-fullscreen,
-body.hmpos-fullscreen {
+html.keytill-fullscreen,
+body.keytill-fullscreen {
 	margin: 0;
 	padding: 0;
 	min-height: 100%;
@@ -19,14 +19,14 @@ body.hmpos-fullscreen {
 	-webkit-font-smoothing: antialiased;
 }
 
-body.hmpos-fullscreen * { box-sizing: border-box; }
+body.keytill-fullscreen * { box-sizing: border-box; }
 
 /* Blindaje de layout: el template del POS llama a wp_footer(), así que otros
    plugins inyectan markup suelto en el <body> (carritos laterales tipo
    CheckoutWC, modales, widgets de chat, barras de cookies, etc.). En el canvas
-   del POS solo debe verse #hmpos-app: ocultamos cualquier hijo directo del body
+   del POS solo debe verse #keytill-app: ocultamos cualquier hijo directo del body
    que no sea el POS (los <script>/<style> no renderizan, se excluyen igual). */
-body.hmpos-fullscreen > *:not(#hmpos-app):not(script):not(style):not(noscript):not(template) {
+body.keytill-fullscreen > *:not(#keytill-app):not(script):not(style):not(noscript):not(template) {
 	display: none !important;
 }
 
@@ -35,11 +35,11 @@ body.hmpos-fullscreen > *:not(#hmpos-app):not(script):not(style):not(noscript):n
    y la tipografía en el contenedor del POS; la herencia baja a los hijos y
    nuestras clases de componente siguen mandando donde aplican. No se tocan
    border/padding/appearance de los form controls para no pisar los componentes. */
-#hmpos-app,
-#hmpos-app *,
-#hmpos-app *::before,
-#hmpos-app *::after { box-sizing: border-box; }
-#hmpos-app {
+#keytill-app,
+#keytill-app *,
+#keytill-app *::before,
+#keytill-app *::after { box-sizing: border-box; }
+#keytill-app {
 	font-family: var(--font-ui);
 	font-size: var(--t-md, 15px);
 	line-height: 1.45;
@@ -67,14 +67,14 @@ kbd {
 }
 kbd.kbd-brand { background: var(--brand); }
 
-.hmpos-card {
+.keytill-card {
 	background: var(--surface);
 	border: 1px solid var(--border);
 	border-radius: var(--r-md);
 }
 
 /* ================= LAYOUT (shell) ================= */
-.hmpos {
+.keytill {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
@@ -83,17 +83,17 @@ kbd.kbd-brand { background: var(--brand); }
 }
 
 /* Vista activa: ocupa el alto restante bajo la nav. */
-.hmpos-view { flex: 1 1 auto; min-height: 0; }
+.keytill-view { flex: 1 1 auto; min-height: 0; }
 
 /* Vista VENTA: la grilla de dos columnas del prototipo. */
-.hmpos-view--venta {
+.keytill-view--venta {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) clamp(280px, 26vw, 400px);
 	gap: var(--s-3);
 	align-items: stretch;
 }
 
-.hmpos-col {
+.keytill-col {
 	display: flex;
 	flex-direction: column;
 	gap: var(--s-3);
@@ -104,39 +104,39 @@ kbd.kbd-brand { background: var(--brand); }
    tipo desktop adaptado — los targets grandes los aporta @media (pointer:coarse).
    El colapso a 1 columna + bottom sheet ocurre en teléfono y tablet PORTRAIT. */
 @media (max-width: 600px), (max-width: 1024px) and (orientation: portrait) {
-	.hmpos-view--venta { grid-template-columns: 1fr; }
+	.keytill-view--venta { grid-template-columns: 1fr; }
 }
 
 /* ================= NAV GLOBAL (shell) ================= */
-.hmpos-nav {
+.keytill-nav {
 	display: flex;
 	align-items: center;
 	gap: var(--s-3);
 	padding: 4px 4px 10px;
 	border-bottom: 1px solid var(--border);
 	flex-wrap: wrap;
-	/* Por encima del modal de apertura de caja (.hmpos-modal--gate, z 40) para
+	/* Por encima del modal de apertura de caja (.keytill-modal--gate, z 40) para
 	   poder cambiar de pestaña con la caja aún cerrada; por debajo de los demás
 	   modales (pago/descuento/etc., z 50) que sí piden atención exclusiva. */
 	position: relative;
 	z-index: 45;
 	background: var(--surface);
 }
-.hmpos-nav__tabs { display: flex; gap: 4px; }
-.hmpos-nav__tab {
+.keytill-nav__tabs { display: flex; gap: 4px; }
+.keytill-nav__tab {
 	cursor: pointer; font: inherit; font-size: var(--t-md); font-weight: 700;
 	letter-spacing: 0.02em; color: var(--text-muted);
 	background: none; border: none; border-radius: var(--r-pill);
 	padding: 7px 16px; transition: color var(--t-fast), background var(--t-fast);
 }
-.hmpos-nav__tab:hover { color: var(--ink); background: var(--surface-2); }
-.hmpos-nav__tab.is-active { color: var(--brand-contrast); background: var(--brand); }
-.hmpos-nav__cashier { margin-left: auto; font-family: var(--font-mono); font-size: var(--t-sm); color: var(--text-subtle); white-space: nowrap; }
-.hmpos-nav__exit { font-family: var(--font-mono); font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.04em; color: var(--text-subtle); text-decoration: none; border: 1px solid var(--border); border-radius: var(--r-pill); padding: 4px 12px; white-space: nowrap; transition: color var(--t-fast), border-color var(--t-fast), background var(--t-fast); }
-.hmpos-nav__exit:hover { color: var(--brand); border-color: var(--brand); background: var(--brand-tint); }
+.keytill-nav__tab:hover { color: var(--ink); background: var(--surface-2); }
+.keytill-nav__tab.is-active { color: var(--brand-contrast); background: var(--brand); }
+.keytill-nav__cashier { margin-left: auto; font-family: var(--font-mono); font-size: var(--t-sm); color: var(--text-subtle); white-space: nowrap; }
+.keytill-nav__exit { font-family: var(--font-mono); font-size: var(--t-xs); font-weight: 600; letter-spacing: 0.04em; color: var(--text-subtle); text-decoration: none; border: 1px solid var(--border); border-radius: var(--r-pill); padding: 4px 12px; white-space: nowrap; transition: color var(--t-fast), border-color var(--t-fast), background var(--t-fast); }
+.keytill-nav__exit:hover { color: var(--brand); border-color: var(--brand); background: var(--brand-tint); }
 
 /* ================= PEDIDOS (consola) ================= */
-.hmpos-orders { position: relative; display: flex; flex-direction: column; gap: var(--s-3); height: 100%; min-height: 0; }
+.keytill-orders { position: relative; display: flex; flex-direction: column; gap: var(--s-3); height: 100%; min-height: 0; }
 
 .orders__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .orders__search {
@@ -217,7 +217,7 @@ kbd.kbd-brand { background: var(--brand); }
 .drawer__btn--warn:hover { background: #fdf0d5; }
 
 /* ================= PRODUCTOS (consola) ================= */
-.hmpos-products { position: relative; display: flex; flex-direction: column; gap: var(--s-3); height: 100%; min-height: 0; }
+.keytill-products { position: relative; display: flex; flex-direction: column; gap: var(--s-3); height: 100%; min-height: 0; }
 
 .prod__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .prod__search {
@@ -432,7 +432,7 @@ kbd.kbd-brand { background: var(--brand); }
 .prod__varlabel:hover { color: var(--brand); background: var(--surface-2); }
 
 /* ================= CLIENTES (consola) ================= */
-.hmpos-customers { position: relative; display: flex; flex-direction: column; gap: var(--s-3); height: 100%; min-height: 0; }
+.keytill-customers { position: relative; display: flex; flex-direction: column; gap: var(--s-3); height: 100%; min-height: 0; }
 
 .cx__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .cx__search {
@@ -478,7 +478,7 @@ kbd.kbd-brand { background: var(--brand); }
 .cx__reprint:hover { color: var(--brand); border-color: var(--brand); background: var(--brand-tint); }
 
 /* Marca (usada en el nav de la consola) */
-.hmpos-brand { font-size: 20px; font-weight: 800; letter-spacing: 0.14em; color: var(--ink); }
+.keytill-brand { font-size: 20px; font-weight: 800; letter-spacing: 0.14em; color: var(--ink); }
 
 /* ================= COMMAND FIELD ================= */
 .cmd-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
@@ -592,7 +592,7 @@ kbd.kbd-brand { background: var(--brand); }
 
 .status { padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
 .status__dot { width: 10px; height: 22px; border-radius: 3px; background: var(--accent); flex: none; }
-.status__dot.is-busy { background: var(--warn); animation: hmpos-pulse 0.7s ease-in-out infinite; }
+.status__dot.is-busy { background: var(--warn); animation: keytill-pulse 0.7s ease-in-out infinite; }
 .status__text { font-size: var(--t-sm); color: var(--text-muted); }
 /* Nivel del mensaje: ámbar = aviso (p. ej. sin stock), rojo = error. Tiñe la
    card entera + la barra lateral + el texto en negrita para que se distinga de
@@ -603,7 +603,7 @@ kbd.kbd-brand { background: var(--brand); }
 .status--error { background: var(--danger-tint); border-color: var(--danger); }
 .status--error .status__dot { background: var(--danger); }
 .status--error .status__text { color: var(--danger); font-weight: 700; }
-@keyframes hmpos-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+@keyframes keytill-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
 /* ================= CAJA (tarjeta) ================= */
 .caja { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
@@ -613,7 +613,7 @@ kbd.kbd-brand { background: var(--brand); }
 .caja__actions span { display: flex; align-items: center; gap: 6px; }
 
 /* ================= MODALS ================= */
-.hmpos-modal {
+.keytill-modal {
 	position: fixed; inset: 0; z-index: 50;
 	background: rgba(10, 26, 51, 0.62);
 	display: flex; align-items: center; justify-content: center;
@@ -622,19 +622,19 @@ kbd.kbd-brand { background: var(--brand); }
 /* Modal de apertura de caja: no bloquea la navegación. Queda por debajo de la
    barra de pestañas (z 45) para poder ir a Productos/Pedidos con la caja aún
    cerrada; el backdrop es más suave porque no exige atención exclusiva. */
-.hmpos-modal--gate {
+.keytill-modal--gate {
 	z-index: 40;
 	background: rgba(10, 26, 51, 0.45);
 }
-.hmpos-modal__card {
+.keytill-modal__card {
 	background: var(--surface);
 	border: 1px solid var(--border-strong);
 	border-radius: var(--r-lg);
 	overflow: hidden;
-	animation: hmpos-pop 90ms ease-out;
+	animation: keytill-pop 90ms ease-out;
 	box-shadow: var(--sh-3);
 }
-@keyframes hmpos-pop { 0% { transform: scale(0.96); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes keytill-pop { 0% { transform: scale(0.96); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
 .modal__title { font-size: var(--t-xl); font-weight: 700; letter-spacing: 0.12em; }
 .modal__sub { font-size: var(--t-sm); color: var(--text-muted); }
@@ -877,37 +877,37 @@ kbd.kbd-brand { background: var(--brand); }
 .saleresult__print:hover { background: var(--accent); color: var(--brand-contrast); }
 
 /* ================= TOAST ================= */
-.hmpos-toast-wrap { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; pointer-events: none; padding: 24px; }
-.hmpos-toast {
+.keytill-toast-wrap { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; pointer-events: none; padding: 24px; }
+.keytill-toast {
 	display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
 	padding: 40px 64px; border-radius: var(--r-lg);
 	background: var(--ink); color: #fff;
 	border-top: 6px solid var(--accent);
 	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
-	animation: hmpos-pop 90ms ease-out;
+	animation: keytill-pop 90ms ease-out;
 }
-.hmpos-toast.is-error { border-top-color: var(--danger); }
-.hmpos-toast__kicker { font-size: var(--t-base); letter-spacing: 0.18em; opacity: 0.8; }
-.hmpos-toast__title { font-size: 54px; font-weight: 800; line-height: 1; }
-.hmpos-toast__detail { font-size: var(--t-xl); }
+.keytill-toast.is-error { border-top-color: var(--danger); }
+.keytill-toast__kicker { font-size: var(--t-base); letter-spacing: 0.18em; opacity: 0.8; }
+.keytill-toast__title { font-size: 54px; font-weight: 800; line-height: 1; }
+.keytill-toast__detail { font-size: var(--t-xl); }
 
 /* ================= GATE (sin permiso) ================= */
-.hmpos-gate {
+.keytill-gate {
 	min-height: 100vh; display: flex; align-items: center; justify-content: center;
 	background: var(--paper); padding: var(--s-6); font-family: var(--font-ui);
 }
-.hmpos-gate__card {
+.keytill-gate__card {
 	background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
 	box-shadow: var(--sh-2); padding: var(--s-10) var(--s-8);
 	max-width: 440px; width: 100%;
 	display: flex; flex-direction: column; align-items: center; gap: var(--s-4); text-align: center;
 }
-.hmpos-gate__mark { display: inline-block; font-weight: 800; font-size: 1.75rem; letter-spacing: 0.02em; background: var(--ink); color: #fff; padding: 6px 12px 4px; border-radius: var(--r-sm); }
-.hmpos-gate__mark small { font-weight: 700; color: var(--accent); margin-left: 2px; }
-.hmpos-gate__title { margin: 0; font-size: var(--t-2xl); font-weight: 700; color: var(--ink); }
-.hmpos-gate__msg { margin: 0; color: var(--text-muted); font-size: var(--t-md); }
-.hmpos-gate__btn { display: inline-flex; align-items: center; justify-content: center; background: var(--brand); color: var(--brand-contrast); font-weight: 600; text-decoration: none; border-radius: var(--r-md); padding: 12px 24px; transition: background var(--t-fast); }
-.hmpos-gate__btn:hover { background: var(--brand-600); color: var(--brand-contrast); }
+.keytill-gate__mark { display: inline-block; font-weight: 800; font-size: 1.75rem; letter-spacing: 0.02em; background: var(--ink); color: #fff; padding: 6px 12px 4px; border-radius: var(--r-sm); }
+.keytill-gate__mark small { font-weight: 700; color: var(--accent); margin-left: 2px; }
+.keytill-gate__title { margin: 0; font-size: var(--t-2xl); font-weight: 700; color: var(--ink); }
+.keytill-gate__msg { margin: 0; color: var(--text-muted); font-size: var(--t-md); }
+.keytill-gate__btn { display: inline-flex; align-items: center; justify-content: center; background: var(--brand); color: var(--brand-contrast); font-weight: 600; text-decoration: none; border-radius: var(--r-md); padding: 12px 24px; transition: background var(--t-fast); }
+.keytill-gate__btn:hover { background: var(--brand-600); color: var(--brand-contrast); }
 
 /* ============================================================
    TÁCTIL / RESPONSIVE (mobile + tablet)
@@ -918,12 +918,12 @@ kbd.kbd-brand { background: var(--brand); }
 /* Campo de escaneo HID latente: focusable pero invisible; inputmode="none"
    ⇒ no abre teclado en pantalla. No se auto-enfoca (soporte de lector queda
    disponible sin invertir en su UX). */
-.hmpos-scan { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.keytill-scan { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
 /* --- Elementos solo-táctil ocultos por defecto (los revela .is-touch) --- */
-.hmpos-actionbar,
+.keytill-actionbar,
 .cart__sheet-head,
-.hmpos-sheet-backdrop { display: none; }
+.keytill-sheet-backdrop { display: none; }
 
 /* Genéricos de sheet (botones grandes de acción en modales/hojas) */
 .sheet-actions { display: flex; gap: 12px; margin-top: 6px; }
@@ -964,7 +964,7 @@ kbd.kbd-brand { background: var(--brand); }
 .line__btn:active { background: var(--brand-tint); }
 
 /* --- Barra de acciones táctil (reemplaza las F-keys) --- */
-.hmpos-actionbar {
+.keytill-actionbar {
 	position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
 	flex-direction: column; gap: 8px;
 	padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
@@ -972,8 +972,8 @@ kbd.kbd-brand { background: var(--brand); }
 	box-shadow: 0 -6px 24px rgba(10, 26, 51, 0.12);
 }
 /* Fila de acciones secundarias: scroll horizontal (Carrito, Cliente, …). */
-.hmpos-actionbar__row { display: flex; align-items: stretch; gap: 8px; overflow-x: auto; }
-.hmpos-abtn {
+.keytill-actionbar__row { display: flex; align-items: stretch; gap: 8px; overflow-x: auto; }
+.keytill-abtn {
 	flex: 0 0 auto; min-height: 48px; min-width: 68px; cursor: pointer;
 	font: inherit; font-size: var(--t-sm); font-weight: 700;
 	background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-md);
@@ -981,13 +981,13 @@ kbd.kbd-brand { background: var(--brand); }
 	display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
 	white-space: nowrap;
 }
-.hmpos-abtn:active { background: var(--brand-tint); }
-.hmpos-abtn__badge {
+.keytill-abtn:active { background: var(--brand-tint); }
+.keytill-abtn__badge {
 	min-width: 22px; padding: 0 6px; border-radius: var(--r-pill);
 	background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: var(--t-xs);
 }
-.hmpos-abtn--cart { display: none; } /* solo en layouts apilados (ver stacked) */
-.hmpos-abtn--scan { flex-direction: row; gap: 6px; }
+.keytill-abtn--cart { display: none; } /* solo en layouts apilados (ver stacked) */
+.keytill-abtn--scan { flex-direction: row; gap: 6px; }
 
 /* --- Escáner por cámara --- */
 .scan-modal { width: min(520px, 96vw); }
@@ -1023,19 +1023,19 @@ kbd.kbd-brand { background: var(--brand); }
 .scan__msg--ok { background: var(--accent-tint, #e8f6ec); border: 1px solid var(--accent, #34a853); }
 .scan__ok { font-weight: 800; font-size: var(--t-lg); color: var(--accent-700, #1e7e34); }
 /* Cobrar: fila propia, full-width, acción primaria destacada. */
-.hmpos-abtn--pay {
+.keytill-abtn--pay {
 	width: 100%; min-height: 56px;
 	background: var(--brand); border-color: var(--brand); color: var(--brand-contrast);
 	font-size: var(--t-lg); flex-direction: row; gap: 12px;
 }
 
 /* Backdrop del bottom sheet */
-.hmpos-sheet-backdrop { position: fixed; inset: 0; z-index: 44; background: rgba(10, 26, 51, 0.5); }
+.keytill-sheet-backdrop { position: fixed; inset: 0; z-index: 44; background: rgba(10, 26, 51, 0.5); }
 
 /* --- Revelado de piezas táctiles --- */
-.is-touch .hmpos-actionbar { display: flex; }
+.is-touch .keytill-actionbar { display: flex; }
 /* Lugar para la barra fija (2 filas) — solo en Venta, que es donde vive. */
-.is-touch .hmpos-view--venta { padding-bottom: calc(136px + env(safe-area-inset-bottom)); }
+.is-touch .keytill-view--venta { padding-bottom: calc(136px + env(safe-area-inset-bottom)); }
 .is-touch .legend { display: none; }              /* las F-keys no aplican */
 .is-touch .totals__cta { display: none; }          /* "F2 para cobrar" */
 .is-touch .customer__head kbd { display: none; }   /* "F4" */
@@ -1049,9 +1049,9 @@ kbd.kbd-brand { background: var(--brand); }
 @media (max-width: 600px), (max-width: 1024px) and (orientation: portrait) {
 
 	/* Apilado natural (sin estirar la columna, evita el hueco vertical grande) */
-	.hmpos-view--venta { display: flex; flex-direction: column; }
+	.keytill-view--venta { display: flex; flex-direction: column; }
 
-	.is-touch .hmpos-abtn--cart { display: inline-flex; }
+	.is-touch .keytill-abtn--cart { display: inline-flex; }
 
 	/* Carrito → bottom sheet deslizable */
 	.is-touch .cart {
@@ -1078,12 +1078,12 @@ kbd.kbd-brand { background: var(--brand); }
 
 /* Nav de pestañas usable en pantalla chica: scroll horizontal */
 @media (max-width: 700px) {
-	.hmpos { padding: var(--s-2); gap: var(--s-2); }
-	.hmpos-nav { flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding: 2px 2px 8px; }
-	.hmpos-nav__tabs { flex: 0 0 auto; }
-	.hmpos-nav__cashier { display: none; }
-	.hmpos-nav__exit { flex: 0 0 auto; }
-	.hmpos-brand { flex: 0 0 auto; }
+	.keytill { padding: var(--s-2); gap: var(--s-2); }
+	.keytill-nav { flex-wrap: nowrap; overflow-x: auto; gap: 8px; padding: 2px 2px 8px; }
+	.keytill-nav__tabs { flex: 0 0 auto; }
+	.keytill-nav__cashier { display: none; }
+	.keytill-nav__exit { flex: 0 0 auto; }
+	.keytill-brand { flex: 0 0 auto; }
 	.cmd-input { font-size: var(--t-lg); }
 }
 
@@ -1117,8 +1117,8 @@ kbd.kbd-brand { background: var(--brand); }
 
 /* Modales → hojas a pantalla completa (desde abajo) */
 @media (max-width: 700px) {
-	.hmpos-modal { padding: 0; align-items: flex-end; }
-	.hmpos-modal__card {
+	.keytill-modal { padding: 0; align-items: flex-end; }
+	.keytill-modal__card {
 		width: 100%; max-width: 100%; max-height: 100vh; overflow-y: auto;
 		border-radius: var(--r-lg) var(--r-lg) 0 0;
 	}
@@ -1135,7 +1135,7 @@ kbd.kbd-brand { background: var(--brand); }
    (incluye tablet landscape, que mantiene 2 columnas)
    ============================================================ */
 @media (pointer: coarse) {
-	.hmpos-nav__tab { padding: 12px 18px; font-size: var(--t-lg); }
+	.keytill-nav__tab { padding: 12px 18px; font-size: var(--t-lg); }
 	.cmd-input { min-height: 56px; }
 	.modal__input { min-height: 50px; font-size: var(--t-lg); }
 	.cust__row { padding: 14px 12px; }
@@ -1172,7 +1172,7 @@ kbd.kbd-brand { background: var(--brand); }
 }
 
 /* ================= CAJA / BANCO ================= */
-.hmpos-cashbank { padding: 16px; max-width: 1100px; margin: 0 auto; }
+.keytill-cashbank { padding: 16px; max-width: 1100px; margin: 0 auto; }
 .cb__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .cb__title { font-size: var(--t-lg); font-weight: 800; margin: 0; }
 .cb__loading { padding: 24px; text-align: center; }

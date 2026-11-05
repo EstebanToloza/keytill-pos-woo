@@ -6,24 +6,24 @@
  * dependencias). La MISMA plantilla sirve al POS (botón "Imprimir" en el modal
  * de confirmación) y al admin del pedido (botón "Imprimir comprobante POS").
  *
- * Ruta: GET al front con ?hmpos_print=<order_id>&_wpnonce=<nonce>. Requiere la
+ * Ruta: GET al front con ?keytill_print=<order_id>&_wpnonce=<nonce>. Requiere la
  * capability del POS o poder editar órdenes de Woo, y un nonce por-orden.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Print {
+class KEYTILL_Print {
 
 	/** Query var que dispara la impresión del comprobante. */
-	const QV = 'hmpos_print';
+	const QV = 'keytill_print';
 
 	/** Query var que dispara la impresión del voucher de crédito (devolución). */
-	const QV_VOUCHER = 'hmpos_voucher';
+	const QV_VOUCHER = 'keytill_voucher';
 
 	/** Query var que dispara la impresión del ticket de cambio (sin precios). */
-	const QV_GIFT = 'hmpos_gift';
+	const QV_GIFT = 'keytill_gift';
 
 	/**
 	 * Engancha el handler del front y el botón en el admin del pedido.
@@ -41,7 +41,7 @@ class HMPOS_Print {
 	 * @return string
 	 */
 	private static function nonce_action( $order_id ) {
-		return 'hmpos_print_' . (int) $order_id;
+		return 'keytill_print_' . (int) $order_id;
 	}
 
 	/**
@@ -63,7 +63,7 @@ class HMPOS_Print {
 
 	/** Acción del nonce del voucher (por código). */
 	private static function voucher_nonce_action( $code ) {
-		return 'hmpos_voucher_' . (string) $code;
+		return 'keytill_voucher_' . (string) $code;
 	}
 
 	/**
@@ -85,7 +85,7 @@ class HMPOS_Print {
 
 	/** Acción del nonce del ticket de cambio (por orden). */
 	private static function gift_nonce_action( $order_id ) {
-		return 'hmpos_gift_' . (int) $order_id;
+		return 'keytill_gift_' . (int) $order_id;
 	}
 
 	/**
@@ -111,50 +111,50 @@ class HMPOS_Print {
 	 * @return bool
 	 */
 	private static function can_print() {
-		return current_user_can( HMPOS_CAP ) || current_user_can( 'edit_shop_orders' );
+		return current_user_can( KEYTILL_CAP ) || current_user_can( 'edit_shop_orders' );
 	}
 
 	/**
 	 * Si la request pide imprimir, valida y renderiza el comprobante; corta.
 	 */
 	public static function maybe_render() {
-		// Voucher de crédito (devolución): ?hmpos_voucher=<code>&_wpnonce=…
+		// Voucher de crédito (devolución): ?keytill_voucher=<code>&_wpnonce=…
 		if ( isset( $_GET[ self::QV_VOUCHER ] ) ) {
-			$code = HMPOS_Credit::normalize_code( sanitize_text_field( wp_unslash( $_GET[ self::QV_VOUCHER ] ) ) );
+			$code = KEYTILL_Credit::normalize_code( sanitize_text_field( wp_unslash( $_GET[ self::QV_VOUCHER ] ) ) );
 			if ( '' === $code ) {
 				return;
 			}
 			if ( ! self::can_print() ) {
-				wp_die( esc_html__( 'No tenés permiso para imprimir este voucher.', 'hm-pos' ), 403 );
+				wp_die( esc_html__( 'No tenés permiso para imprimir este voucher.', 'keytill' ), 403 );
 			}
 			$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 			if ( ! wp_verify_nonce( $nonce, self::voucher_nonce_action( $code ) ) ) {
-				wp_die( esc_html__( 'El enlace del voucher venció. Volvé a generarlo desde el POS.', 'hm-pos' ), 403 );
+				wp_die( esc_html__( 'El enlace del voucher venció. Volvé a generarlo desde el POS.', 'keytill' ), 403 );
 			}
-			$credit = HMPOS_Credit::get_by_code( $code );
+			$credit = KEYTILL_Credit::get_by_code( $code );
 			if ( ! $credit ) {
-				wp_die( esc_html__( 'No se encontró el crédito.', 'hm-pos' ), 404 );
+				wp_die( esc_html__( 'No se encontró el crédito.', 'keytill' ), 404 );
 			}
 			self::render_voucher( $credit );
 			exit;
 		}
 
-		// Ticket de cambio (sin precios): ?hmpos_gift=<id>&_wpnonce=…
+		// Ticket de cambio (sin precios): ?keytill_gift=<id>&_wpnonce=…
 		if ( isset( $_GET[ self::QV_GIFT ] ) ) {
 			$order_id = absint( $_GET[ self::QV_GIFT ] );
 			if ( ! $order_id ) {
 				return;
 			}
 			if ( ! self::can_print() ) {
-				wp_die( esc_html__( 'No tenés permiso para imprimir este ticket.', 'hm-pos' ), 403 );
+				wp_die( esc_html__( 'No tenés permiso para imprimir este ticket.', 'keytill' ), 403 );
 			}
 			$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 			if ( ! wp_verify_nonce( $nonce, self::gift_nonce_action( $order_id ) ) ) {
-				wp_die( esc_html__( 'El enlace del ticket de cambio venció. Reabrilo desde el POS.', 'hm-pos' ), 403 );
+				wp_die( esc_html__( 'El enlace del ticket de cambio venció. Reabrilo desde el POS.', 'keytill' ), 403 );
 			}
 			$order = wc_get_order( $order_id );
 			if ( ! $order ) {
-				wp_die( esc_html__( 'No se encontró el pedido.', 'hm-pos' ), 404 );
+				wp_die( esc_html__( 'No se encontró el pedido.', 'keytill' ), 404 );
 			}
 			self::render_gift( $order );
 			exit;
@@ -169,17 +169,17 @@ class HMPOS_Print {
 		}
 
 		if ( ! self::can_print() ) {
-			wp_die( esc_html__( 'No tenés permiso para imprimir este comprobante.', 'hm-pos' ), 403 );
+			wp_die( esc_html__( 'No tenés permiso para imprimir este comprobante.', 'keytill' ), 403 );
 		}
 
 		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, self::nonce_action( $order_id ) ) ) {
-			wp_die( esc_html__( 'El enlace de impresión venció. Reabrí el comprobante desde el pedido.', 'hm-pos' ), 403 );
+			wp_die( esc_html__( 'El enlace de impresión venció. Reabrí el comprobante desde el pedido.', 'keytill' ), 403 );
 		}
 
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
-			wp_die( esc_html__( 'No se encontró el pedido.', 'hm-pos' ), 404 );
+			wp_die( esc_html__( 'No se encontró el pedido.', 'keytill' ), 404 );
 		}
 
 		self::render( $order );
@@ -193,12 +193,12 @@ class HMPOS_Print {
 	 * @param WC_Order $order Orden.
 	 */
 	public static function admin_button( $order ) {
-		if ( ! $order instanceof WC_Order || 'hmpos' !== $order->get_created_via() ) {
+		if ( ! $order instanceof WC_Order || 'keytill' !== $order->get_created_via() ) {
 			return;
 		}
 		$url = self::print_url( $order->get_id() );
 		echo '<p class="form-field form-field-wide"><a href="' . esc_url( $url ) . '" target="_blank" rel="noopener" class="button">'
-			. esc_html__( 'Imprimir comprobante POS', 'hm-pos' ) . '</a></p>';
+			. esc_html__( 'Imprimir comprobante POS', 'keytill' ) . '</a></p>';
 	}
 
 	/**
@@ -208,13 +208,13 @@ class HMPOS_Print {
 	 * @param WC_Order $order Orden.
 	 */
 	private static function render( $order ) {
-		$biz      = class_exists( 'HMPOS_Settings' ) ? HMPOS_Settings::business() : array(
+		$biz      = class_exists( 'KEYTILL_Settings' ) ? KEYTILL_Settings::business() : array(
 			'name'     => get_bloginfo( 'name' ),
 			'tax_id'   => '',
 			'address'  => '',
 			'phone'    => '',
-			'subtitle' => __( 'Resumen de compra', 'hm-pos' ),
-			'footer'   => __( 'Documento no válido como factura. ¡Gracias por su compra!', 'hm-pos' ),
+			'subtitle' => __( 'Resumen de compra', 'keytill' ),
+			'footer'   => __( 'Documento no válido como factura. ¡Gracias por su compra!', 'keytill' ),
 			'logo'     => 0,
 		);
 		$store    = $biz['name'];
@@ -228,7 +228,7 @@ class HMPOS_Print {
 		// Cajero: se muestra el NOMBRE (nunca el email/login). Si no hay nombre
 		// cargado, no se muestra nada.
 		$cashier    = '';
-		$cashier_id = (int) $order->get_meta( '_hmpos_cajero_id' );
+		$cashier_id = (int) $order->get_meta( '_keytill_cajero_id' );
 		if ( $cashier_id ) {
 			$cu = get_userdata( $cashier_id );
 			if ( $cu ) {
@@ -242,12 +242,12 @@ class HMPOS_Print {
 		}
 
 		// Cliente (fiscal, si se cargó).
-		$cust_name = $order->get_meta( '_hmpos_customer_name' );
+		$cust_name = $order->get_meta( '_keytill_customer_name' );
 		if ( '' === $cust_name ) {
 			$cust_name = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
 		}
-		$cust_doc = $order->get_meta( '_hmpos_customer_doc' );
-		$cust_iva = $order->get_meta( '_hmpos_customer_iva' );
+		$cust_doc = $order->get_meta( '_keytill_customer_doc' );
+		$cust_iva = $order->get_meta( '_keytill_customer_iva' );
 
 		// Líneas: subtotal para detectar descuento.
 		$subtotal = 0.0;
@@ -277,13 +277,13 @@ class HMPOS_Print {
 
 		// Pago.
 		$pay_title   = $order->get_payment_method_title();
-		$credit_used = (float) $order->get_meta( '_hmpos_credit_used' );
-		$credit_code = $order->get_meta( '_hmpos_credit_code' );
-		$tendered    = $order->get_meta( '_hmpos_tendered' );
-		$change      = $order->get_meta( '_hmpos_change' );
+		$credit_used = (float) $order->get_meta( '_keytill_credit_used' );
+		$credit_code = $order->get_meta( '_keytill_credit_code' );
+		$tendered    = $order->get_meta( '_keytill_tendered' );
+		$change      = $order->get_meta( '_keytill_change' );
 
 		// Gift cards emitidas en esta venta.
-		$giftcards = HMPOS_Credit_Product::codes_for_order( $order );
+		$giftcards = KEYTILL_Credit_Product::codes_for_order( $order );
 
 		// A partir de acá, HTML completo (sin theme). Todo escapado.
 		header( 'Content-Type: text/html; charset=utf-8' );
@@ -293,7 +293,7 @@ class HMPOS_Print {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo esc_html( sprintf( __( 'Comprobante venta #%s', 'hm-pos' ), $number ) ); ?></title>
+<title><?php echo esc_html( sprintf( __( 'Comprobante venta #%s', 'keytill' ), $number ) ); ?></title>
 <style>
 	/* Ticket térmico de 58 mm (área imprimible ~48 mm). Fuente monoespaciada para
 	   que los importes queden alineados; todo en negro sobre blanco. */
@@ -340,11 +340,11 @@ class HMPOS_Print {
 		<?php endif; ?>
 
 		<hr class="hr">
-		<div class="doc"><span class="b"><?php echo esc_html( sprintf( __( 'Venta #%s', 'hm-pos' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
-		<?php if ( $cashier ) : ?><div class="who muted"><?php esc_html_e( 'Cajero', 'hm-pos' ); ?>: <?php echo esc_html( $cashier ); ?></div><?php endif; ?>
+		<div class="doc"><span class="b"><?php echo esc_html( sprintf( __( 'Venta #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
+		<?php if ( $cashier ) : ?><div class="who muted"><?php esc_html_e( 'Cajero', 'keytill' ); ?>: <?php echo esc_html( $cashier ); ?></div><?php endif; ?>
 		<?php if ( '' !== $cust_name || '' !== $cust_doc ) : ?>
 			<div class="who muted">
-				<?php esc_html_e( 'Cliente', 'hm-pos' ); ?>: <?php echo esc_html( $cust_name ? $cust_name : __( 'Consumidor final', 'hm-pos' ) ); ?>
+				<?php esc_html_e( 'Cliente', 'keytill' ); ?>: <?php echo esc_html( $cust_name ? $cust_name : __( 'Consumidor final', 'keytill' ) ); ?>
 				<?php if ( '' !== $cust_doc ) : ?><br><?php echo esc_html( $cust_doc ); ?><?php endif; ?>
 				<?php if ( '' !== $cust_iva ) : ?> · <?php echo esc_html( $cust_iva ); ?><?php endif; ?>
 			</div>
@@ -367,26 +367,26 @@ class HMPOS_Print {
 
 		<hr class="hr">
 		<?php if ( $discount > 0 ) : ?>
-			<div class="row"><span class="l"><?php esc_html_e( 'Subtotal', 'hm-pos' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( $subtotal, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
-			<div class="row"><span class="l"><?php esc_html_e( 'Descuento', 'hm-pos' ); ?></span><span class="v">−<?php echo wp_kses_post( wc_price( $discount, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+			<div class="row"><span class="l"><?php esc_html_e( 'Subtotal', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( $subtotal, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+			<div class="row"><span class="l"><?php esc_html_e( 'Descuento', 'keytill' ); ?></span><span class="v">−<?php echo wp_kses_post( wc_price( $discount, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 		<?php endif; ?>
-		<div class="row grand"><span class="l"><?php esc_html_e( 'TOTAL', 'hm-pos' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( $total, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+		<div class="row grand"><span class="l"><?php esc_html_e( 'TOTAL', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( $total, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 
 		<hr class="hr">
-		<div class="row"><span class="l"><?php esc_html_e( 'Medio de pago', 'hm-pos' ); ?></span><span class="v"><?php echo esc_html( $pay_title ); ?></span></div>
+		<div class="row"><span class="l"><?php esc_html_e( 'Medio de pago', 'keytill' ); ?></span><span class="v"><?php echo esc_html( $pay_title ); ?></span></div>
 		<?php if ( $credit_used > 0 ) : ?>
-			<div class="row"><span class="l"><?php esc_html_e( 'Crédito en tienda', 'hm-pos' ); ?><?php echo $credit_code ? ' (' . esc_html( $credit_code ) . ')' : ''; ?></span><span class="v"><?php echo wp_kses_post( wc_price( $credit_used, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+			<div class="row"><span class="l"><?php esc_html_e( 'Crédito en tienda', 'keytill' ); ?><?php echo $credit_code ? ' (' . esc_html( $credit_code ) . ')' : ''; ?></span><span class="v"><?php echo wp_kses_post( wc_price( $credit_used, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 		<?php endif; ?>
 		<?php if ( '' !== (string) $tendered ) : ?>
-			<div class="row"><span class="l"><?php esc_html_e( 'Recibido', 'hm-pos' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( (float) $tendered, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+			<div class="row"><span class="l"><?php esc_html_e( 'Recibido', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( (float) $tendered, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 		<?php endif; ?>
 		<?php if ( '' !== (string) $change ) : ?>
-			<div class="row"><span class="l"><?php esc_html_e( 'Vuelto', 'hm-pos' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( (float) $change, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
+			<div class="row"><span class="l"><?php esc_html_e( 'Vuelto', 'keytill' ); ?></span><span class="v"><?php echo wp_kses_post( wc_price( (float) $change, array( 'currency' => $order->get_currency() ) ) ); ?></span></div>
 		<?php endif; ?>
 
 		<?php if ( ! empty( $giftcards ) ) : ?>
 			<div class="gc">
-				<div class="h"><?php esc_html_e( 'Gift cards emitidas', 'hm-pos' ); ?></div>
+				<div class="h"><?php esc_html_e( 'Gift cards emitidas', 'keytill' ); ?></div>
 				<?php foreach ( $giftcards as $g ) : ?>
 					<div class="code">
 						<span><?php echo esc_html( $g['code'] ); ?></span>
@@ -409,18 +409,18 @@ class HMPOS_Print {
 	 * Voucher térmico de 58 mm del crédito emitido en una devolución: monto,
 	 * vencimiento, código y código de barras (Code 128) para escanear al canjear.
 	 *
-	 * @param object $credit Fila de HMPOS_Credit::get_by_code() (->code, ->balance, ->expires_at).
+	 * @param object $credit Fila de KEYTILL_Credit::get_by_code() (->code, ->balance, ->expires_at).
 	 */
 	private static function render_voucher( $credit ) {
 		$biz = apply_filters(
-			'hmpos_receipt_business',
+			'keytill_receipt_business',
 			array( 'name' => get_bloginfo( 'name' ), 'logo' => 0 )
 		);
 		$store   = isset( $biz['name'] ) ? $biz['name'] : get_bloginfo( 'name' );
 		$code    = (string) $credit->code;
 		$amount  = (float) $credit->balance;
 		$expires = ! empty( $credit->expires_at ) ? mysql2date( 'd/m/Y', $credit->expires_at ) : '';
-		$svg     = class_exists( 'HMPOS_Labels' ) ? HMPOS_Labels::code128_svg( $code ) : '';
+		$svg     = class_exists( 'KEYTILL_Labels' ) ? KEYTILL_Labels::code128_svg( $code ) : '';
 
 		header( 'Content-Type: text/html; charset=utf-8' );
 		?>
@@ -429,7 +429,7 @@ class HMPOS_Print {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo esc_html( sprintf( __( 'Voucher %s', 'hm-pos' ), $code ) ); ?></title>
+<title><?php echo esc_html( sprintf( __( 'Voucher %s', 'keytill' ), $code ) ); ?></title>
 <style>
 	*{ box-sizing:border-box; }
 	html,body{ margin:0; padding:0; background:#e9edf2; color:#000;
@@ -452,27 +452,27 @@ class HMPOS_Print {
 		@page{ size:58mm auto; margin:0; }
 	}
 </style>
-<style id="hmpos-pagesize">@page{ size:58mm auto; margin:0; }</style>
+<style id="keytill-pagesize">@page{ size:58mm auto; margin:0; }</style>
 </head>
 <body>
 	<div class="t">
 		<div class="store"><?php echo esc_html( $store ); ?></div>
-		<div class="kind"><?php esc_html_e( 'CRÉDITO EN TIENDA', 'hm-pos' ); ?></div>
-		<div class="lbl"><?php esc_html_e( 'Voucher de devolución', 'hm-pos' ); ?></div>
+		<div class="kind"><?php esc_html_e( 'CRÉDITO EN TIENDA', 'keytill' ); ?></div>
+		<div class="lbl"><?php esc_html_e( 'Voucher de devolución', 'keytill' ); ?></div>
 		<hr class="hr">
-		<div class="lbl"><?php esc_html_e( 'MONTO', 'hm-pos' ); ?></div>
+		<div class="lbl"><?php esc_html_e( 'MONTO', 'keytill' ); ?></div>
 		<div class="amt"><?php echo wp_kses_post( wc_price( $amount ) ); ?></div>
 		<hr class="hr">
-		<div class="lbl"><?php esc_html_e( 'CÓDIGO', 'hm-pos' ); ?></div>
+		<div class="lbl"><?php esc_html_e( 'CÓDIGO', 'keytill' ); ?></div>
 		<div class="code"><?php echo esc_html( $code ); ?></div>
 		<?php if ( $svg ) : ?>
 			<span class="bc"><?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG generado internamente ?></span>
 		<?php endif; ?>
 		<?php if ( '' !== $expires ) : ?>
-			<div class="exp"><?php esc_html_e( 'Válido hasta', 'hm-pos' ); ?> <?php echo esc_html( $expires ); ?></div>
+			<div class="exp"><?php esc_html_e( 'Válido hasta', 'keytill' ); ?> <?php echo esc_html( $expires ); ?></div>
 		<?php endif; ?>
 		<hr class="hr">
-		<div class="foot"><?php esc_html_e( 'Presentá este voucher para usar tu crédito. No es dinero en efectivo.', 'hm-pos' ); ?></div>
+		<div class="foot"><?php esc_html_e( 'Presentá este voucher para usar tu crédito. No es dinero en efectivo.', 'keytill' ); ?></div>
 	</div>
 	<script>window.addEventListener('load',function(){window.print();});</script>
 </body>
@@ -488,7 +488,7 @@ class HMPOS_Print {
 	 * @param WC_Order $order Orden.
 	 */
 	private static function render_gift( $order ) {
-		$biz = class_exists( 'HMPOS_Settings' ) ? HMPOS_Settings::business() : array(
+		$biz = class_exists( 'KEYTILL_Settings' ) ? KEYTILL_Settings::business() : array(
 			'name' => get_bloginfo( 'name' ),
 			'logo' => 0,
 		);
@@ -500,7 +500,7 @@ class HMPOS_Print {
 		$date_str = $date ? $date->date_i18n( 'd/m/Y H:i' ) : '';
 
 		// Validez: fecha de la venta + días configurados (0 = sin plazo).
-		$days      = class_exists( 'HMPOS_Settings' ) ? (int) HMPOS_Settings::get( 'exchange_days' ) : 30;
+		$days      = class_exists( 'KEYTILL_Settings' ) ? (int) KEYTILL_Settings::get( 'exchange_days' ) : 30;
 		$valid_str = '';
 		if ( $days > 0 ) {
 			$ts        = $date ? $date->getTimestamp() : current_time( 'timestamp' );
@@ -527,7 +527,7 @@ class HMPOS_Print {
 			);
 		}
 
-		$svg = class_exists( 'HMPOS_Labels' ) ? HMPOS_Labels::code128_svg( $number ) : '';
+		$svg = class_exists( 'KEYTILL_Labels' ) ? KEYTILL_Labels::code128_svg( $number ) : '';
 
 		header( 'Content-Type: text/html; charset=utf-8' );
 		?>
@@ -536,7 +536,7 @@ class HMPOS_Print {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo esc_html( sprintf( __( 'Ticket de cambio #%s', 'hm-pos' ), $number ) ); ?></title>
+<title><?php echo esc_html( sprintf( __( 'Ticket de cambio #%s', 'keytill' ), $number ) ); ?></title>
 <style>
 	*{ box-sizing:border-box; }
 	html,body{ margin:0; padding:0; background:#e9edf2; color:#000;
@@ -568,17 +568,17 @@ class HMPOS_Print {
 	<div class="t">
 		<?php if ( $logo_src ) : ?><img class="logo" src="<?php echo esc_url( $logo_src ); ?>" alt=""><?php endif; ?>
 		<div class="store"><?php echo esc_html( $store ); ?></div>
-		<div class="title"><?php esc_html_e( 'TICKET DE CAMBIO', 'hm-pos' ); ?></div>
+		<div class="title"><?php esc_html_e( 'TICKET DE CAMBIO', 'keytill' ); ?></div>
 
 		<hr class="hr">
-		<div class="doc"><span style="font-weight:700"><?php echo esc_html( sprintf( __( 'Venta #%s', 'hm-pos' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
+		<div class="doc"><span style="font-weight:700"><?php echo esc_html( sprintf( __( 'Venta #%s', 'keytill' ), $number ) ); ?></span><br><?php echo esc_html( $date_str ); ?></div>
 
 		<hr class="hr">
 		<?php foreach ( $rows as $r ) : ?>
 			<div class="it">
 				<div class="nm"><?php echo esc_html( $r['name'] ); ?></div>
 				<?php if ( '' !== $r['attrs'] ) : ?><div class="at"><?php echo esc_html( $r['attrs'] ); ?></div><?php endif; ?>
-				<div class="qty"><?php echo esc_html( sprintf( __( 'Cantidad: %d', 'hm-pos' ), $r['qty'] ) ); ?></div>
+				<div class="qty"><?php echo esc_html( sprintf( __( 'Cantidad: %d', 'keytill' ), $r['qty'] ) ); ?></div>
 			</div>
 		<?php endforeach; ?>
 
@@ -593,13 +593,13 @@ class HMPOS_Print {
 		<div class="note">
 			<?php
 			if ( '' !== $valid_str ) {
-				echo esc_html( sprintf( __( 'Válido para cambios hasta el %1$s (%2$d días).', 'hm-pos' ), $valid_str, $days ) );
+				echo esc_html( sprintf( __( 'Válido para cambios hasta el %1$s (%2$d días).', 'keytill' ), $valid_str, $days ) );
 			} else {
-				esc_html_e( 'Presentá este ticket para realizar cambios.', 'hm-pos' );
+				esc_html_e( 'Presentá este ticket para realizar cambios.', 'keytill' );
 			}
 			?>
 		</div>
-		<div class="foot"><?php esc_html_e( 'No es comprobante de pago.', 'hm-pos' ); ?></div>
+		<div class="foot"><?php esc_html_e( 'No es comprobante de pago.', 'keytill' ); ?></div>
 	</div>
 	<script>window.addEventListener('load',function(){window.print();});</script>
 </body>

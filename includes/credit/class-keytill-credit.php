@@ -14,7 +14,7 @@
  * Integridad del saldo: el débito es atómico (UPDATE condicional con WHERE
  * balance >= monto), así el canje web y el del mostrador nunca lo sobregiran.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -22,22 +22,22 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Lógica del crédito en tienda.
  */
-class HMPOS_Credit {
+class KEYTILL_Credit {
 
 	/** Versión del esquema de tablas (sube si cambia la estructura). */
 	const DB_VERSION = '2';
 
 	/** Opción con la versión de esquema instalada. */
-	const DB_VERSION_OPTION = 'hmpos_credit_db_version';
+	const DB_VERSION_OPTION = 'keytill_credit_db_version';
 
 	/** Opción con los días de vigencia por defecto. */
-	const EXPIRY_OPTION = 'hmpos_credit_expiry_days';
+	const EXPIRY_OPTION = 'keytill_credit_expiry_days';
 
 	/** Días de vigencia por defecto si no se configuró otro valor. */
 	const DEFAULT_EXPIRY_DAYS = 30;
 
 	/** Hook del cron diario que marca créditos vencidos. */
-	const CRON_HOOK = 'hmpos_credit_expire_event';
+	const CRON_HOOK = 'keytill_credit_expire_event';
 
 	/* ------------------------------------------------------------------ *
 	 * Nombres de tabla
@@ -50,7 +50,7 @@ class HMPOS_Credit {
 	 */
 	public static function table() {
 		global $wpdb;
-		return $wpdb->prefix . 'hmpos_credits';
+		return $wpdb->prefix . 'keytill_credits';
 	}
 
 	/**
@@ -60,7 +60,7 @@ class HMPOS_Credit {
 	 */
 	public static function ledger_table() {
 		global $wpdb;
-		return $wpdb->prefix . 'hmpos_credit_ledger';
+		return $wpdb->prefix . 'keytill_credit_ledger';
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -72,9 +72,9 @@ class HMPOS_Credit {
 	 */
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_admin_menu' ) );
-		add_action( 'admin_post_hmpos_credit_issue', array( __CLASS__, 'handle_issue' ) );
-		add_action( 'admin_post_hmpos_credit_void', array( __CLASS__, 'handle_void' ) );
-		add_action( 'admin_post_hmpos_credit_extend', array( __CLASS__, 'handle_extend' ) );
+		add_action( 'admin_post_keytill_credit_issue', array( __CLASS__, 'handle_issue' ) );
+		add_action( 'admin_post_keytill_credit_void', array( __CLASS__, 'handle_void' ) );
+		add_action( 'admin_post_keytill_credit_extend', array( __CLASS__, 'handle_extend' ) );
 		add_action( self::CRON_HOOK, array( __CLASS__, 'expire_due' ) );
 
 		// Auto-migración: crea/actualiza las tablas si el plugin ya estaba activo
@@ -223,7 +223,7 @@ class HMPOS_Credit {
 		global $wpdb;
 		$amount = round( (float) $amount, 2 );
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'hmpos_credit_amount', __( 'Monto de crédito inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_credit_amount', __( 'Monto de crédito inválido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$now  = current_time( 'mysql' );
@@ -255,7 +255,7 @@ class HMPOS_Credit {
 		);
 
 		if ( ! $ok ) {
-			return new WP_Error( 'hmpos_credit_insert', __( 'No se pudo emitir el crédito.', 'hm-pos' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_credit_insert', __( 'No se pudo emitir el crédito.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		$id = (int) $wpdb->insert_id;
@@ -338,18 +338,18 @@ class HMPOS_Credit {
 	 */
 	public static function reason_not_redeemable( $row ) {
 		if ( ! $row ) {
-			return __( 'Código de crédito inexistente.', 'hm-pos' );
+			return __( 'Código de crédito inexistente.', 'keytill' );
 		}
 		if ( 'void' === $row->status ) {
-			return __( 'El crédito fue anulado.', 'hm-pos' );
+			return __( 'El crédito fue anulado.', 'keytill' );
 		}
 		if ( 'expired' === $row->status || ( $row->expires_at && strtotime( $row->expires_at ) <= current_time( 'timestamp' ) ) ) { // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp
-			return __( 'El crédito está vencido.', 'hm-pos' );
+			return __( 'El crédito está vencido.', 'keytill' );
 		}
 		if ( (float) $row->balance <= 0 || 'used' === $row->status ) {
-			return __( 'El crédito no tiene saldo.', 'hm-pos' );
+			return __( 'El crédito no tiene saldo.', 'keytill' );
 		}
-		return __( 'El crédito no es válido.', 'hm-pos' );
+		return __( 'El crédito no es válido.', 'keytill' );
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -566,11 +566,11 @@ class HMPOS_Credit {
 	 */
 	public static function register_admin_menu() {
 		add_submenu_page(
-			'hmpos',
-			__( 'Créditos en tienda', 'hm-pos' ),
-			__( 'Créditos', 'hm-pos' ),
+			'keytill',
+			__( 'Créditos en tienda', 'keytill' ),
+			__( 'Créditos', 'keytill' ),
 			'manage_woocommerce',
-			'hmpos-credits',
+			'keytill-credits',
 			array( __CLASS__, 'render_admin_page' )
 		);
 	}
@@ -580,7 +580,7 @@ class HMPOS_Credit {
 	 */
 	public static function render_admin_page() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'Sin permiso.', 'hm-pos' ) );
+			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
 		}
 		global $wpdb;
 		$table = self::table();
@@ -601,10 +601,10 @@ class HMPOS_Credit {
 
 		$sum_active = (float) $wpdb->get_var( "SELECT COALESCE(SUM(balance),0) FROM $table WHERE status = 'active'" ); // phpcs:ignore
 		$labels     = array(
-			'active'  => __( 'Activo', 'hm-pos' ),
-			'used'    => __( 'Usado', 'hm-pos' ),
-			'expired' => __( 'Vencido', 'hm-pos' ),
-			'void'    => __( 'Anulado', 'hm-pos' ),
+			'active'  => __( 'Activo', 'keytill' ),
+			'used'    => __( 'Usado', 'keytill' ),
+			'expired' => __( 'Vencido', 'keytill' ),
+			'void'    => __( 'Anulado', 'keytill' ),
 		);
 
 		// Código recién emitido (para mostrarlo destacado tras el redirect).
@@ -612,100 +612,100 @@ class HMPOS_Credit {
 		$issued = ( '' !== $issued && self::get_by_code( $issued ) ) ? $issued : '';
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Créditos en tienda', 'hm-pos' ); ?></h1>
+			<h1><?php esc_html_e( 'Créditos en tienda', 'keytill' ); ?></h1>
 			<p>
 				<?php
 				printf(
 					/* translators: %s: saldo total activo. */
-					esc_html__( 'Saldo activo en circulación: %s', 'hm-pos' ),
+					esc_html__( 'Saldo activo en circulación: %s', 'keytill' ),
 					'<strong>' . wp_kses_post( wc_price( $sum_active ) ) . '</strong>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				);
 				?>
-				· <?php printf( esc_html__( 'Vigencia por defecto: %d días', 'hm-pos' ), (int) self::get_expiry_days() ); ?>
+				· <?php printf( esc_html__( 'Vigencia por defecto: %d días', 'keytill' ), (int) self::get_expiry_days() ); ?>
 			</p>
 
 			<?php if ( '' !== $issued ) : ?>
 				<div class="notice notice-success">
 					<p style="font-size:14px">
-						<?php esc_html_e( 'Gift card emitida. Código:', 'hm-pos' ); ?>
+						<?php esc_html_e( 'Gift card emitida. Código:', 'keytill' ); ?>
 						<code style="font-size:18px;padding:4px 8px"><?php echo esc_html( $issued ); ?></code>
-						<?php esc_html_e( 'Anotalo/entregáselo al cliente.', 'hm-pos' ); ?>
+						<?php esc_html_e( 'Anotalo/entregáselo al cliente.', 'keytill' ); ?>
 					</p>
 				</div>
 			<?php endif; ?>
 			<?php if ( isset( $_GET['issue_error'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
-				<div class="notice notice-error"><p><?php esc_html_e( 'No se pudo emitir la gift card (revisá el monto).', 'hm-pos' ); ?></p></div>
+				<div class="notice notice-error"><p><?php esc_html_e( 'No se pudo emitir la gift card (revisá el monto).', 'keytill' ); ?></p></div>
 			<?php endif; ?>
 
-			<h2 style="margin-top:1em"><?php esc_html_e( 'Emitir gift card', 'hm-pos' ); ?></h2>
+			<h2 style="margin-top:1em"><?php esc_html_e( 'Emitir gift card', 'keytill' ); ?></h2>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="background:#fff;border:1px solid #ccd0d4;padding:12px 16px;max-width:760px">
-				<input type="hidden" name="action" value="hmpos_credit_issue" />
-				<?php wp_nonce_field( 'hmpos_credit_issue' ); ?>
+				<input type="hidden" name="action" value="keytill_credit_issue" />
+				<?php wp_nonce_field( 'keytill_credit_issue' ); ?>
 				<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
-					<label><?php esc_html_e( 'Monto', 'hm-pos' ); ?><br />
+					<label><?php esc_html_e( 'Monto', 'keytill' ); ?><br />
 						<input type="number" name="amount" min="1" step="0.01" required style="width:140px" placeholder="0,00" />
 					</label>
-					<label><?php esc_html_e( 'Vigencia (días)', 'hm-pos' ); ?><br />
+					<label><?php esc_html_e( 'Vigencia (días)', 'keytill' ); ?><br />
 						<input type="number" name="expiry_days" min="0" step="1" value="<?php echo (int) self::get_expiry_days(); ?>" style="width:100px" />
 					</label>
-					<label><?php esc_html_e( 'Email (opcional)', 'hm-pos' ); ?><br />
+					<label><?php esc_html_e( 'Email (opcional)', 'keytill' ); ?><br />
 						<input type="email" name="customer_email" style="width:220px" placeholder="cliente@ejemplo.com" />
 					</label>
-					<label style="flex:1;min-width:180px"><?php esc_html_e( 'Nota (opcional)', 'hm-pos' ); ?><br />
-						<input type="text" name="note" style="width:100%" placeholder="<?php esc_attr_e( 'Ej: regalo cumpleaños', 'hm-pos' ); ?>" />
+					<label style="flex:1;min-width:180px"><?php esc_html_e( 'Nota (opcional)', 'keytill' ); ?><br />
+						<input type="text" name="note" style="width:100%" placeholder="<?php esc_attr_e( 'Ej: regalo cumpleaños', 'keytill' ); ?>" />
 					</label>
-					<button class="button button-primary"><?php esc_html_e( 'Emitir', 'hm-pos' ); ?></button>
+					<button class="button button-primary"><?php esc_html_e( 'Emitir', 'keytill' ); ?></button>
 				</div>
-				<p class="description" style="margin:8px 0 0"><?php esc_html_e( 'Genera un crédito al portador (0 días = sin vencimiento). El código se muestra al confirmar.', 'hm-pos' ); ?></p>
+				<p class="description" style="margin:8px 0 0"><?php esc_html_e( 'Genera un crédito al portador (0 días = sin vencimiento). El código se muestra al confirmar.', 'keytill' ); ?></p>
 			</form>
 
 			<form method="get">
-				<input type="hidden" name="page" value="hmpos-credits" />
+				<input type="hidden" name="page" value="keytill-credits" />
 				<p class="search-box">
-					<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Código o email…', 'hm-pos' ); ?>" />
-					<button class="button"><?php esc_html_e( 'Buscar', 'hm-pos' ); ?></button>
+					<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Código o email…', 'keytill' ); ?>" />
+					<button class="button"><?php esc_html_e( 'Buscar', 'keytill' ); ?></button>
 				</p>
 			</form>
 
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'Código', 'hm-pos' ); ?></th>
-						<th><?php esc_html_e( 'Saldo', 'hm-pos' ); ?></th>
-						<th><?php esc_html_e( 'Emitido', 'hm-pos' ); ?></th>
-						<th><?php esc_html_e( 'Estado', 'hm-pos' ); ?></th>
-						<th><?php esc_html_e( 'Cliente', 'hm-pos' ); ?></th>
-						<th><?php esc_html_e( 'Vence', 'hm-pos' ); ?></th>
-						<th><?php esc_html_e( 'Origen', 'hm-pos' ); ?></th>
-						<th><?php esc_html_e( 'Acciones', 'hm-pos' ); ?></th>
+						<th><?php esc_html_e( 'Código', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Saldo', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Emitido', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Estado', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Cliente', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Vence', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Origen', 'keytill' ); ?></th>
+						<th><?php esc_html_e( 'Acciones', 'keytill' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php if ( empty( $rows ) ) : ?>
-						<tr><td colspan="8"><?php esc_html_e( 'Sin créditos todavía.', 'hm-pos' ); ?></td></tr>
+						<tr><td colspan="8"><?php esc_html_e( 'Sin créditos todavía.', 'keytill' ); ?></td></tr>
 					<?php else : ?>
 						<?php foreach ( $rows as $r ) : ?>
 							<tr>
 								<td><code><?php echo esc_html( $r->code ); ?></code></td>
 								<td><strong><?php echo wp_kses_post( wc_price( (float) $r->balance ) ); ?></strong>
-									<br /><small class="description"><?php echo wp_kses_post( wc_price( (float) $r->initial_amount ) ); ?> <?php esc_html_e( 'inicial', 'hm-pos' ); ?></small></td>
+									<br /><small class="description"><?php echo wp_kses_post( wc_price( (float) $r->initial_amount ) ); ?> <?php esc_html_e( 'inicial', 'keytill' ); ?></small></td>
 								<td><?php echo esc_html( $r->issued_at ? mysql2date( 'd/m/Y', $r->issued_at ) : '—' ); ?></td>
 								<td><?php echo esc_html( isset( $labels[ $r->status ] ) ? $labels[ $r->status ] : $r->status ); ?></td>
 								<td><?php echo esc_html( $r->customer_email ? $r->customer_email : '—' ); ?></td>
-								<td><?php echo esc_html( $r->expires_at ? mysql2date( 'd/m/Y', $r->expires_at ) : __( 'sin venc.', 'hm-pos' ) ); ?></td>
+								<td><?php echo esc_html( $r->expires_at ? mysql2date( 'd/m/Y', $r->expires_at ) : __( 'sin venc.', 'keytill' ) ); ?></td>
 								<td>
 									<?php
 									$is_gift = isset( $r->kind ) && 'giftcard' === $r->kind;
 									if ( $is_gift ) {
 										echo '<span class="dashicons dashicons-tickets-alt" style="color:#996b00"></span> ';
-										esc_html_e( 'Gift card', 'hm-pos' );
+										esc_html_e( 'Gift card', 'keytill' );
 										if ( $r->source_order_id ) {
-											echo ' · <a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'venta #%d', 'hm-pos' ), (int) $r->source_order_id ) ) . '</a>';
+											echo ' · <a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'venta #%d', 'keytill' ), (int) $r->source_order_id ) ) . '</a>';
 										} else {
-											echo ' <span class="description">(' . esc_html__( 'admin', 'hm-pos' ) . ')</span>';
+											echo ' <span class="description">(' . esc_html__( 'admin', 'keytill' ) . ')</span>';
 										}
 									} elseif ( $r->source_order_id ) {
-										echo '<a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'devolución #%d', 'hm-pos' ), (int) $r->source_order_id ) ) . '</a>';
+										echo '<a href="' . esc_url( admin_url( 'post.php?action=edit&post=' . (int) $r->source_order_id ) ) . '">' . esc_html( sprintf( __( 'devolución #%d', 'keytill' ), (int) $r->source_order_id ) ) . '</a>';
 									} else {
 										echo '—';
 									}
@@ -714,16 +714,16 @@ class HMPOS_Credit {
 								<td>
 									<?php if ( 'active' === $r->status ) : ?>
 										<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline">
-											<input type="hidden" name="action" value="hmpos_credit_extend" />
+											<input type="hidden" name="action" value="keytill_credit_extend" />
 											<input type="hidden" name="credit_id" value="<?php echo (int) $r->id; ?>" />
-											<?php wp_nonce_field( 'hmpos_credit_extend_' . (int) $r->id ); ?>
-											<button class="button button-small"><?php esc_html_e( '+30 días', 'hm-pos' ); ?></button>
+											<?php wp_nonce_field( 'keytill_credit_extend_' . (int) $r->id ); ?>
+											<button class="button button-small"><?php esc_html_e( '+30 días', 'keytill' ); ?></button>
 										</form>
-										<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('<?php echo esc_js( __( '¿Anular este crédito?', 'hm-pos' ) ); ?>');">
-											<input type="hidden" name="action" value="hmpos_credit_void" />
+										<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline" onsubmit="return confirm('<?php echo esc_js( __( '¿Anular este crédito?', 'keytill' ) ); ?>');">
+											<input type="hidden" name="action" value="keytill_credit_void" />
 											<input type="hidden" name="credit_id" value="<?php echo (int) $r->id; ?>" />
-											<?php wp_nonce_field( 'hmpos_credit_void_' . (int) $r->id ); ?>
-											<button class="button button-small button-link-delete"><?php esc_html_e( 'Anular', 'hm-pos' ); ?></button>
+											<?php wp_nonce_field( 'keytill_credit_void_' . (int) $r->id ); ?>
+											<button class="button button-small button-link-delete"><?php esc_html_e( 'Anular', 'keytill' ); ?></button>
 										</form>
 									<?php else : ?>
 										—
@@ -763,9 +763,9 @@ class HMPOS_Credit {
 	 */
 	public static function handle_issue() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'Sin permiso.', 'hm-pos' ) );
+			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
 		}
-		check_admin_referer( 'hmpos_credit_issue' );
+		check_admin_referer( 'keytill_credit_issue' );
 
 		$amount = isset( $_POST['amount'] ) ? round( (float) wp_unslash( $_POST['amount'] ), 2 ) : 0; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$args   = array(
@@ -779,7 +779,7 @@ class HMPOS_Credit {
 			$args['expiry_days'] = max( 0, (int) $_POST['expiry_days'] );
 		}
 
-		$redirect = admin_url( 'admin.php?page=hmpos-credits' );
+		$redirect = admin_url( 'admin.php?page=keytill-credits' );
 		$result   = self::issue( $amount, $args );
 		if ( ! is_wp_error( $result ) ) {
 			$redirect = add_query_arg( 'issued', rawurlencode( $result['code'] ), $redirect );
@@ -796,9 +796,9 @@ class HMPOS_Credit {
 	public static function handle_void() {
 		$id = isset( $_POST['credit_id'] ) ? absint( $_POST['credit_id'] ) : 0;
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! $id ) {
-			wp_die( esc_html__( 'Sin permiso.', 'hm-pos' ) );
+			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
 		}
-		check_admin_referer( 'hmpos_credit_void_' . $id );
+		check_admin_referer( 'keytill_credit_void_' . $id );
 
 		global $wpdb;
 		$row = self::get( $id );
@@ -806,7 +806,7 @@ class HMPOS_Credit {
 			$wpdb->update( self::table(), array( 'status' => 'void', 'updated_at' => current_time( 'mysql' ) ), array( 'id' => $id ), array( '%s', '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			self::log( $id, 'void', -1 * (float) $row->balance, 0, array( 'channel' => 'admin', 'cajero_id' => get_current_user_id() ) );
 		}
-		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=hmpos-credits' ) );
+		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=keytill-credits' ) );
 		exit;
 	}
 
@@ -816,9 +816,9 @@ class HMPOS_Credit {
 	public static function handle_extend() {
 		$id = isset( $_POST['credit_id'] ) ? absint( $_POST['credit_id'] ) : 0;
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! $id ) {
-			wp_die( esc_html__( 'Sin permiso.', 'hm-pos' ) );
+			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
 		}
-		check_admin_referer( 'hmpos_credit_extend_' . $id );
+		check_admin_referer( 'keytill_credit_extend_' . $id );
 
 		global $wpdb;
 		$row = self::get( $id );
@@ -828,7 +828,7 @@ class HMPOS_Credit {
 			$wpdb->update( self::table(), array( 'expires_at' => $new, 'updated_at' => current_time( 'mysql' ) ), array( 'id' => $id ), array( '%s', '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			self::log( $id, 'adjust', 0, (float) $row->balance, array( 'channel' => 'admin', 'cajero_id' => get_current_user_id(), 'note' => 'Vencimiento +30 días' ) );
 		}
-		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=hmpos-credits' ) );
+		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=keytill-credits' ) );
 		exit;
 	}
 }

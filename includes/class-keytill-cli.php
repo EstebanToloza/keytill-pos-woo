@@ -2,15 +2,15 @@
 /**
  * Comandos WP-CLI del POS.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Comandos `wp hmpos ...`.
+ * Comandos `wp keytill ...`.
  */
-class HMPOS_CLI {
+class KEYTILL_CLI {
 
 	/**
 	 * Carga los productos demo del prototipo. Idempotente: si el SKU ya existe,
@@ -24,8 +24,8 @@ class HMPOS_CLI {
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp hmpos seed-demo
-	 *     wp hmpos seed-demo --force
+	 *     wp keytill seed-demo
+	 *     wp keytill seed-demo --force
 	 *
 	 * @when after_wp_load
 	 *
@@ -37,8 +37,8 @@ class HMPOS_CLI {
 			WP_CLI::error( 'WooCommerce no está activo.' );
 		}
 
-		require_once HMPOS_DIR . 'includes/hmpos-demo-products.php';
-		$products = hmpos_demo_products();
+		require_once KEYTILL_DIR . 'includes/keytill-demo-products.php';
+		$products = keytill_demo_products();
 		$force    = isset( $assoc_args['force'] );
 
 		$created = 0;

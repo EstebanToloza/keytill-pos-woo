@@ -2,12 +2,12 @@
 /**
  * Arqueo de caja: sesiones de apertura/cierre, retiros y desglose por medio.
  *
- * Una sesión de caja es un CPT `hmpos_cash_session`. Su post ID es el
- * `register_session_id` que se guarda en cada orden del POS (`_hmpos_session`).
+ * Una sesión de caja es un CPT `keytill_cash_session`. Su post ID es el
+ * `register_session_id` que se guarda en cada orden del POS (`_keytill_session`).
  * El efectivo esperado y el desglose por medio se calculan sumando las órdenes
  * ligadas a la sesión.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -15,9 +15,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Lógica de caja.
  */
-class HMPOS_Cash {
+class KEYTILL_Cash {
 
-	const CPT = 'hmpos_cash_session';
+	const CPT = 'keytill_cash_session';
 
 	/**
 	 * Engancha el registro del CPT.
@@ -43,15 +43,15 @@ class HMPOS_Cash {
 	/** Columnas de la lista de sesiones de caja. */
 	public static function admin_columns( $cols ) {
 		return array(
-			'apertura'   => __( 'Apertura', 'hm-pos' ),
-			'cierre'     => __( 'Cierre', 'hm-pos' ),
-			'cajero'     => __( 'Cajero', 'hm-pos' ),
-			'estado'     => __( 'Estado', 'hm-pos' ),
-			'fondo'      => __( 'Fondo', 'hm-pos' ),
-			'retiros'    => __( 'Retiros', 'hm-pos' ),
-			'esperado'   => __( 'Esperado', 'hm-pos' ),
-			'contado'    => __( 'Contado', 'hm-pos' ),
-			'diferencia' => __( 'Diferencia', 'hm-pos' ),
+			'apertura'   => __( 'Apertura', 'keytill' ),
+			'cierre'     => __( 'Cierre', 'keytill' ),
+			'cajero'     => __( 'Cajero', 'keytill' ),
+			'estado'     => __( 'Estado', 'keytill' ),
+			'fondo'      => __( 'Fondo', 'keytill' ),
+			'retiros'    => __( 'Retiros', 'keytill' ),
+			'esperado'   => __( 'Esperado', 'keytill' ),
+			'contado'    => __( 'Contado', 'keytill' ),
+			'diferencia' => __( 'Diferencia', 'keytill' ),
 		);
 	}
 
@@ -85,49 +85,49 @@ class HMPOS_Cash {
 		switch ( $col ) {
 			case 'apertura':
 				$link = get_edit_post_link( $post_id );
-				$txt  = self::fmt_date( get_post_meta( $post_id, '_hmpos_opened_at', true ) );
+				$txt  = self::fmt_date( get_post_meta( $post_id, '_keytill_opened_at', true ) );
 				echo $link // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					? '<a href="' . esc_url( $link ) . '" title="' . esc_attr__( 'Ver detalle', 'hm-pos' ) . '"><strong>' . esc_html( $txt ) . '</strong></a>'
+					? '<a href="' . esc_url( $link ) . '" title="' . esc_attr__( 'Ver detalle', 'keytill' ) . '"><strong>' . esc_html( $txt ) . '</strong></a>'
 					: esc_html( $txt );
 				break;
 			case 'cierre':
-				echo self::fmt_date( get_post_meta( $post_id, '_hmpos_closed_at', true ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo self::fmt_date( get_post_meta( $post_id, '_keytill_closed_at', true ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				break;
 			case 'cajero':
-				echo esc_html( self::cashier_label( (int) get_post_meta( $post_id, '_hmpos_cajero_id', true ) ) );
+				echo esc_html( self::cashier_label( (int) get_post_meta( $post_id, '_keytill_cajero_id', true ) ) );
 				break;
 			case 'estado':
-				$open = 'open' === get_post_meta( $post_id, '_hmpos_status', true );
+				$open = 'open' === get_post_meta( $post_id, '_keytill_status', true );
 				printf(
 					'<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-weight:600;%s">%s</span>',
 					$open ? 'background:#e1f7ef;color:#15805f' : 'background:#eef1f6;color:#50607a', // phpcs:ignore
-					esc_html( $open ? __( 'Abierta', 'hm-pos' ) : __( 'Cerrada', 'hm-pos' ) )
+					esc_html( $open ? __( 'Abierta', 'keytill' ) : __( 'Cerrada', 'keytill' ) )
 				);
 				break;
 			case 'fondo':
-				echo wp_kses_post( self::fmt( get_post_meta( $post_id, '_hmpos_opening_float', true ) ) );
+				echo wp_kses_post( self::fmt( get_post_meta( $post_id, '_keytill_opening_float', true ) ) );
 				break;
 			case 'retiros':
-				$t = (float) get_post_meta( $post_id, '_hmpos_withdrawals_total', true );
+				$t = (float) get_post_meta( $post_id, '_keytill_withdrawals_total', true );
 				echo $t > 0 ? wp_kses_post( self::fmt( $t ) ) : '—';
 				break;
 			case 'esperado':
-				$v = get_post_meta( $post_id, '_hmpos_expected_cash', true );
+				$v = get_post_meta( $post_id, '_keytill_expected_cash', true );
 				echo '' !== $v ? wp_kses_post( self::fmt( $v ) ) : '—';
 				break;
 			case 'contado':
-				$v = get_post_meta( $post_id, '_hmpos_counted_cash', true );
+				$v = get_post_meta( $post_id, '_keytill_counted_cash', true );
 				echo '' !== $v ? wp_kses_post( self::fmt( $v ) ) : '—';
 				break;
 			case 'diferencia':
-				$v = get_post_meta( $post_id, '_hmpos_difference', true );
+				$v = get_post_meta( $post_id, '_keytill_difference', true );
 				if ( '' === $v ) {
 					echo '—';
 					break;
 				}
 				$d     = (float) $v;
 				$color = $d < 0 ? '#c0392b' : ( $d > 0 ? '#b7791f' : '#15805f' );
-				$lbl   = $d < 0 ? __( 'FALTA', 'hm-pos' ) : ( $d > 0 ? __( 'SOBRA', 'hm-pos' ) : __( 'OK', 'hm-pos' ) );
+				$lbl   = $d < 0 ? __( 'FALTA', 'keytill' ) : ( $d > 0 ? __( 'SOBRA', 'keytill' ) : __( 'OK', 'keytill' ) );
 				printf(
 					'<strong style="color:%s">%s</strong> <span style="color:%s;font-size:11px">%s</span>',
 					esc_attr( $color ),
@@ -149,7 +149,7 @@ class HMPOS_Cash {
 
 	/** Caja de detalle de la sesión (retiros/ingresos con motivo + desglose). */
 	public static function add_detail_metabox() {
-		add_meta_box( 'hmpos_cash_detail', __( 'Detalle de la caja', 'hm-pos' ), array( __CLASS__, 'render_detail' ), self::CPT, 'normal', 'high' );
+		add_meta_box( 'keytill_cash_detail', __( 'Detalle de la caja', 'keytill' ), array( __CLASS__, 'render_detail' ), self::CPT, 'normal', 'high' );
 	}
 
 	public static function render_detail( $post ) {
@@ -158,16 +158,16 @@ class HMPOS_Cash {
 
 		echo '<table class="widefat" style="max-width:420px;margin-bottom:16px"><tbody>';
 		$rows = array(
-			array( __( 'Fondo inicial', 'hm-pos' ), self::fmt( $p['opening_float'] ) ),
-			array( __( 'Ventas efectivo', 'hm-pos' ), self::fmt( $p['cash_sales'] ) ),
-			array( __( 'Ingresos', 'hm-pos' ), self::fmt( $p['deposits_total'] ) ),
-			array( __( 'Retiros', 'hm-pos' ), '− ' . self::fmt( $p['withdrawals_total'] ) ),
-			array( __( 'Devoluciones efectivo', 'hm-pos' ), '− ' . self::fmt( $p['cash_refunds'] ) ),
-			array( __( 'Esperado en cajón', 'hm-pos' ), self::fmt( $p['expected_cash'] ) ),
+			array( __( 'Fondo inicial', 'keytill' ), self::fmt( $p['opening_float'] ) ),
+			array( __( 'Ventas efectivo', 'keytill' ), self::fmt( $p['cash_sales'] ) ),
+			array( __( 'Ingresos', 'keytill' ), self::fmt( $p['deposits_total'] ) ),
+			array( __( 'Retiros', 'keytill' ), '− ' . self::fmt( $p['withdrawals_total'] ) ),
+			array( __( 'Devoluciones efectivo', 'keytill' ), '− ' . self::fmt( $p['cash_refunds'] ) ),
+			array( __( 'Esperado en cajón', 'keytill' ), self::fmt( $p['expected_cash'] ) ),
 		);
 		if ( 'closed' === $p['status'] ) {
-			$rows[] = array( __( 'Contado', 'hm-pos' ), self::fmt( isset( $p['counted_cash'] ) ? $p['counted_cash'] : 0 ) );
-			$rows[] = array( __( 'Diferencia', 'hm-pos' ), self::fmt( isset( $p['difference'] ) ? $p['difference'] : 0 ) );
+			$rows[] = array( __( 'Contado', 'keytill' ), self::fmt( isset( $p['counted_cash'] ) ? $p['counted_cash'] : 0 ) );
+			$rows[] = array( __( 'Diferencia', 'keytill' ), self::fmt( isset( $p['difference'] ) ? $p['difference'] : 0 ) );
 		}
 		foreach ( $rows as $r ) {
 			printf( '<tr><td>%s</td><td style="text-align:right">%s</td></tr>', esc_html( $r[0] ), wp_kses_post( $r[1] ) );
@@ -176,7 +176,7 @@ class HMPOS_Cash {
 
 		// Desglose por medio de pago.
 		if ( ! empty( $p['breakdown'] ) ) {
-			echo '<h3>' . esc_html__( 'Por medio de pago', 'hm-pos' ) . '</h3>';
+			echo '<h3>' . esc_html__( 'Por medio de pago', 'keytill' ) . '</h3>';
 			echo '<table class="widefat striped" style="max-width:420px"><tbody>';
 			foreach ( $p['breakdown'] as $b ) {
 				if ( (float) $b['total'] <= 0 && (int) $b['count'] <= 0 ) {
@@ -192,19 +192,19 @@ class HMPOS_Cash {
 			echo '</tbody></table>';
 		}
 
-		self::render_move_table( __( 'Retiros', 'hm-pos' ), $p['withdrawals'], 'reason' );
-		self::render_move_table( __( 'Ingresos', 'hm-pos' ), $p['deposits'], 'concept' );
+		self::render_move_table( __( 'Retiros', 'keytill' ), $p['withdrawals'], 'reason' );
+		self::render_move_table( __( 'Ingresos', 'keytill' ), $p['deposits'], 'concept' );
 	}
 
 	/** Tabla de movimientos (retiros/ingresos) con su motivo. */
 	private static function render_move_table( $title, $list, $concept_key ) {
 		echo '<h3>' . esc_html( $title ) . '</h3>';
 		if ( empty( $list ) || ! is_array( $list ) ) {
-			echo '<p>' . esc_html__( 'Sin movimientos.', 'hm-pos' ) . '</p>';
+			echo '<p>' . esc_html__( 'Sin movimientos.', 'keytill' ) . '</p>';
 			return;
 		}
 		echo '<table class="widefat striped"><thead><tr>';
-		foreach ( array( __( 'Fecha', 'hm-pos' ), __( 'Concepto', 'hm-pos' ), __( 'Monto', 'hm-pos' ), __( 'Cajero', 'hm-pos' ) ) as $h ) {
+		foreach ( array( __( 'Fecha', 'keytill' ), __( 'Concepto', 'keytill' ), __( 'Monto', 'keytill' ), __( 'Cajero', 'keytill' ) ) as $h ) {
 			echo '<th>' . esc_html( $h ) . '</th>';
 		}
 		echo '</tr></thead><tbody>';
@@ -229,13 +229,13 @@ class HMPOS_Cash {
 			self::CPT,
 			array(
 				'labels'          => array(
-					'name'          => __( 'Sesiones de caja', 'hm-pos' ),
-					'singular_name' => __( 'Sesión de caja', 'hm-pos' ),
-					'menu_name'     => __( 'Cajas (POS)', 'hm-pos' ),
+					'name'          => __( 'Sesiones de caja', 'keytill' ),
+					'singular_name' => __( 'Sesión de caja', 'keytill' ),
+					'menu_name'     => __( 'Cajas (POS)', 'keytill' ),
 				),
 				'public'          => false,
 				'show_ui'         => true,
-				'show_in_menu'    => 'hmpos', // submenú de "HM POS"
+				'show_in_menu'    => 'keytill', // submenú de "HM POS"
 				'show_in_rest'    => false,
 				'menu_icon'       => 'dashicons-money-alt',
 				'capability_type' => 'post',
@@ -276,8 +276,8 @@ class HMPOS_Cash {
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				'meta_query'       => array(
 					'relation' => 'AND',
-					array( 'key' => '_hmpos_status', 'value' => 'open' ),
-					array( 'key' => '_hmpos_cajero_id', 'value' => $user_id ),
+					array( 'key' => '_keytill_status', 'value' => 'open' ),
+					array( 'key' => '_keytill_cajero_id', 'value' => $user_id ),
 				),
 			)
 		);
@@ -291,7 +291,7 @@ class HMPOS_Cash {
 	 * @return bool
 	 */
 	public static function is_open( $id ) {
-		return $id && get_post_type( $id ) === self::CPT && 'open' === get_post_meta( $id, '_hmpos_status', true );
+		return $id && get_post_type( $id ) === self::CPT && 'open' === get_post_meta( $id, '_keytill_status', true );
 	}
 
 	/**
@@ -301,7 +301,7 @@ class HMPOS_Cash {
 	 * @return string branch_id
 	 */
 	public static function session_branch( $id ) {
-		return $id ? (string) get_post_meta( $id, '_hmpos_branch', true ) : '';
+		return $id ? (string) get_post_meta( $id, '_keytill_branch', true ) : '';
 	}
 
 	/**
@@ -327,7 +327,7 @@ class HMPOS_Cash {
 		}
 		$orders = wc_get_orders(
 			array(
-				'type'       => 'shop_order', // excluye refunds (también llevan _hmpos_session)
+				'type'       => 'shop_order', // excluye refunds (también llevan _keytill_session)
 				'limit'      => -1,
 				// Incluye 'refunded' para que una venta devuelta TOTALMENTE en la misma
 				// sesión no desaparezca del arqueo: su total bruto queda en las ventas y
@@ -336,7 +336,7 @@ class HMPOS_Cash {
 				'status'     => array( 'wc-completed', 'wc-processing', 'wc-refunded' ),
 				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery
 					array(
-						'key'     => '_hmpos_session',
+						'key'     => '_keytill_session',
 						'value'   => (string) $id,
 						'compare' => '=',
 					),
@@ -352,8 +352,8 @@ class HMPOS_Cash {
 		$out = array();
 		foreach ( (array) $orders as $o ) {
 			if ( $o instanceof WC_Order
-				&& 'hmpos' === $o->get_created_via()
-				&& (string) $id === (string) $o->get_meta( '_hmpos_session' ) ) {
+				&& 'keytill' === $o->get_created_via()
+				&& (string) $id === (string) $o->get_meta( '_keytill_session' ) ) {
 				$out[] = $o;
 			}
 		}
@@ -374,16 +374,16 @@ class HMPOS_Cash {
 	public static function open_session( $opening_float, $user_id, $branch_id = '' ) {
 		// Multi-caja: solo se rechaza si ESTE cajero ya tiene una caja abierta.
 		if ( self::get_open_session_id( $user_id ) ) {
-			return new WP_Error( 'hmpos_cash_open', __( 'Ya tenés una caja abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_open', __( 'Ya tenés una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		// Sucursal de la caja: si hay sucursales activas, es obligatoria (define de
 		// dónde se descuenta/reingresa el stock por sucursal). Sin sucursales, se ignora.
 		$branch = '';
-		if ( class_exists( 'HMPOS_Branches' ) && HMPOS_Branches::active() ) {
-			$branch = HMPOS_Branches::valid_id( $branch_id );
+		if ( class_exists( 'KEYTILL_Branches' ) && KEYTILL_Branches::active() ) {
+			$branch = KEYTILL_Branches::valid_id( $branch_id );
 			if ( '' === $branch ) {
-				return new WP_Error( 'hmpos_cash_branch', __( 'Elegí la sucursal de la caja.', 'hm-pos' ), array( 'status' => 400 ) );
+				return new WP_Error( 'keytill_cash_branch', __( 'Elegí la sucursal de la caja.', 'keytill' ), array( 'status' => 400 ) );
 			}
 		}
 
@@ -394,7 +394,7 @@ class HMPOS_Cash {
 				'post_status' => 'publish',
 				'post_title'  => sprintf(
 					/* translators: 1: fecha/hora, 2: cajero. */
-					__( 'Caja %1$s · %2$s', 'hm-pos' ),
+					__( 'Caja %1$s · %2$s', 'keytill' ),
 					wp_date( 'd/m/Y H:i' ),
 					$user ? $user->display_name : ''
 				),
@@ -405,17 +405,17 @@ class HMPOS_Cash {
 			return $id;
 		}
 
-		update_post_meta( $id, '_hmpos_status', 'open' );
-		update_post_meta( $id, '_hmpos_cajero_id', (int) $user_id );
+		update_post_meta( $id, '_keytill_status', 'open' );
+		update_post_meta( $id, '_keytill_cajero_id', (int) $user_id );
 		if ( '' !== $branch ) {
-			update_post_meta( $id, '_hmpos_branch', $branch );
+			update_post_meta( $id, '_keytill_branch', $branch );
 		}
-		update_post_meta( $id, '_hmpos_opening_float', round( (float) $opening_float, 2 ) );
-		update_post_meta( $id, '_hmpos_opened_at', current_time( 'mysql' ) );
-		update_post_meta( $id, '_hmpos_withdrawals', array() );
-		update_post_meta( $id, '_hmpos_withdrawals_total', 0 );
-		update_post_meta( $id, '_hmpos_deposits', array() );
-		update_post_meta( $id, '_hmpos_deposits_total', 0 );
+		update_post_meta( $id, '_keytill_opening_float', round( (float) $opening_float, 2 ) );
+		update_post_meta( $id, '_keytill_opened_at', current_time( 'mysql' ) );
+		update_post_meta( $id, '_keytill_withdrawals', array() );
+		update_post_meta( $id, '_keytill_withdrawals_total', 0 );
+		update_post_meta( $id, '_keytill_deposits', array() );
+		update_post_meta( $id, '_keytill_deposits_total', 0 );
 
 		return self::session_payload( $id );
 	}
@@ -430,15 +430,15 @@ class HMPOS_Cash {
 	 */
 	public static function add_withdrawal( $id, $amount, $reason ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'hmpos_cash_closed', __( 'No hay una caja abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$amount = round( (float) $amount, 2 );
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'hmpos_bad_amount', __( 'Monto de retiro inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_amount', __( 'Monto de retiro inválido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$uid    = get_current_user_id();
-		$list   = get_post_meta( $id, '_hmpos_withdrawals', true );
+		$list   = get_post_meta( $id, '_keytill_withdrawals', true );
 		$list   = is_array( $list ) ? $list : array();
 		$list[] = array(
 			'amount'    => $amount,
@@ -447,8 +447,8 @@ class HMPOS_Cash {
 			'cajero_id' => (int) $uid, // atribución en caja compartida (un cajón, varios cajeros)
 			'cajero'    => $uid ? self::cashier_label( $uid ) : '',
 		);
-		update_post_meta( $id, '_hmpos_withdrawals', $list );
-		update_post_meta( $id, '_hmpos_withdrawals_total', round( array_sum( wp_list_pluck( $list, 'amount' ) ), 2 ) );
+		update_post_meta( $id, '_keytill_withdrawals', $list );
+		update_post_meta( $id, '_keytill_withdrawals_total', round( array_sum( wp_list_pluck( $list, 'amount' ) ), 2 ) );
 
 		return self::session_payload( $id );
 	}
@@ -464,15 +464,15 @@ class HMPOS_Cash {
 	 */
 	public static function add_deposit( $id, $amount, $concept ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'hmpos_cash_closed', __( 'No hay una caja abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$amount = round( (float) $amount, 2 );
 		if ( $amount <= 0 ) {
-			return new WP_Error( 'hmpos_bad_amount', __( 'Monto de ingreso inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_amount', __( 'Monto de ingreso inválido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$uid    = get_current_user_id();
-		$list   = get_post_meta( $id, '_hmpos_deposits', true );
+		$list   = get_post_meta( $id, '_keytill_deposits', true );
 		$list   = is_array( $list ) ? $list : array();
 		$list[] = array(
 			'amount'    => $amount,
@@ -481,8 +481,8 @@ class HMPOS_Cash {
 			'cajero_id' => (int) $uid,
 			'cajero'    => $uid ? self::cashier_label( $uid ) : '',
 		);
-		update_post_meta( $id, '_hmpos_deposits', $list );
-		update_post_meta( $id, '_hmpos_deposits_total', round( array_sum( wp_list_pluck( $list, 'amount' ) ), 2 ) );
+		update_post_meta( $id, '_keytill_deposits', $list );
+		update_post_meta( $id, '_keytill_deposits_total', round( array_sum( wp_list_pluck( $list, 'amount' ) ), 2 ) );
 
 		return self::session_payload( $id );
 	}
@@ -496,7 +496,7 @@ class HMPOS_Cash {
 	 */
 	public static function close_session( $id, $counted_cash ) {
 		if ( ! self::is_open( $id ) ) {
-			return new WP_Error( 'hmpos_cash_closed', __( 'No hay una caja abierta para cerrar.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta para cerrar.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		$summary  = self::compute_summary( $id );
@@ -504,12 +504,12 @@ class HMPOS_Cash {
 		$expected = $summary['expected_cash'];
 		$diff     = round( $counted - $expected, 2 );
 
-		update_post_meta( $id, '_hmpos_status', 'closed' );
-		update_post_meta( $id, '_hmpos_closed_at', current_time( 'mysql' ) );
-		update_post_meta( $id, '_hmpos_counted_cash', $counted );
-		update_post_meta( $id, '_hmpos_expected_cash', $expected );
-		update_post_meta( $id, '_hmpos_difference', $diff );
-		update_post_meta( $id, '_hmpos_breakdown', wp_json_encode( $summary['breakdown'] ) );
+		update_post_meta( $id, '_keytill_status', 'closed' );
+		update_post_meta( $id, '_keytill_closed_at', current_time( 'mysql' ) );
+		update_post_meta( $id, '_keytill_counted_cash', $counted );
+		update_post_meta( $id, '_keytill_expected_cash', $expected );
+		update_post_meta( $id, '_keytill_difference', $diff );
+		update_post_meta( $id, '_keytill_breakdown', wp_json_encode( $summary['breakdown'] ) );
 
 		return self::session_payload( $id );
 	}
@@ -525,7 +525,7 @@ class HMPOS_Cash {
 	 * @return array{breakdown:array,sales_total:float,cash_sales:float,expected_cash:float}
 	 */
 	public static function compute_summary( $id ) {
-		$methods   = HMPOS_REST::payment_methods();
+		$methods   = KEYTILL_REST::payment_methods();
 		$breakdown = array();
 		foreach ( $methods as $mid => $mlabel ) {
 			$breakdown[ $mid ] = array(
@@ -538,7 +538,7 @@ class HMPOS_Cash {
 		// Bucket informativo del crédito en tienda (no es efectivo del cajón).
 		$breakdown['credito'] = array(
 			'id'    => 'credito',
-			'label' => __( 'Crédito en tienda', 'hm-pos' ),
+			'label' => __( 'Crédito en tienda', 'keytill' ),
 			'total' => 0.0,
 			'count' => 0,
 		);
@@ -552,12 +552,12 @@ class HMPOS_Cash {
 			}
 			$pm          = $order->get_payment_method();
 			$total       = (float) $order->get_total();
-			$credit_used = (float) $order->get_meta( '_hmpos_credit_used' );
+			$credit_used = (float) $order->get_meta( '_keytill_credit_used' );
 			$charged     = round( $total - $credit_used, 2 ); // lo cobrado por el medio real
 			$sales_total += $total;
 
 			// Atribución por cajero (quién hizo la venta).
-			$cid = (int) $order->get_meta( '_hmpos_cajero_id' );
+			$cid = (int) $order->get_meta( '_keytill_cajero_id' );
 			if ( ! isset( $by_cashier[ $cid ] ) ) {
 				$by_cashier[ $cid ] = array(
 					'id'    => $cid,
@@ -594,10 +594,10 @@ class HMPOS_Cash {
 			}
 		}
 
-		$float    = (float) get_post_meta( $id, '_hmpos_opening_float', true );
-		$wd       = (float) get_post_meta( $id, '_hmpos_withdrawals_total', true );
-		$deposits = (float) get_post_meta( $id, '_hmpos_deposits_total', true );
-		$refunds  = (float) get_post_meta( $id, '_hmpos_cash_refunds_total', true );
+		$float    = (float) get_post_meta( $id, '_keytill_opening_float', true );
+		$wd       = (float) get_post_meta( $id, '_keytill_withdrawals_total', true );
+		$deposits = (float) get_post_meta( $id, '_keytill_deposits_total', true );
+		$refunds  = (float) get_post_meta( $id, '_keytill_cash_refunds_total', true );
 
 		// Ordena el desglose por cajero de mayor a menor venta.
 		$by_cashier = array_values( $by_cashier );
@@ -635,8 +635,8 @@ class HMPOS_Cash {
 		if ( $amount <= 0 ) {
 			return $id;
 		}
-		$prev = (float) get_post_meta( $id, '_hmpos_cash_refunds_total', true );
-		update_post_meta( $id, '_hmpos_cash_refunds_total', round( $prev + $amount, 2 ) );
+		$prev = (float) get_post_meta( $id, '_keytill_cash_refunds_total', true );
+		update_post_meta( $id, '_keytill_cash_refunds_total', round( $prev + $amount, 2 ) );
 		return $id;
 	}
 
@@ -647,11 +647,11 @@ class HMPOS_Cash {
 	 * @return array
 	 */
 	public static function session_payload( $id ) {
-		$status  = get_post_meta( $id, '_hmpos_status', true );
+		$status  = get_post_meta( $id, '_keytill_status', true );
 		$summary = self::compute_summary( $id );
-		$list    = get_post_meta( $id, '_hmpos_withdrawals', true );
+		$list    = get_post_meta( $id, '_keytill_withdrawals', true );
 
-		$cajero_id   = (int) get_post_meta( $id, '_hmpos_cajero_id', true );
+		$cajero_id   = (int) get_post_meta( $id, '_keytill_cajero_id', true );
 		$cajero_user = $cajero_id ? get_userdata( $cajero_id ) : null;
 
 		$branch_id = self::session_branch( $id );
@@ -662,13 +662,13 @@ class HMPOS_Cash {
 			'cajero_id'           => $cajero_id,
 			'cajero_name'         => $cajero_user ? $cajero_user->display_name : '',
 			'branch_id'           => $branch_id,
-			'branch_name'         => ( '' !== $branch_id && class_exists( 'HMPOS_Branches' ) ) ? HMPOS_Branches::name_of( $branch_id ) : '',
-			'opening_float'       => (float) get_post_meta( $id, '_hmpos_opening_float', true ),
-			'opened_at'           => get_post_meta( $id, '_hmpos_opened_at', true ),
+			'branch_name'         => ( '' !== $branch_id && class_exists( 'KEYTILL_Branches' ) ) ? KEYTILL_Branches::name_of( $branch_id ) : '',
+			'opening_float'       => (float) get_post_meta( $id, '_keytill_opening_float', true ),
+			'opened_at'           => get_post_meta( $id, '_keytill_opened_at', true ),
 			'withdrawals'         => is_array( $list ) ? $list : array(),
-			'withdrawals_total'   => (float) get_post_meta( $id, '_hmpos_withdrawals_total', true ),
-			'deposits'            => is_array( get_post_meta( $id, '_hmpos_deposits', true ) ) ? get_post_meta( $id, '_hmpos_deposits', true ) : array(),
-			'deposits_total'      => (float) get_post_meta( $id, '_hmpos_deposits_total', true ),
+			'withdrawals_total'   => (float) get_post_meta( $id, '_keytill_withdrawals_total', true ),
+			'deposits'            => is_array( get_post_meta( $id, '_keytill_deposits', true ) ) ? get_post_meta( $id, '_keytill_deposits', true ) : array(),
+			'deposits_total'      => (float) get_post_meta( $id, '_keytill_deposits_total', true ),
 			'sales_total'         => $summary['sales_total'],
 			'cash_sales'          => $summary['cash_sales'],
 			'cash_refunds'        => $summary['cash_refunds'],
@@ -678,9 +678,9 @@ class HMPOS_Cash {
 		);
 
 		if ( 'closed' === $status ) {
-			$payload['closed_at']    = get_post_meta( $id, '_hmpos_closed_at', true );
-			$payload['counted_cash'] = (float) get_post_meta( $id, '_hmpos_counted_cash', true );
-			$payload['difference']   = (float) get_post_meta( $id, '_hmpos_difference', true );
+			$payload['closed_at']    = get_post_meta( $id, '_keytill_closed_at', true );
+			$payload['counted_cash'] = (float) get_post_meta( $id, '_keytill_counted_cash', true );
+			$payload['difference']   = (float) get_post_meta( $id, '_keytill_difference', true );
 		}
 
 		return $payload;

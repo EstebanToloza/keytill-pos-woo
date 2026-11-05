@@ -1,6 +1,6 @@
 <?php
 /**
- * Decodificador del código de barras de 12 dígitos de HM Sport.
+ * Decodificador del código de barras de 12 dígitos de Keytill.
  *
  * El cliente identifica cada prenda con un código de 12 dígitos compuesto por 5
  * segmentos (derivado de `Codigos_de_barras.xlsx`, hoja LISTAS). Ejemplo:
@@ -18,12 +18,12 @@
  * el precargado del producto se resuelven aparte (necesitan la configuración de
  * qué atributo global es "color" y cuál "talle").
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Barcode {
+class KEYTILL_Barcode {
 
 	/** Identificación (AA). */
 	const IDENT = array(

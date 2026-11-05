@@ -1,10 +1,10 @@
 /* ============================================================
-   HM Sport POS — pos-orders.js
+   Keytill POS — pos-orders.js
    Pestaña "Pedidos" de la consola. Componente Alpine independiente
-   (hmposOrders) montado en su vista; lee $store.pos para saber si
+   (keytillOrders) montado en su vista; lee $store.pos para saber si
    está activa. Lista paginada + filtros + detalle (reimprimir / devolver).
    La devolución reutiliza el flujo F7 del componente de venta vía el
-   evento 'hmpos:return'.
+   evento 'keytill:return'.
    ============================================================ */
 ( function () {
 	'use strict';
@@ -33,7 +33,7 @@
 			.then( function ( r ) { return r.json(); } );
 	}
 
-	function hmposOrders() {
+	function keytillOrders() {
 		return {
 			items: [],
 			total: 0,
@@ -54,7 +54,7 @@
 				var self = this;
 				// Carga perezosa: recién al activar la pestaña por primera vez.
 				this._onView = function ( e ) { if ( e.detail === 'pedidos' ) { self.ensureLoaded(); } };
-				window.addEventListener( 'hmpos:view', this._onView );
+				window.addEventListener( 'keytill:view', this._onView );
 				if ( this.$store.pos.view === 'pedidos' ) { this.ensureLoaded(); }
 			},
 
@@ -67,7 +67,7 @@
 
 			loadFilters: function () {
 				var self = this;
-				getJSON( API.root + 'hmpos/v1/orders/filters' )
+				getJSON( API.root + 'keytill/v1/orders/filters' )
 					.then( function ( d ) { if ( d ) { self.meta = d; } } )
 					.catch( function () {} );
 			},
@@ -85,7 +85,7 @@
 				this.loading = true;
 				this.error = '';
 				var params = Object.assign( { page: page || 1, per_page: this.perPage }, this.cleanFilters() );
-				getJSON( API.root + 'hmpos/v1/orders/list?' + qs( params ) )
+				getJSON( API.root + 'keytill/v1/orders/list?' + qs( params ) )
 					.then( function ( d ) {
 						self.loading = false;
 						self.items = ( d && d.items ) || [];
@@ -129,7 +129,7 @@
 			// Descarga el CSV de pedidos respetando los filtros actuales. Exige un
 			// rango de fechas (Desde y Hasta) para no exportar todo el histórico.
 			exportCsv: function () {
-				var cfg = window.hmposConfig || {};
+				var cfg = window.keytillConfig || {};
 				if ( ! cfg.ordersExport ) { this.error = 'No se pudo generar la exportación.'; return; }
 				if ( ! this.filters.date_from || ! this.filters.date_to ) {
 					this.error = 'Elegí un rango de fechas (Desde y Hasta) para exportar.';
@@ -150,7 +150,7 @@
 				var self = this;
 				this.detailLoading = true;
 				this.selected = null;
-				getJSON( API.root + 'hmpos/v1/orders/' + id )
+				getJSON( API.root + 'keytill/v1/orders/' + id )
 					.then( function ( d ) { self.detailLoading = false; self.selected = d; } )
 					.catch( function () { self.detailLoading = false; self.error = 'No se pudo abrir el pedido.'; } );
 			},
@@ -172,7 +172,7 @@
 			refund: function () {
 				if ( ! this.selected ) { return; }
 				// Reutiliza el flujo de devolución (F7) del componente de venta.
-				window.dispatchEvent( new CustomEvent( 'hmpos:return', { detail: { number: this.selected.number } } ) );
+				window.dispatchEvent( new CustomEvent( 'keytill:return', { detail: { number: this.selected.number } } ) );
 				this.closeDetail();
 				this.$store.pos.go( 'venta' );
 			}
@@ -180,6 +180,6 @@
 	}
 
 	document.addEventListener( 'alpine:init', function () {
-		window.Alpine.data( 'hmposOrders', hmposOrders );
+		window.Alpine.data( 'keytillOrders', keytillOrders );
 	} );
 }() );

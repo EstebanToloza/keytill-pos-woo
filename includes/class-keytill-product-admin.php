@@ -3,17 +3,17 @@
  * Integración del código de barras del POS con el admin CLÁSICO de WooCommerce:
  * campo en la ficha del producto (simples y variaciones), columna en el listado
  * de productos y acceso a la impresión de etiquetas. Comparte la meta
- * `_hmpos_barcode` con el editor del POS (interoperan).
+ * `_keytill_barcode` con el editor del POS (interoperan).
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Product_Admin {
+class KEYTILL_Product_Admin {
 
-	const META   = '_hmpos_barcode';
-	const NOTICE = 'hmpos_barcode_notice_';
+	const META   = '_keytill_barcode';
+	const NOTICE = 'keytill_barcode_notice_';
 
 	public static function init() {
 		if ( ! is_admin() ) {
@@ -43,7 +43,7 @@ class HMPOS_Product_Admin {
 		if ( ! $screen || 'edit-product' !== $screen->id ) {
 			return;
 		}
-		echo '<style>.column-hmpos_barcode{width:9em}.column-hmpos_barcode code{font-size:12px;white-space:nowrap}</style>';
+		echo '<style>.column-keytill_barcode{width:9em}.column-keytill_barcode code{font-size:12px;white-space:nowrap}</style>';
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -55,9 +55,9 @@ class HMPOS_Product_Admin {
 		woocommerce_wp_text_input(
 			array(
 				'id'                => self::META,
-				'label'             => __( 'Código de barras (POS)', 'hm-pos' ),
+				'label'             => __( 'Código de barras (POS)', 'keytill' ),
 				'desc_tip'          => true,
-				'description'       => __( '12 dígitos. Sirve para escanear en el POS e imprimir etiquetas.', 'hm-pos' ),
+				'description'       => __( '12 dígitos. Sirve para escanear en el POS e imprimir etiquetas.', 'keytill' ),
 				'wrapper_class'     => 'show_if_simple',
 				'custom_attributes' => array(
 					'inputmode' => 'numeric',
@@ -72,7 +72,7 @@ class HMPOS_Product_Admin {
 		$code = $pid ? (string) get_post_meta( $pid, self::META, true ) : '';
 		if ( '' !== $code ) {
 			echo '<p class="form-field show_if_simple"><a href="' . esc_url( self::labels_url( $pid ) ) . '" target="_blank" rel="noopener" class="button">'
-				. esc_html__( 'Imprimir etiquetas', 'hm-pos' ) . '</a></p>';
+				. esc_html__( 'Imprimir etiquetas', 'keytill' ) . '</a></p>';
 		}
 	}
 
@@ -103,9 +103,9 @@ class HMPOS_Product_Admin {
 				'id'                => self::META . '_' . $loop,
 				'name'              => self::META . '[' . $loop . ']',
 				'value'             => $code,
-				'label'             => __( 'Código de barras (POS)', 'hm-pos' ),
+				'label'             => __( 'Código de barras (POS)', 'keytill' ),
 				'desc_tip'          => true,
-				'description'       => __( '12 dígitos.', 'hm-pos' ),
+				'description'       => __( '12 dígitos.', 'keytill' ),
 				'wrapper_class'     => 'form-row form-row-full',
 				'custom_attributes' => array(
 					'inputmode' => 'numeric',
@@ -116,7 +116,7 @@ class HMPOS_Product_Admin {
 		);
 		if ( '' !== $code ) {
 			echo '<p class="form-row form-row-full"><a href="' . esc_url( self::labels_url( $vid ) ) . '" target="_blank" rel="noopener" class="button button-small">'
-				. esc_html__( 'Imprimir etiquetas', 'hm-pos' ) . '</a></p>';
+				. esc_html__( 'Imprimir etiquetas', 'keytill' ) . '</a></p>';
 		}
 	}
 
@@ -151,12 +151,12 @@ class HMPOS_Product_Admin {
 			return;
 		}
 		if ( 12 !== strlen( $code ) ) {
-			self::notice( __( 'El código de barras debe tener 12 dígitos: no se guardó.', 'hm-pos' ) );
+			self::notice( __( 'El código de barras debe tener 12 dígitos: no se guardó.', 'keytill' ) );
 			return;
 		}
-		if ( class_exists( 'HMPOS_REST' ) && HMPOS_REST::barcode_in_use( $code, (int) $product->get_id() ) ) {
+		if ( class_exists( 'KEYTILL_REST' ) && KEYTILL_REST::barcode_in_use( $code, (int) $product->get_id() ) ) {
 			/* translators: %s: código de barras. */
-			self::notice( sprintf( __( 'El código de barras %s ya está en uso por otro producto: no se guardó.', 'hm-pos' ), $code ) );
+			self::notice( sprintf( __( 'El código de barras %s ya está en uso por otro producto: no se guardó.', 'keytill' ), $code ) );
 			return;
 		}
 		$product->update_meta_data( self::META, $code );
@@ -172,18 +172,18 @@ class HMPOS_Product_Admin {
 		foreach ( $columns as $key => $label ) {
 			$out[ $key ] = $label;
 			if ( 'sku' === $key ) {
-				$out['hmpos_barcode'] = __( 'Cód. barras', 'hm-pos' );
+				$out['keytill_barcode'] = __( 'Cód. barras', 'keytill' );
 			}
 		}
-		if ( ! isset( $out['hmpos_barcode'] ) ) {
-			$out['hmpos_barcode'] = __( 'Cód. barras', 'hm-pos' );
+		if ( ! isset( $out['keytill_barcode'] ) ) {
+			$out['keytill_barcode'] = __( 'Cód. barras', 'keytill' );
 		}
 		return $out;
 	}
 
 	/** Valor de la columna. */
 	public static function list_column_value( $column, $post_id ) {
-		if ( 'hmpos_barcode' !== $column ) {
+		if ( 'keytill_barcode' !== $column ) {
 			return;
 		}
 		$product = wc_get_product( $post_id );
@@ -192,7 +192,7 @@ class HMPOS_Product_Admin {
 			return;
 		}
 		if ( $product->is_type( 'variable' ) ) {
-			echo '<span style="color:#888">' . esc_html__( 'por variación', 'hm-pos' ) . '</span>';
+			echo '<span style="color:#888">' . esc_html__( 'por variación', 'keytill' ) . '</span>';
 			return;
 		}
 		$code = (string) $product->get_meta( self::META );
@@ -206,8 +206,8 @@ class HMPOS_Product_Admin {
 		}
 		$product = wc_get_product( $post->ID );
 		if ( $product && ! $product->is_type( 'variable' ) && '' !== (string) $product->get_meta( self::META ) ) {
-			$actions['hmpos_labels'] = '<a href="' . esc_url( self::labels_url( $post->ID ) ) . '" target="_blank" rel="noopener">'
-				. esc_html__( 'Etiquetas', 'hm-pos' ) . '</a>';
+			$actions['keytill_labels'] = '<a href="' . esc_url( self::labels_url( $post->ID ) ) . '" target="_blank" rel="noopener">'
+				. esc_html__( 'Etiquetas', 'keytill' ) . '</a>';
 		}
 		return $actions;
 	}
@@ -218,7 +218,7 @@ class HMPOS_Product_Admin {
 
 	/** URL de etiquetas con una cantidad por defecto (ajustable en la propia hoja). */
 	private static function labels_url( $id ) {
-		return class_exists( 'HMPOS_Labels' ) ? add_query_arg( 'qty', 30, HMPOS_Labels::url( $id ) ) : '#';
+		return class_exists( 'KEYTILL_Labels' ) ? add_query_arg( 'qty', 30, KEYTILL_Labels::url( $id ) ) : '#';
 	}
 
 	/** Deja un aviso para el usuario actual (se muestra una vez). */

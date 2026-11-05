@@ -7,27 +7,27 @@
  * de admin "HM POS" con submenús (Inicio · Ajustes · Cajas · Créditos · Manual),
  * reemplazando los menús top-level sueltos.
  *
- * Fuente única de configuración: opciones prefijadas `hmpos_`. Todo tiene defaults
+ * Fuente única de configuración: opciones prefijadas `keytill_`. Todo tiene defaults
  * sensatos → el plugin funciona sin tocar nada.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Settings {
+class KEYTILL_Settings {
 
 	/** Opción con los datos generales (comprobante + etiqueta de caja). */
-	const OPTION = 'hmpos_settings';
+	const OPTION = 'keytill_settings';
 
 	/** Opción con los medios de pago no-efectivo (lista de etiquetas). */
-	const METHODS_OPTION = 'hmpos_payment_methods';
+	const METHODS_OPTION = 'keytill_payment_methods';
 
 	/** Opción con los atributos (taxonomías) a mostrar en las etiquetas. */
-	const LABEL_ATTRS_OPTION = 'hmpos_label_attributes';
+	const LABEL_ATTRS_OPTION = 'keytill_label_attributes';
 
 	/** Slug del menú padre. */
-	const MENU = 'hmpos';
+	const MENU = 'keytill';
 
 	/**
 	 * Defaults de los datos generales. `business_name` vacío = usa el nombre del sitio.
@@ -41,9 +41,9 @@ class HMPOS_Settings {
 			'business_address' => '',
 			'business_phone'   => '',
 			'business_logo'    => 0,
-			'receipt_subtitle' => __( 'Resumen de compra', 'hm-pos' ),
-			'receipt_footer'   => __( 'Documento no válido como factura. ¡Gracias por su compra!', 'hm-pos' ),
-			'register_label'   => __( 'CAJA 01', 'hm-pos' ),
+			'receipt_subtitle' => __( 'Resumen de compra', 'keytill' ),
+			'receipt_footer'   => __( 'Documento no válido como factura. ¡Gracias por su compra!', 'keytill' ),
+			'register_label'   => __( 'CAJA 01', 'keytill' ),
 			'exchange_days'    => 30, // validez del ticket de cambio (0 = sin plazo)
 		);
 	}
@@ -85,12 +85,12 @@ class HMPOS_Settings {
 	/** Etiqueta de la caja (ej. "CAJA 01"). */
 	public static function register_label() {
 		$v = self::get( 'register_label' );
-		return '' !== $v ? $v : __( 'CAJA 01', 'hm-pos' );
+		return '' !== $v ? $v : __( 'CAJA 01', 'keytill' );
 	}
 
 	/** Tope del monto de una gift card de monto libre en el POS. 0 = sin tope. */
 	public static function giftcard_max() {
-		return max( 0, (int) get_option( 'hmpos_giftcard_max', 0 ) );
+		return max( 0, (int) get_option( 'keytill_giftcard_max', 0 ) );
 	}
 
 	/**
@@ -123,7 +123,7 @@ class HMPOS_Settings {
 		if ( ! is_array( $labels ) ) {
 			$labels = self::default_methods();
 		}
-		$methods = array( 'efectivo' => __( 'Efectivo', 'hm-pos' ) );
+		$methods = array( 'efectivo' => __( 'Efectivo', 'keytill' ) );
 		foreach ( $labels as $label ) {
 			$label = trim( (string) $label );
 			if ( '' === $label ) {
@@ -179,34 +179,34 @@ class HMPOS_Settings {
 	 * @param string $hook Hook suffix de la pantalla admin actual.
 	 */
 	public static function admin_assets( $hook ) {
-		if ( false === strpos( (string) $hook, 'hmpos-settings' ) ) {
+		if ( false === strpos( (string) $hook, 'keytill-settings' ) ) {
 			return;
 		}
 		wp_enqueue_media();
 		// Handle vacío con deps: el inline JS se imprime después de jQuery + media.
-		wp_register_script( 'hmpos-settings', '', array( 'jquery', 'media-editor' ), HMPOS_VERSION, true );
-		wp_enqueue_script( 'hmpos-settings' );
+		wp_register_script( 'keytill-settings', '', array( 'jquery', 'media-editor' ), KEYTILL_VERSION, true );
+		wp_enqueue_script( 'keytill-settings' );
 		$js = "(function($){var frame;" .
-			"$('#hmpos_logo_pick').on('click',function(e){e.preventDefault();" .
+			"$('#keytill_logo_pick').on('click',function(e){e.preventDefault();" .
 			"if(frame){frame.open();return;}" .
-			"frame=wp.media({title:" . wp_json_encode( __( 'Elegir logo', 'hm-pos' ) ) . ",library:{type:'image'},multiple:false,button:{text:" . wp_json_encode( __( 'Usar como logo', 'hm-pos' ) ) . "}});" .
+			"frame=wp.media({title:" . wp_json_encode( __( 'Elegir logo', 'keytill' ) ) . ",library:{type:'image'},multiple:false,button:{text:" . wp_json_encode( __( 'Usar como logo', 'keytill' ) ) . "}});" .
 			"frame.on('select',function(){var a=frame.state().get('selection').first().toJSON();" .
 			"var url=(a.sizes&&a.sizes.medium)?a.sizes.medium.url:a.url;" .
-			"$('#hmpos_business_logo').val(a.id);" .
-			"$('#hmpos_logo_preview').show().find('img').attr('src',url);" .
-			"$('#hmpos_logo_clear').show();});frame.open();});" .
-			"$('#hmpos_logo_clear').on('click',function(e){e.preventDefault();" .
-			"$('#hmpos_business_logo').val('');$('#hmpos_logo_preview').hide();$(this).hide();});" .
+			"$('#keytill_business_logo').val(a.id);" .
+			"$('#keytill_logo_preview').show().find('img').attr('src',url);" .
+			"$('#keytill_logo_clear').show();});frame.open();});" .
+			"$('#keytill_logo_clear').on('click',function(e){e.preventDefault();" .
+			"$('#keytill_business_logo').val('');$('#keytill_logo_preview').hide();$(this).hide();});" .
 			"})(jQuery);";
-		wp_add_inline_script( 'hmpos-settings', $js );
+		wp_add_inline_script( 'keytill-settings', $js );
 	}
 
 	/** Registra el menú padre "HM POS" + submenús propios (Inicio, Ajustes). */
 	public static function register_menu() {
 		add_menu_page(
-			__( 'HM POS', 'hm-pos' ),
-			__( 'HM POS', 'hm-pos' ),
-			HMPOS_CAP, // operate: cajero/encargado/gerente/admin ven el menú (Inicio)
+			__( 'HM POS', 'keytill' ),
+			__( 'HM POS', 'keytill' ),
+			KEYTILL_CAP, // operate: cajero/encargado/gerente/admin ven el menú (Inicio)
 			self::MENU,
 			array( __CLASS__, 'render_home' ),
 			'dashicons-store',
@@ -215,20 +215,20 @@ class HMPOS_Settings {
 		// El primer submenú lo genera WP automáticamente (etiqueta "HM POS" → Inicio).
 		add_submenu_page(
 			self::MENU,
-			__( 'Ajustes del POS', 'hm-pos' ),
-			__( 'Ajustes', 'hm-pos' ),
+			__( 'Ajustes del POS', 'keytill' ),
+			__( 'Ajustes', 'keytill' ),
 			'manage_woocommerce',
-			'hmpos-settings',
+			'keytill-settings',
 			array( __CLASS__, 'render_settings' )
 		);
 	}
 
 	/** Registra las opciones + secciones/campos (Settings API). */
 	public static function register_settings() {
-		register_setting( 'hmpos_settings_group', self::OPTION, array( __CLASS__, 'sanitize' ) );
+		register_setting( 'keytill_settings_group', self::OPTION, array( __CLASS__, 'sanitize' ) );
 		register_setting(
-			'hmpos_settings_group',
-			'hmpos_credit_expiry_days',
+			'keytill_settings_group',
+			'keytill_credit_expiry_days',
 			array(
 				'type'              => 'integer',
 				'sanitize_callback' => function ( $v ) {
@@ -237,8 +237,8 @@ class HMPOS_Settings {
 			)
 		);
 		register_setting(
-			'hmpos_settings_group',
-			'hmpos_giftcard_max',
+			'keytill_settings_group',
+			'keytill_giftcard_max',
 			array(
 				'type'              => 'integer',
 				'sanitize_callback' => function ( $v ) {
@@ -246,8 +246,8 @@ class HMPOS_Settings {
 				},
 			)
 		);
-		register_setting( 'hmpos_settings_group', self::METHODS_OPTION, array( __CLASS__, 'sanitize_methods' ) );
-		register_setting( 'hmpos_settings_group', self::LABEL_ATTRS_OPTION, array( __CLASS__, 'sanitize_label_attributes' ) );
+		register_setting( 'keytill_settings_group', self::METHODS_OPTION, array( __CLASS__, 'sanitize_methods' ) );
+		register_setting( 'keytill_settings_group', self::LABEL_ATTRS_OPTION, array( __CLASS__, 'sanitize_label_attributes' ) );
 	}
 
 	/** Sanitiza la lista de atributos de etiqueta → array de nombres de taxonomía. */
@@ -316,32 +316,32 @@ class HMPOS_Settings {
 	/** Inicio: atajo a la pantalla del POS + estado. Visible para operadores. */
 	public static function render_home() {
 		$pos_url = self::pos_page_url();
-		$open    = class_exists( 'HMPOS_Cash' ) ? HMPOS_Cash::get_open_session_id() : 0;
+		$open    = class_exists( 'KEYTILL_Cash' ) ? KEYTILL_Cash::get_open_session_id() : 0;
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'HM POS', 'hm-pos' ); ?></h1>
-			<p class="description"><?php esc_html_e( 'Punto de venta de mostrador sobre WooCommerce.', 'hm-pos' ); ?></p>
+			<h1><?php esc_html_e( 'HM POS', 'keytill' ); ?></h1>
+			<p class="description"><?php esc_html_e( 'Punto de venta de mostrador sobre WooCommerce.', 'keytill' ); ?></p>
 
 			<div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:16px">
 				<div class="card" style="padding:16px 20px;max-width:420px">
-					<h2 style="margin-top:0"><?php esc_html_e( 'Abrir el POS', 'hm-pos' ); ?></h2>
+					<h2 style="margin-top:0"><?php esc_html_e( 'Abrir el POS', 'keytill' ); ?></h2>
 					<?php if ( $pos_url ) : ?>
-						<p><a class="button button-primary button-hero" href="<?php echo esc_url( $pos_url ); ?>"><?php esc_html_e( 'Abrir pantalla de venta', 'hm-pos' ); ?></a></p>
+						<p><a class="button button-primary button-hero" href="<?php echo esc_url( $pos_url ); ?>"><?php esc_html_e( 'Abrir pantalla de venta', 'keytill' ); ?></a></p>
 						<p class="description"><code><?php echo esc_html( $pos_url ); ?></code></p>
 					<?php else : ?>
-						<p><?php esc_html_e( 'Todavía no hay una página con el shortcode [hm_pos]. Creá una página, pegá el shortcode [hm_pos] y asignale el template «HM POS — Pantalla completa».', 'hm-pos' ); ?></p>
+						<p><?php esc_html_e( 'Todavía no hay una página con el shortcode [keytill]. Creá una página, pegá el shortcode [keytill] y asignale el template «HM POS — Pantalla completa».', 'keytill' ); ?></p>
 					<?php endif; ?>
 				</div>
 
 				<div class="card" style="padding:16px 20px;max-width:420px">
-					<h2 style="margin-top:0"><?php esc_html_e( 'Estado', 'hm-pos' ); ?></h2>
+					<h2 style="margin-top:0"><?php esc_html_e( 'Estado', 'keytill' ); ?></h2>
 					<p>
-						<?php esc_html_e( 'Caja:', 'hm-pos' ); ?>
-						<strong><?php echo $open ? esc_html( sprintf( __( 'abierta (#%d)', 'hm-pos' ), $open ) ) : esc_html__( 'cerrada', 'hm-pos' ); ?></strong>
+						<?php esc_html_e( 'Caja:', 'keytill' ); ?>
+						<strong><?php echo $open ? esc_html( sprintf( __( 'abierta (#%d)', 'keytill' ), $open ) ) : esc_html__( 'cerrada', 'keytill' ); ?></strong>
 					</p>
-					<p><?php esc_html_e( 'Versión:', 'hm-pos' ); ?> <code><?php echo esc_html( HMPOS_VERSION ); ?></code></p>
+					<p><?php esc_html_e( 'Versión:', 'keytill' ); ?> <code><?php echo esc_html( KEYTILL_VERSION ); ?></code></p>
 					<?php if ( current_user_can( 'manage_woocommerce' ) ) : ?>
-						<p><a href="<?php echo esc_url( admin_url( 'admin.php?page=hmpos-settings' ) ); ?>"><?php esc_html_e( 'Ajustes del POS', 'hm-pos' ); ?> →</a></p>
+						<p><a href="<?php echo esc_url( admin_url( 'admin.php?page=keytill-settings' ) ); ?>"><?php esc_html_e( 'Ajustes del POS', 'keytill' ); ?> →</a></p>
 					<?php endif; ?>
 				</div>
 			</div>
@@ -360,90 +360,90 @@ class HMPOS_Settings {
 		$opt          = wp_parse_args( (array) get_option( self::OPTION, array() ), $b );
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Ajustes del POS', 'hm-pos' ); ?></h1>
+			<h1><?php esc_html_e( 'Ajustes del POS', 'keytill' ); ?></h1>
 			<form method="post" action="options.php">
-				<?php settings_fields( 'hmpos_settings_group' ); ?>
+				<?php settings_fields( 'keytill_settings_group' ); ?>
 
-				<h2><?php esc_html_e( 'Datos del negocio (comprobante)', 'hm-pos' ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Encabezado y pie del comprobante interno. Si el nombre queda vacío se usa el nombre del sitio.', 'hm-pos' ); ?></p>
+				<h2><?php esc_html_e( 'Datos del negocio (comprobante)', 'keytill' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Encabezado y pie del comprobante interno. Si el nombre queda vacío se usa el nombre del sitio.', 'keytill' ); ?></p>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="hmpos_business_name"><?php esc_html_e( 'Nombre del negocio', 'hm-pos' ); ?></label></th>
-						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_name]" id="hmpos_business_name" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_name'] ); ?>" placeholder="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" /></td>
+						<th scope="row"><label for="keytill_business_name"><?php esc_html_e( 'Nombre del negocio', 'keytill' ); ?></label></th>
+						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_name]" id="keytill_business_name" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_name'] ); ?>" placeholder="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="hmpos_business_tax_id"><?php esc_html_e( 'CUIT / ID fiscal', 'hm-pos' ); ?></label></th>
-						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_tax_id]" id="hmpos_business_tax_id" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_tax_id'] ); ?>" /></td>
+						<th scope="row"><label for="keytill_business_tax_id"><?php esc_html_e( 'CUIT / ID fiscal', 'keytill' ); ?></label></th>
+						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_tax_id]" id="keytill_business_tax_id" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_tax_id'] ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="hmpos_business_address"><?php esc_html_e( 'Dirección', 'hm-pos' ); ?></label></th>
-						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_address]" id="hmpos_business_address" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_address'] ); ?>" /></td>
+						<th scope="row"><label for="keytill_business_address"><?php esc_html_e( 'Dirección', 'keytill' ); ?></label></th>
+						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_address]" id="keytill_business_address" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_address'] ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="hmpos_business_phone"><?php esc_html_e( 'Teléfono', 'hm-pos' ); ?></label></th>
-						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_phone]" id="hmpos_business_phone" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_phone'] ); ?>" /></td>
+						<th scope="row"><label for="keytill_business_phone"><?php esc_html_e( 'Teléfono', 'keytill' ); ?></label></th>
+						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[business_phone]" id="keytill_business_phone" type="text" class="regular-text" value="<?php echo esc_attr( $opt['business_phone'] ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Logo', 'hm-pos' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Logo', 'keytill' ); ?></th>
 						<td>
 							<?php
 							$logo_id  = (int) $opt['business_logo'];
 							$logo_src = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 							?>
-							<input type="hidden" name="<?php echo esc_attr( self::OPTION ); ?>[business_logo]" id="hmpos_business_logo" value="<?php echo esc_attr( $logo_id ); ?>" />
-							<div id="hmpos_logo_preview" style="margin-bottom:8px;<?php echo $logo_src ? '' : 'display:none'; ?>">
+							<input type="hidden" name="<?php echo esc_attr( self::OPTION ); ?>[business_logo]" id="keytill_business_logo" value="<?php echo esc_attr( $logo_id ); ?>" />
+							<div id="keytill_logo_preview" style="margin-bottom:8px;<?php echo $logo_src ? '' : 'display:none'; ?>">
 								<img src="<?php echo esc_url( $logo_src ); ?>" alt="" style="max-width:180px;max-height:90px;height:auto;border:1px solid #ccd0d4;padding:4px;background:#fff" />
 							</div>
-							<button type="button" class="button" id="hmpos_logo_pick"><?php esc_html_e( 'Elegir logo', 'hm-pos' ); ?></button>
-							<button type="button" class="button" id="hmpos_logo_clear" style="<?php echo $logo_id ? '' : 'display:none'; ?>"><?php esc_html_e( 'Quitar', 'hm-pos' ); ?></button>
-							<p class="description"><?php esc_html_e( 'Aparece en el encabezado del comprobante. Recomendado: PNG/JPG horizontal.', 'hm-pos' ); ?></p>
+							<button type="button" class="button" id="keytill_logo_pick"><?php esc_html_e( 'Elegir logo', 'keytill' ); ?></button>
+							<button type="button" class="button" id="keytill_logo_clear" style="<?php echo $logo_id ? '' : 'display:none'; ?>"><?php esc_html_e( 'Quitar', 'keytill' ); ?></button>
+							<p class="description"><?php esc_html_e( 'Aparece en el encabezado del comprobante. Recomendado: PNG/JPG horizontal.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="hmpos_receipt_subtitle"><?php esc_html_e( 'Subtítulo del comprobante', 'hm-pos' ); ?></label></th>
+						<th scope="row"><label for="keytill_receipt_subtitle"><?php esc_html_e( 'Subtítulo del comprobante', 'keytill' ); ?></label></th>
 						<td>
-							<input name="<?php echo esc_attr( self::OPTION ); ?>[receipt_subtitle]" id="hmpos_receipt_subtitle" type="text" class="regular-text" value="<?php echo esc_attr( $opt['receipt_subtitle'] ); ?>" placeholder="<?php esc_attr_e( 'Resumen de compra', 'hm-pos' ); ?>" />
-							<p class="description"><?php esc_html_e( 'Bajo el nombre del negocio, en el encabezado.', 'hm-pos' ); ?></p>
+							<input name="<?php echo esc_attr( self::OPTION ); ?>[receipt_subtitle]" id="keytill_receipt_subtitle" type="text" class="regular-text" value="<?php echo esc_attr( $opt['receipt_subtitle'] ); ?>" placeholder="<?php esc_attr_e( 'Resumen de compra', 'keytill' ); ?>" />
+							<p class="description"><?php esc_html_e( 'Bajo el nombre del negocio, en el encabezado.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="hmpos_receipt_footer"><?php esc_html_e( 'Leyenda al pie', 'hm-pos' ); ?></label></th>
-						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[receipt_footer]" id="hmpos_receipt_footer" type="text" class="large-text" value="<?php echo esc_attr( $opt['receipt_footer'] ); ?>" /></td>
+						<th scope="row"><label for="keytill_receipt_footer"><?php esc_html_e( 'Leyenda al pie', 'keytill' ); ?></label></th>
+						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[receipt_footer]" id="keytill_receipt_footer" type="text" class="large-text" value="<?php echo esc_attr( $opt['receipt_footer'] ); ?>" /></td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="hmpos_exchange_days">Validez del ticket de cambio (dias)</label></th>
+						<th scope="row"><label for="keytill_exchange_days">Validez del ticket de cambio (dias)</label></th>
 						<td>
-							<input name="<?php echo esc_attr( self::OPTION ); ?>[exchange_days]" id="hmpos_exchange_days" type="number" min="0" class="small-text" value="<?php echo esc_attr( $opt['exchange_days'] ); ?>" />
+							<input name="<?php echo esc_attr( self::OPTION ); ?>[exchange_days]" id="keytill_exchange_days" type="number" min="0" class="small-text" value="<?php echo esc_attr( $opt['exchange_days'] ); ?>" />
 							<p class="description">Dias para cambiar presentando el ticket de cambio. 0 = sin plazo.</p>
 						</td>
 					</tr>
 				</table>
 
-				<h2><?php esc_html_e( 'Medios de pago', 'hm-pos' ); ?></h2>
+				<h2><?php esc_html_e( 'Medios de pago', 'keytill' ); ?></h2>
 				<p class="description">
-					<?php esc_html_e( 'Uno por línea (además de Efectivo, que es fijo). El POS solo registra el medio elegido para el arqueo — el cobro real se hace afuera (posnet, transferencia, app). Podés renombrar o agregar (ej. «Mercado Pago», «Tarjeta débito»). Máx. 8.', 'hm-pos' ); ?>
+					<?php esc_html_e( 'Uno por línea (además de Efectivo, que es fijo). El POS solo registra el medio elegido para el arqueo — el cobro real se hace afuera (posnet, transferencia, app). Podés renombrar o agregar (ej. «Mercado Pago», «Tarjeta débito»). Máx. 8.', 'keytill' ); ?>
 				</p>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="hmpos_methods"><?php esc_html_e( 'Medios (no-efectivo)', 'hm-pos' ); ?></label></th>
-						<td><textarea name="<?php echo esc_attr( self::METHODS_OPTION ); ?>" id="hmpos_methods" rows="6" class="regular-text" placeholder="Tarjeta&#10;Transferencia&#10;Mercado Pago"><?php echo esc_textarea( $methods_text ); ?></textarea></td>
+						<th scope="row"><label for="keytill_methods"><?php esc_html_e( 'Medios (no-efectivo)', 'keytill' ); ?></label></th>
+						<td><textarea name="<?php echo esc_attr( self::METHODS_OPTION ); ?>" id="keytill_methods" rows="6" class="regular-text" placeholder="Tarjeta&#10;Transferencia&#10;Mercado Pago"><?php echo esc_textarea( $methods_text ); ?></textarea></td>
 					</tr>
 				</table>
 
-				<h2><?php esc_html_e( 'Etiquetas de producto', 'hm-pos' ); ?></h2>
+				<h2><?php esc_html_e( 'Etiquetas de producto', 'keytill' ); ?></h2>
 				<p class="description">
-					<?php esc_html_e( 'Atributos que se imprimen en las etiquetas de las variaciones, en formato «Propiedad: Valor» (ej. «Talle: XL»). Si no marcás ninguno se muestran todos los atributos de la variación.', 'hm-pos' ); ?>
+					<?php esc_html_e( 'Atributos que se imprimen en las etiquetas de las variaciones, en formato «Propiedad: Valor» (ej. «Talle: XL»). Si no marcás ninguno se muestran todos los atributos de la variación.', 'keytill' ); ?>
 				</p>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><?php esc_html_e( 'Atributos a mostrar', 'hm-pos' ); ?></th>
+						<th scope="row"><?php esc_html_e( 'Atributos a mostrar', 'keytill' ); ?></th>
 						<td>
 							<?php
 							$attrs    = function_exists( 'wc_get_attribute_taxonomies' ) ? wc_get_attribute_taxonomies() : array();
 							$selected = (array) get_option( self::LABEL_ATTRS_OPTION, array() );
 							if ( empty( $attrs ) ) :
 								?>
-								<p class="description"><?php esc_html_e( 'No hay atributos globales de producto definidos.', 'hm-pos' ); ?></p>
+								<p class="description"><?php esc_html_e( 'No hay atributos globales de producto definidos.', 'keytill' ); ?></p>
 							<?php else : ?>
 								<fieldset>
 									<?php foreach ( $attrs as $attr ) : ?>
@@ -460,29 +460,29 @@ class HMPOS_Settings {
 					</tr>
 				</table>
 
-				<h2><?php esc_html_e( 'Crédito en tienda y gift cards', 'hm-pos' ); ?></h2>
+				<h2><?php esc_html_e( 'Crédito en tienda y gift cards', 'keytill' ); ?></h2>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="hmpos_credit_expiry_days"><?php esc_html_e( 'Vigencia por defecto (días)', 'hm-pos' ); ?></label></th>
+						<th scope="row"><label for="keytill_credit_expiry_days"><?php esc_html_e( 'Vigencia por defecto (días)', 'keytill' ); ?></label></th>
 						<td>
-							<input name="hmpos_credit_expiry_days" id="hmpos_credit_expiry_days" type="number" min="0" step="1" value="<?php echo esc_attr( (int) get_option( 'hmpos_credit_expiry_days', 30 ) ); ?>" class="small-text" />
-							<p class="description"><?php esc_html_e( '0 = sin vencimiento. Se aplica a los créditos de devolución y gift cards nuevos.', 'hm-pos' ); ?></p>
+							<input name="keytill_credit_expiry_days" id="keytill_credit_expiry_days" type="number" min="0" step="1" value="<?php echo esc_attr( (int) get_option( 'keytill_credit_expiry_days', 30 ) ); ?>" class="small-text" />
+							<p class="description"><?php esc_html_e( '0 = sin vencimiento. Se aplica a los créditos de devolución y gift cards nuevos.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="hmpos_giftcard_max"><?php esc_html_e( 'Tope de gift card (monto libre)', 'hm-pos' ); ?></label></th>
+						<th scope="row"><label for="keytill_giftcard_max"><?php esc_html_e( 'Tope de gift card (monto libre)', 'keytill' ); ?></label></th>
 						<td>
-							<input name="hmpos_giftcard_max" id="hmpos_giftcard_max" type="number" min="0" step="1" value="<?php echo esc_attr( self::giftcard_max() ); ?>" class="small-text" />
-							<p class="description"><?php esc_html_e( '0 = sin tope. Monto máximo que un cajero puede cargar en una gift card de monto libre en el POS.', 'hm-pos' ); ?></p>
+							<input name="keytill_giftcard_max" id="keytill_giftcard_max" type="number" min="0" step="1" value="<?php echo esc_attr( self::giftcard_max() ); ?>" class="small-text" />
+							<p class="description"><?php esc_html_e( '0 = sin tope. Monto máximo que un cajero puede cargar en una gift card de monto libre en el POS.', 'keytill' ); ?></p>
 						</td>
 					</tr>
 				</table>
 
-				<h2><?php esc_html_e( 'General', 'hm-pos' ); ?></h2>
+				<h2><?php esc_html_e( 'General', 'keytill' ); ?></h2>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><label for="hmpos_register_label"><?php esc_html_e( 'Etiqueta de la caja', 'hm-pos' ); ?></label></th>
-						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[register_label]" id="hmpos_register_label" type="text" class="regular-text" value="<?php echo esc_attr( $opt['register_label'] ); ?>" placeholder="CAJA 01" /></td>
+						<th scope="row"><label for="keytill_register_label"><?php esc_html_e( 'Etiqueta de la caja', 'keytill' ); ?></label></th>
+						<td><input name="<?php echo esc_attr( self::OPTION ); ?>[register_label]" id="keytill_register_label" type="text" class="regular-text" value="<?php echo esc_attr( $opt['register_label'] ); ?>" placeholder="CAJA 01" /></td>
 					</tr>
 				</table>
 
@@ -496,14 +496,14 @@ class HMPOS_Settings {
 	 * Helpers
 	 * ------------------------------------------------------------------ */
 
-	/** URL de la primera página que tenga el shortcode [hm_pos], o '' si no hay. */
+	/** URL de la primera página que tenga el shortcode [keytill], o '' si no hay. */
 	public static function pos_page_url() {
 		$pages = get_posts(
 			array(
 				'post_type'      => 'page',
 				'post_status'    => 'publish',
 				'posts_per_page' => 1,
-				's'              => '[hm_pos]',
+				's'              => '[keytill]',
 				'fields'         => 'ids',
 			)
 		);

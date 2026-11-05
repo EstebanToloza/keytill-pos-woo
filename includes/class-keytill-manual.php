@@ -4,14 +4,14 @@
  * ningún servicio externo) y se sirve de dos maneras:
  *
  * 1) Página autocontenida en el front (como el comprobante): ruta
- *    `?hmpos_manual=1`, resuelta en `template_redirect` (render + exit, sin
+ *    `?keytill_manual=1`, resuelta en `template_redirect` (render + exit, sin
  *    el theme). Gate: capability del cajero (o quien administre WooCommerce).
  * 2) Ítem de menú en el admin ("Manual (POS)") que la muestra embebida, para
  *    que sea fácil de encontrar. Además, la barra del POS enlaza a la página.
  *
  * El contenido está en templates/manual.php.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -19,10 +19,10 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Manual de mostrador.
  */
-class HMPOS_Manual {
+class KEYTILL_Manual {
 
 	/** Query var que dispara el render de la página. */
-	const QV = 'hmpos_manual';
+	const QV = 'keytill_manual';
 
 	/**
 	 * Engancha el render en el front y el menú en el admin.
@@ -39,7 +39,7 @@ class HMPOS_Manual {
 	 * @return bool
 	 */
 	public static function can_view() {
-		return current_user_can( HMPOS_CAP ) || current_user_can( 'manage_woocommerce' );
+		return current_user_can( KEYTILL_CAP ) || current_user_can( 'manage_woocommerce' );
 	}
 
 	/**
@@ -61,14 +61,14 @@ class HMPOS_Manual {
 		}
 		if ( ! self::can_view() ) {
 			wp_die(
-				esc_html__( 'No tenés permiso para ver el manual.', 'hm-pos' ),
-				esc_html__( 'Sin permiso', 'hm-pos' ),
+				esc_html__( 'No tenés permiso para ver el manual.', 'keytill' ),
+				esc_html__( 'Sin permiso', 'keytill' ),
 				array( 'response' => 403 )
 			);
 		}
 
 		nocache_headers();
-		$template = HMPOS_DIR . 'templates/manual.php';
+		$template = KEYTILL_DIR . 'templates/manual.php';
 		if ( is_readable( $template ) ) {
 			include $template;
 		}
@@ -80,11 +80,11 @@ class HMPOS_Manual {
 	 */
 	public static function register_admin_menu() {
 		add_submenu_page(
-			'hmpos',
-			__( 'Manual de mostrador', 'hm-pos' ),
-			__( 'Manual', 'hm-pos' ),
-			HMPOS_CAP,
-			'hmpos-manual',
+			'keytill',
+			__( 'Manual de mostrador', 'keytill' ),
+			__( 'Manual', 'keytill' ),
+			KEYTILL_CAP,
+			'keytill-manual',
 			array( __CLASS__, 'render_admin_page' )
 		);
 	}
@@ -95,21 +95,21 @@ class HMPOS_Manual {
 	 */
 	public static function render_admin_page() {
 		if ( ! self::can_view() ) {
-			wp_die( esc_html__( 'Sin permiso.', 'hm-pos' ) );
+			wp_die( esc_html__( 'Sin permiso.', 'keytill' ) );
 		}
 		$url = self::url();
 		?>
 		<div class="wrap">
 			<h1 style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-				<?php esc_html_e( 'Manual de mostrador', 'hm-pos' ); ?>
+				<?php esc_html_e( 'Manual de mostrador', 'keytill' ); ?>
 				<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" class="button button-secondary">
-					<?php esc_html_e( 'Abrir en pestaña nueva', 'hm-pos' ); ?> ↗
+					<?php esc_html_e( 'Abrir en pestaña nueva', 'keytill' ); ?> ↗
 				</a>
 			</h1>
-			<p class="description"><?php esc_html_e( 'Guía de operatoria del POS. Se puede imprimir (Ctrl/Cmd + P) para dejar una copia en la caja.', 'hm-pos' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Guía de operatoria del POS. Se puede imprimir (Ctrl/Cmd + P) para dejar una copia en la caja.', 'keytill' ); ?></p>
 			<iframe
 				src="<?php echo esc_url( $url ); ?>"
-				title="<?php esc_attr_e( 'Manual de mostrador', 'hm-pos' ); ?>"
+				title="<?php esc_attr_e( 'Manual de mostrador', 'keytill' ); ?>"
 				style="width:100%;height:calc(100vh - 180px);min-height:520px;border:1px solid #c3c4c7;border-radius:6px;background:#fff;margin-top:8px"
 			></iframe>
 		</div>

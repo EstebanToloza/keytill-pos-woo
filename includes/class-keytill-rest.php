@@ -1,12 +1,12 @@
 <?php
 /**
- * API REST del POS — namespace hmpos/v1. Mismo origen, con nonce.
+ * API REST del POS — namespace keytill/v1. Mismo origen, con nonce.
  *
  * Seguridad: permission_callback exige la capability del cajero; el nonce
  * (X-WP-Nonce) lo verifica la capa REST de WordPress; entrada saneada y
  * salida tipada/escapada.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -14,9 +14,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Rutas REST del POS.
  */
-class HMPOS_REST {
+class KEYTILL_REST {
 
-	const NS = 'hmpos/v1';
+	const NS = 'keytill/v1';
 
 	/**
 	 * Medios de pago admitidos (id => etiqueta). Espeja METHODS del prototipo.
@@ -26,8 +26,8 @@ class HMPOS_REST {
 	public static function payment_methods() {
 		// Fuente única: los medios configurados en Ajustes (Efectivo fijo + los
 		// no-efectivo del local). Fallback a los 4 clásicos si la clase no está.
-		if ( class_exists( 'HMPOS_Settings' ) ) {
-			return HMPOS_Settings::payment_methods();
+		if ( class_exists( 'KEYTILL_Settings' ) ) {
+			return KEYTILL_Settings::payment_methods();
 		}
 		return array(
 			'efectivo'      => 'Efectivo',
@@ -98,7 +98,7 @@ class HMPOS_REST {
 	 * @return bool
 	 */
 	public static function skip_woo_stock_for_pos( $can, $order ) {
-		if ( $order instanceof WC_Order && 'hmpos' === $order->get_created_via() ) {
+		if ( $order instanceof WC_Order && 'keytill' === $order->get_created_via() ) {
 			return false;
 		}
 		return $can;
@@ -112,7 +112,7 @@ class HMPOS_REST {
 	private static function rollback_stock( $reduced ) {
 		foreach ( (array) $reduced as $pp ) {
 			if ( ! empty( $pp['managed'] ) ) {
-				HMPOS_Branch_Stock::adjust( $pp['pid'], $pp['src'], (int) $pp['qty'] ); // sin guard: reintegra
+				KEYTILL_Branch_Stock::adjust( $pp['pid'], $pp['src'], (int) $pp['qty'] ); // sin guard: reintegra
 			} elseif ( $pp['product'] instanceof WC_Product && $pp['product']->managing_stock() ) {
 				wc_update_product_stock( $pp['product'], (int) $pp['qty'], 'increase' );
 			}
@@ -120,7 +120,7 @@ class HMPOS_REST {
 	}
 
 	/** Clave del transient de la precarga de catálogo (versionada por si cambia el shape). */
-	const CATALOG_CACHE_KEY = 'hmpos_catalog_all_v4';
+	const CATALOG_CACHE_KEY = 'keytill_catalog_all_v4';
 
 	/**
 	 * Permite vender productos privados (de test) DENTRO del POS. No afecta la web.
@@ -551,7 +551,7 @@ class HMPOS_REST {
 				'total_refunded' => (float) $order->get_total_refunded(),
 				'payment_method' => $order->get_payment_method(),
 				'payment_title'  => $order->get_payment_method_title(),
-				'is_pos'         => (bool) $order->get_meta( '_hmpos' ),
+				'is_pos'         => (bool) $order->get_meta( '_keytill' ),
 				'items'          => $items,
 			),
 			200
@@ -593,12 +593,12 @@ class HMPOS_REST {
 		}
 
 		if ( ! $order || ! ( $order instanceof WC_Order ) ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Venta no encontrada.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Venta no encontrada.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		// Debe estar pagada. Se aceptan tanto ventas del POS como de la web.
 		$blocked = array( 'pending', 'on-hold', 'cancelled', 'failed', 'checkout-draft', 'auto-draft', 'trash' );
 		if ( in_array( $order->get_status(), $blocked, true ) ) {
-			return new WP_Error( 'hmpos_not_paid', __( 'La venta no está pagada; no se puede devolver.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_not_paid', __( 'La venta no está pagada; no se puede devolver.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		return $order;
 	}
@@ -613,7 +613,7 @@ class HMPOS_REST {
 	 */
 	public static function order_refund( WP_REST_Request $request ) {
 		if ( ! function_exists( 'wc_create_refund' ) ) {
-			return new WP_Error( 'hmpos_no_woo', __( 'WooCommerce no disponible.', 'hm-pos' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_no_woo', __( 'WooCommerce no disponible.', 'keytill' ), array( 'status' => 500 ) );
 		}
 		$params   = self::body( $request );
 		$order_id = isset( $params['order_id'] ) ? absint( $params['order_id'] ) : 0;
@@ -626,8 +626,8 @@ class HMPOS_REST {
 		// efectivo del cajón) o emite un crédito en tienda; en ambos casos debe
 		// quedar ligada a la sesión de caja del cajero para el arqueo. Se valida en
 		// el servidor (no se confía en el front).
-		if ( ! HMPOS_Cash::get_open_session_id() ) {
-			return new WP_Error( 'hmpos_cash_closed', __( 'No hay una caja abierta. Abrí la caja para hacer una devolución.', 'hm-pos' ), array( 'status' => 409 ) );
+		if ( ! KEYTILL_Cash::get_open_session_id() ) {
+			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta. Abrí la caja para hacer una devolución.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		$raw_lines = isset( $params['lines'] ) && is_array( $params['lines'] ) ? $params['lines'] : array();
@@ -656,9 +656,9 @@ class HMPOS_REST {
 			$max = (int) $item->get_quantity() + (int) $order->get_qty_refunded_for_item( $item_id );
 			if ( $qty > $max ) {
 				return new WP_Error(
-					'hmpos_refund_qty',
+					'keytill_refund_qty',
 					/* translators: %s: nombre del ítem. */
-					sprintf( __( 'Cantidad a devolver mayor a la disponible: %s.', 'hm-pos' ), $item->get_name() ),
+					sprintf( __( 'Cantidad a devolver mayor a la disponible: %s.', 'keytill' ), $item->get_name() ),
 					array( 'status' => 400 )
 				);
 			}
@@ -687,7 +687,7 @@ class HMPOS_REST {
 		}
 
 		if ( empty( $line_items ) ) {
-			return new WP_Error( 'hmpos_refund_empty', __( 'No hay ítems para devolver.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_refund_empty', __( 'No hay ítems para devolver.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$amount = round( $amount, 2 );
@@ -705,17 +705,17 @@ class HMPOS_REST {
 		);
 
 		if ( is_wp_error( $refund ) ) {
-			return new WP_Error( 'hmpos_refund_fail', $refund->get_error_message(), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_refund_fail', $refund->get_error_message(), array( 'status' => 500 ) );
 		}
 
 		// Marca la devolución como del POS + cajero + sesión de caja.
 		$user       = wp_get_current_user();
-		$session_id = HMPOS_Cash::get_open_session_id();
+		$session_id = KEYTILL_Cash::get_open_session_id();
 
 		// Reintegro de stock: SIEMPRE a la sucursal de la caja que recibe la
 		// devolución (ahí queda físicamente la prenda), NO a la de la venta original.
 		// Distribuido → suma a esa sucursal; legacy → stock único nativo.
-		$refund_branch = $session_id ? HMPOS_Cash::session_branch( $session_id ) : '';
+		$refund_branch = $session_id ? KEYTILL_Cash::session_branch( $session_id ) : '';
 		foreach ( $line_items as $item_id => $li ) {
 			$rqty = (int) $li['qty'];
 			if ( $rqty < 1 ) {
@@ -730,39 +730,39 @@ class HMPOS_REST {
 				continue;
 			}
 			$spid = $prod->get_id();
-			if ( '' !== $refund_branch && HMPOS_Branch_Stock::is_managed( $spid ) ) {
-				HMPOS_Branch_Stock::adjust( $spid, $refund_branch, $rqty );
+			if ( '' !== $refund_branch && KEYTILL_Branch_Stock::is_managed( $spid ) ) {
+				KEYTILL_Branch_Stock::adjust( $spid, $refund_branch, $rqty );
 			} elseif ( $prod->managing_stock() ) {
 				wc_update_product_stock( $prod, $rqty, 'increase' );
 			}
 		}
 
-		$refund->add_meta_data( '_hmpos_refund', 1, true );
-		$refund->add_meta_data( '_hmpos_cajero_id', (int) $user->ID, true );
-		$refund->add_meta_data( '_hmpos_cajero_login', $user->user_login, true );
+		$refund->add_meta_data( '_keytill_refund', 1, true );
+		$refund->add_meta_data( '_keytill_cajero_id', (int) $user->ID, true );
+		$refund->add_meta_data( '_keytill_cajero_login', $user->user_login, true );
 		if ( $session_id ) {
-			$refund->add_meta_data( '_hmpos_session', $session_id, true );
+			$refund->add_meta_data( '_keytill_session', $session_id, true );
 		}
-		$refund->add_meta_data( '_hmpos_refund_method', $refund_method, true );
+		$refund->add_meta_data( '_keytill_refund_method', $refund_method, true );
 
 		// Re-acreditación: si la venta se pagó (en parte) con crédito en tienda,
 		// esa porción del reintegro vuelve SIEMPRE como crédito nuevo (no en
 		// efectivo). El resto va por el medio elegido por el cajero.
 		$order_total  = (float) $order->get_total();
-		$credit_used  = (float) $order->get_meta( '_hmpos_credit_used' );
+		$credit_used  = (float) $order->get_meta( '_keytill_credit_used' );
 		$credit_frac  = ( $order_total > 0 && $credit_used > 0 ) ? min( 1.0, $credit_used / $order_total ) : 0.0;
 		$reissue_base = round( $amount * $credit_frac, 2 );
 
 		// Órdenes WEB pagadas con crédito: si esta devolución dejó la orden
 		// TOTALMENTE reembolsada, el hook woocommerce_order_status_refunded ya
-		// restituyó el crédito ORIGINAL (HMPOS_Credit_Web::ensure_released, que corre
+		// restituyó el crédito ORIGINAL (KEYTILL_Credit_Web::ensure_released, que corre
 		// sincrónicamente dentro de wc_create_refund). En ese caso NO reemitimos esa
 		// porción o el reintegro se duplicaría. La porción no-crédito (el resto) se
 		// devuelve igual por el medio elegido.
 		$fresh        = wc_get_order( $order_id );
 		$web_released = $fresh
-			&& 'web' === $fresh->get_meta( '_hmpos_credit_channel' )
-			&& 'released' === $fresh->get_meta( '_hmpos_credit_state' );
+			&& 'web' === $fresh->get_meta( '_keytill_credit_channel' )
+			&& 'released' === $fresh->get_meta( '_keytill_credit_state' );
 
 		$reissue   = $web_released ? 0.0 : $reissue_base;
 		$remainder = round( $amount - $reissue_base, 2 );
@@ -775,7 +775,7 @@ class HMPOS_REST {
 		// sale de la cuenta bancaria → la caja digital lo resta por esta meta.
 		$digital_back  = ( 'transferencia' === $refund_method ) ? $remainder : 0.0;
 		if ( $digital_back > 0 ) {
-			$refund->add_meta_data( '_hmpos_digital_refund', $digital_back, true );
+			$refund->add_meta_data( '_keytill_digital_refund', $digital_back, true );
 		}
 
 		$refund->save();
@@ -783,7 +783,7 @@ class HMPOS_REST {
 		// Emite el crédito en tienda por el monto que corresponde.
 		$credit = null;
 		if ( $credit_amount > 0 ) {
-			$issued = HMPOS_Credit::issue(
+			$issued = KEYTILL_Credit::issue(
 				$credit_amount,
 				array(
 					'customer_id'      => (int) $order->get_customer_id(),
@@ -795,22 +795,22 @@ class HMPOS_REST {
 					'channel'          => 'pos',
 					'note'             => sprintf(
 						/* translators: %s: número de venta. */
-						__( 'Devolución de la venta #%s', 'hm-pos' ),
+						__( 'Devolución de la venta #%s', 'keytill' ),
 						$order->get_order_number()
 					),
 				)
 			);
 			if ( ! is_wp_error( $issued ) ) {
 				$credit = $issued;
-				$refund->add_meta_data( '_hmpos_credit_issued_id', $issued['id'], true );
-				$refund->add_meta_data( '_hmpos_credit_issued_code', $issued['code'], true );
+				$refund->add_meta_data( '_keytill_credit_issued_id', $issued['id'], true );
+				$refund->add_meta_data( '_keytill_credit_issued_code', $issued['code'], true );
 				$refund->save();
 			}
 		}
 
 		// Reintegro en efectivo: sale del cajón de la caja abierta.
 		if ( $cash_back > 0 ) {
-			HMPOS_Cash::record_cash_refund( $cash_back );
+			KEYTILL_Cash::record_cash_refund( $cash_back );
 		}
 
 		return new WP_REST_Response(
@@ -826,7 +826,7 @@ class HMPOS_REST {
 				'credit_amount'  => $credit ? (float) $credit['balance'] : 0.0,
 				'credit_code'    => $credit ? $credit['code'] : '',
 				'credit_expires' => $credit && $credit['expires_at'] ? mysql2date( 'd/m/Y', $credit['expires_at'] ) : '',
-				'voucher_url'    => $credit ? HMPOS_Print::voucher_url( $credit['code'] ) : '',
+				'voucher_url'    => $credit ? KEYTILL_Print::voucher_url( $credit['code'] ) : '',
 				'restocked'      => true,
 			),
 			201
@@ -896,13 +896,13 @@ class HMPOS_REST {
 		$meta_query = array();
 		$origin     = sanitize_key( (string) $request->get_param( 'origin' ) );
 		if ( 'pos' === $origin ) {
-			$meta_query[] = array( 'key' => '_hmpos', 'compare' => 'EXISTS' );
+			$meta_query[] = array( 'key' => '_keytill', 'compare' => 'EXISTS' );
 		} elseif ( 'web' === $origin ) {
-			$meta_query[] = array( 'key' => '_hmpos', 'compare' => 'NOT EXISTS' );
+			$meta_query[] = array( 'key' => '_keytill', 'compare' => 'NOT EXISTS' );
 		}
 		$cajero = (int) $request->get_param( 'cajero_id' );
 		if ( $cajero ) {
-			$meta_query[] = array( 'key' => '_hmpos_cajero_id', 'value' => $cajero );
+			$meta_query[] = array( 'key' => '_keytill_cajero_id', 'value' => $cajero );
 		}
 		if ( $meta_query ) {
 			$args['meta_query'] = $meta_query; // phpcs:ignore WordPress.DB.SlowDBQuery
@@ -954,7 +954,7 @@ class HMPOS_REST {
 	 * @return array
 	 */
 	private static function order_row( $o ) {
-		$cust = $o->get_meta( '_hmpos_customer_name' );
+		$cust = $o->get_meta( '_keytill_customer_name' );
 		if ( '' === $cust ) {
 			$cust = trim( $o->get_billing_first_name() . ' ' . $o->get_billing_last_name() );
 		}
@@ -963,14 +963,14 @@ class HMPOS_REST {
 			'number'        => $o->get_order_number(),
 			'date'          => $o->get_date_created() ? $o->get_date_created()->date_i18n( 'd/m/Y H:i' ) : '',
 			'ts'            => $o->get_date_created() ? $o->get_date_created()->getTimestamp() : 0,
-			'cashier'       => $o->get_meta( '_hmpos_cajero_login' ),
+			'cashier'       => $o->get_meta( '_keytill_cajero_login' ),
 			'customer'      => $cust,
 			'total'         => (float) $o->get_total(),
 			'total_f'       => html_entity_decode( wp_strip_all_tags( wc_price( $o->get_total(), array( 'currency' => $o->get_currency() ) ) ), ENT_QUOTES, 'UTF-8' ),
 			'payment_title' => $o->get_payment_method_title(),
 			'status'        => $o->get_status(),
 			'status_label'  => wc_get_order_status_name( $o->get_status() ),
-			'origin'        => $o->get_meta( '_hmpos' ) ? 'pos' : 'web',
+			'origin'        => $o->get_meta( '_keytill' ) ? 'pos' : 'web',
 			'items_count'   => (int) $o->get_item_count(),
 			'refunded'      => (float) $o->get_total_refunded(),
 		);
@@ -991,7 +991,7 @@ class HMPOS_REST {
 		foreach ( self::payment_methods() as $id => $label ) {
 			$methods[] = array( 'id' => $id, 'label' => $label );
 		}
-		$methods[] = array( 'id' => 'credito', 'label' => __( 'Crédito en tienda', 'hm-pos' ) );
+		$methods[] = array( 'id' => 'credito', 'label' => __( 'Crédito en tienda', 'keytill' ) );
 
 		$statuses = array();
 		foreach ( wc_get_order_statuses() as $key => $label ) {
@@ -1013,7 +1013,7 @@ class HMPOS_REST {
 	public static function order_detail( WP_REST_Request $request ) {
 		$order = wc_get_order( absint( $request->get_param( 'id' ) ) );
 		if ( ! $order instanceof WC_Order ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Pedido no encontrado.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Pedido no encontrado.', 'keytill' ), array( 'status' => 404 ) );
 		}
 
 		$currency = $order->get_currency();
@@ -1038,7 +1038,7 @@ class HMPOS_REST {
 		$total    = (float) $order->get_total();
 		$discount = round( $subtotal - $sum_totals, 2 );
 
-		$cust_name = $order->get_meta( '_hmpos_customer_name' );
+		$cust_name = $order->get_meta( '_keytill_customer_name' );
 		if ( '' === $cust_name ) {
 			$cust_name = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
 		}
@@ -1050,14 +1050,14 @@ class HMPOS_REST {
 				'date'          => $order->get_date_created() ? $order->get_date_created()->date_i18n( 'd/m/Y H:i' ) : '',
 				'status'        => $order->get_status(),
 				'status_label'  => wc_get_order_status_name( $order->get_status() ),
-				'origin'        => $order->get_meta( '_hmpos' ) ? 'pos' : 'web',
-				'cashier'       => $order->get_meta( '_hmpos_cajero_login' ),
-				'seller'        => $order->get_meta( '_hmpos_seller' ),
+				'origin'        => $order->get_meta( '_keytill' ) ? 'pos' : 'web',
+				'cashier'       => $order->get_meta( '_keytill_cajero_login' ),
+				'seller'        => $order->get_meta( '_keytill_seller' ),
 				'customer'      => array(
 					'id'    => (int) $order->get_customer_id(),
 					'name'  => $cust_name,
-					'doc'   => $order->get_meta( '_hmpos_customer_doc' ),
-					'iva'   => $order->get_meta( '_hmpos_customer_iva' ),
+					'doc'   => $order->get_meta( '_keytill_customer_doc' ),
+					'iva'   => $order->get_meta( '_keytill_customer_iva' ),
 					'email' => $order->get_billing_email(),
 				),
 				'lines'         => $lines,
@@ -1068,14 +1068,14 @@ class HMPOS_REST {
 				'refunded'      => (float) $order->get_total_refunded(),
 				'refunded_f'    => $fmt( $order->get_total_refunded() ),
 				'payment_title' => $order->get_payment_method_title(),
-				'credit_used'   => (float) $order->get_meta( '_hmpos_credit_used' ),
-				'credit_used_f' => $fmt( (float) $order->get_meta( '_hmpos_credit_used' ) ),
-				'credit_code'   => $order->get_meta( '_hmpos_credit_code' ),
-				'tendered_f'    => '' !== (string) $order->get_meta( '_hmpos_tendered' ) ? $fmt( (float) $order->get_meta( '_hmpos_tendered' ) ) : '',
-				'change_f'      => '' !== (string) $order->get_meta( '_hmpos_change' ) ? $fmt( (float) $order->get_meta( '_hmpos_change' ) ) : '',
-				'giftcards'     => HMPOS_Credit_Product::codes_for_order( $order ),
-				'print_url'     => HMPOS_Print::print_url( $order->get_id() ),
-				'gift_url'      => HMPOS_Print::gift_url( $order->get_id() ),
+				'credit_used'   => (float) $order->get_meta( '_keytill_credit_used' ),
+				'credit_used_f' => $fmt( (float) $order->get_meta( '_keytill_credit_used' ) ),
+				'credit_code'   => $order->get_meta( '_keytill_credit_code' ),
+				'tendered_f'    => '' !== (string) $order->get_meta( '_keytill_tendered' ) ? $fmt( (float) $order->get_meta( '_keytill_tendered' ) ) : '',
+				'change_f'      => '' !== (string) $order->get_meta( '_keytill_change' ) ? $fmt( (float) $order->get_meta( '_keytill_change' ) ) : '',
+				'giftcards'     => KEYTILL_Credit_Product::codes_for_order( $order ),
+				'print_url'     => KEYTILL_Print::print_url( $order->get_id() ),
+				'gift_url'      => KEYTILL_Print::gift_url( $order->get_id() ),
 				'refundable'    => ! in_array( $order->get_status(), array( 'pending', 'on-hold', 'cancelled', 'failed', 'checkout-draft', 'auto-draft', 'trash' ), true ),
 			),
 			200
@@ -1215,14 +1215,14 @@ class HMPOS_REST {
 		$id      = absint( $request->get_param( 'id' ) );
 		$product = wc_get_product( $id );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Producto no encontrado.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$params = self::body( $request );
 		$from   = isset( $params['from'] ) ? (string) $params['from'] : '';
 		$to     = isset( $params['to'] ) ? (string) $params['to'] : '';
 		$qty    = isset( $params['qty'] ) ? (int) $params['qty'] : 0;
 
-		$res = HMPOS_Branch_Stock::move( $id, $from, $to, $qty );
+		$res = KEYTILL_Branch_Stock::move( $id, $from, $to, $qty );
 		if ( is_wp_error( $res ) ) {
 			return $res;
 		}
@@ -1236,9 +1236,9 @@ class HMPOS_REST {
 		$params     = self::body( $request );
 		$branch_raw = isset( $params['branch_id'] ) ? (string) $params['branch_id'] : '';
 		$clear      = ( '' === trim( $branch_raw ) );
-		$branch     = $clear ? '' : HMPOS_Branches::valid_id( $branch_raw );
+		$branch     = $clear ? '' : KEYTILL_Branches::valid_id( $branch_raw );
 		if ( ! $clear && '' === $branch ) {
-			return new WP_Error( 'hmpos_bad_branch', __( 'Sucursal inválida.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_branch', __( 'Sucursal inválida.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Ids: explícitos (tildados) o resueltos por el filtro actual.
@@ -1256,7 +1256,7 @@ class HMPOS_REST {
 		}
 
 		if ( empty( $ids ) ) {
-			return new WP_Error( 'hmpos_no_ids', __( 'No seleccionaste ningún producto.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_no_ids', __( 'No seleccionaste ningún producto.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( count( $ids ) > 5000 ) {
 			$ids = array_slice( $ids, 0, 5000 ); // tope de seguridad.
@@ -1287,9 +1287,9 @@ class HMPOS_REST {
 				continue;
 			}
 			if ( $clear ) {
-				$t->delete_meta_data( HMPOS_Branches::META );
+				$t->delete_meta_data( KEYTILL_Branches::META );
 			} else {
-				$t->update_meta_data( HMPOS_Branches::META, $branch );
+				$t->update_meta_data( KEYTILL_Branches::META, $branch );
 			}
 			$t->save(); // dispara woocommerce_update_product → invalida el caché del catálogo.
 			$updated++;
@@ -1298,7 +1298,7 @@ class HMPOS_REST {
 		return new WP_REST_Response(
 			array(
 				'updated' => $updated,
-				'branch'  => $clear ? '' : HMPOS_Branches::name_of( $branch ),
+				'branch'  => $clear ? '' : KEYTILL_Branches::name_of( $branch ),
 			),
 			200
 		);
@@ -1383,7 +1383,7 @@ class HMPOS_REST {
 			}
 		}
 		return new WP_REST_Response(
-			array( 'categories' => $cats, 'can_manage' => current_user_can( HMPOS_CAP_MANAGE ) ),
+			array( 'categories' => $cats, 'can_manage' => current_user_can( KEYTILL_CAP_MANAGE ) ),
 			200
 		);
 	}
@@ -1397,7 +1397,7 @@ class HMPOS_REST {
 	public static function admin_product_detail( WP_REST_Request $request ) {
 		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Producto no encontrado.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$row               = self::admin_product_row( $product );
 		$row['variations'] = self::admin_variations( $product );
@@ -1521,7 +1521,7 @@ class HMPOS_REST {
 			$ids[] = (int) $pid;
 		}
 
-		// 5) Código de barras (_hmpos_barcode) en productos y variaciones → padre.
+		// 5) Código de barras (_keytill_barcode) en productos y variaciones → padre.
 		// Se resuelve con un LIKE preparado directo sobre postmeta, por el mismo
 		// motivo que el nombre: inmune a plugins que hookean la query de productos.
 		$by_barcode = $wpdb->get_col(
@@ -1529,7 +1529,7 @@ class HMPOS_REST {
 				"SELECT p.ID FROM {$wpdb->posts} p
 				 INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID
 				 WHERE p.post_type IN ( 'product', 'product_variation' )
-				   AND m.meta_key = '_hmpos_barcode'
+				   AND m.meta_key = '_keytill_barcode'
 				   AND m.meta_value LIKE %s
 				 LIMIT 50",
 				$like
@@ -1564,8 +1564,8 @@ class HMPOS_REST {
 				$wpdb->prepare(
 					"SELECT k.order_id FROM {$meta} k
 					 INNER JOIN {$meta} c ON c.order_id = k.order_id
-					 WHERE k.meta_key = '_hmpos_idempotency_key' AND k.meta_value = %s
-					   AND c.meta_key = '_hmpos_cajero_id' AND c.meta_value = %s
+					 WHERE k.meta_key = '_keytill_idempotency_key' AND k.meta_value = %s
+					   AND c.meta_key = '_keytill_cajero_id' AND c.meta_value = %s
 					 ORDER BY k.order_id DESC LIMIT 1",
 					$idem,
 					(string) $cajero_id
@@ -1576,8 +1576,8 @@ class HMPOS_REST {
 				$wpdb->prepare(
 					"SELECT k.post_id FROM {$wpdb->postmeta} k
 					 INNER JOIN {$wpdb->postmeta} c ON c.post_id = k.post_id
-					 WHERE k.meta_key = '_hmpos_idempotency_key' AND k.meta_value = %s
-					   AND c.meta_key = '_hmpos_cajero_id' AND c.meta_value = %s
+					 WHERE k.meta_key = '_keytill_idempotency_key' AND k.meta_value = %s
+					   AND c.meta_key = '_keytill_cajero_id' AND c.meta_value = %s
 					 ORDER BY k.post_id DESC LIMIT 1",
 					$idem,
 					(string) $cajero_id
@@ -1649,26 +1649,26 @@ class HMPOS_REST {
 			'category'      => $cat,
 			'active'        => ( 'publish' === $p->get_status() ),
 			'status'        => $p->get_status(),
-			'giftcard'      => HMPOS_Credit_Product::is_giftcard( $p ),
+			'giftcard'      => KEYTILL_Credit_Product::is_giftcard( $p ),
 			// Edición rápida (solo simples; los variables se editan por variación).
 			'editable'      => ( 'simple' === $type ),
 			'regular_price' => 'simple' === $type ? (string) $p->get_regular_price() : '',
 			'sale_price'    => 'simple' === $type ? (string) $p->get_sale_price() : '',
-			'barcode'       => 'simple' === $type ? (string) $p->get_meta( '_hmpos_barcode' ) : '',
-			'label_url'     => HMPOS_Labels::url( $p->get_id() ),
+			'barcode'       => 'simple' === $type ? (string) $p->get_meta( '_keytill_barcode' ) : '',
+			'label_url'     => KEYTILL_Labels::url( $p->get_id() ),
 			'price_html'    => $price_disp,
 			'stock_qty'     => ( 'simple' === $type && null !== $p->get_stock_quantity() ) ? (int) $p->get_stock_quantity() : null,
 			'manage_stock'  => 'simple' === $type ? (bool) $p->get_manage_stock() : false,
 			'in_stock'      => $p->is_in_stock(),
 			'variations'    => $var_count,
 			'image'         => $img_id ? wp_get_attachment_image_url( $img_id, 'thumbnail' ) : '',
-			'branch_id'     => (string) $p->get_meta( HMPOS_Branches::META ),
-			'branch'        => HMPOS_Branches::name_of( $p->get_meta( HMPOS_Branches::META ) ),
+			'branch_id'     => (string) $p->get_meta( KEYTILL_Branches::META ),
+			'branch'        => KEYTILL_Branches::name_of( $p->get_meta( KEYTILL_Branches::META ) ),
 			// Stock por sucursal (solo simples; los variables lo llevan por variación).
 			// branch_managed=false → "legacy": todavía usa el stock único de Woo.
-			'branch_stock'   => ( 'simple' === $type ) ? HMPOS_Branch_Stock::map_for_active( $p->get_id() ) : array(),
-			'stock_total'    => ( 'simple' === $type ) ? HMPOS_Branch_Stock::total( $p->get_id() ) : null,
-			'branch_managed' => ( 'simple' === $type ) ? HMPOS_Branch_Stock::is_managed( $p->get_id() ) : false,
+			'branch_stock'   => ( 'simple' === $type ) ? KEYTILL_Branch_Stock::map_for_active( $p->get_id() ) : array(),
+			'stock_total'    => ( 'simple' === $type ) ? KEYTILL_Branch_Stock::total( $p->get_id() ) : null,
+			'branch_managed' => ( 'simple' === $type ) ? KEYTILL_Branch_Stock::is_managed( $p->get_id() ) : false,
 		);
 	}
 
@@ -1683,18 +1683,18 @@ class HMPOS_REST {
 			'id'            => (int) $v->get_id(),
 			'label'         => self::variation_label( $v ),
 			'sku'           => $v->get_sku( 'edit' ), // SKU propio (vacío si hereda el del padre).
-			'barcode'       => (string) $v->get_meta( '_hmpos_barcode' ),
-			'label_url'     => HMPOS_Labels::url( $v->get_id() ),
+			'barcode'       => (string) $v->get_meta( '_keytill_barcode' ),
+			'label_url'     => KEYTILL_Labels::url( $v->get_id() ),
 			'regular_price' => (string) $v->get_regular_price(),
 			'stock_qty'     => null !== $v->get_stock_quantity() ? (int) $v->get_stock_quantity() : null,
 			'manage_stock'  => (bool) $v->get_manage_stock(),
 			'in_stock'      => $v->is_in_stock(),
 			'is_variation'  => true,
-			'branch_id'     => (string) $v->get_meta( HMPOS_Branches::META ),
-			'branch'        => HMPOS_Branches::name_of( $v->get_meta( HMPOS_Branches::META ) ),
-			'branch_stock'   => HMPOS_Branch_Stock::map_for_active( $v->get_id() ),
-			'stock_total'    => HMPOS_Branch_Stock::total( $v->get_id() ),
-			'branch_managed' => HMPOS_Branch_Stock::is_managed( $v->get_id() ),
+			'branch_id'     => (string) $v->get_meta( KEYTILL_Branches::META ),
+			'branch'        => KEYTILL_Branches::name_of( $v->get_meta( KEYTILL_Branches::META ) ),
+			'branch_stock'   => KEYTILL_Branch_Stock::map_for_active( $v->get_id() ),
+			'stock_total'    => KEYTILL_Branch_Stock::total( $v->get_id() ),
+			'branch_managed' => KEYTILL_Branch_Stock::is_managed( $v->get_id() ),
 		);
 	}
 
@@ -1742,12 +1742,12 @@ class HMPOS_REST {
 		$params = self::body( $request );
 		$name   = isset( $params['name'] ) ? sanitize_text_field( $params['name'] ) : '';
 		if ( '' === $name ) {
-			return new WP_Error( 'hmpos_bad_attr', __( 'El nombre del atributo es obligatorio.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_attr', __( 'El nombre del atributo es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$slug = wc_sanitize_taxonomy_name( $name ); // sin prefijo pa_, minúsculas.
 		if ( '' === $slug ) {
-			return new WP_Error( 'hmpos_bad_attr', __( 'Nombre de atributo inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_attr', __( 'Nombre de atributo inválido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Dedup: si ya existe un atributo global con ese slug, se reutiliza.
@@ -1767,7 +1767,7 @@ class HMPOS_REST {
 			)
 		);
 		if ( is_wp_error( $attr_id ) ) {
-			return new WP_Error( 'hmpos_attr_fail', $attr_id->get_error_message(), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_attr_fail', $attr_id->get_error_message(), array( 'status' => 400 ) );
 		}
 
 		// Registra la taxonomía en esta misma request para poder usarla ya (WC la
@@ -1789,7 +1789,7 @@ class HMPOS_REST {
 		$attr_id = absint( $request->get_param( 'id' ) );
 		$tax_obj = self::get_attribute_taxonomy( $attr_id );
 		if ( ! $tax_obj ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Atributo no encontrado.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Atributo no encontrado.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$taxonomy = wc_attribute_taxonomy_name( $tax_obj->attribute_name );
 		self::register_attribute_taxonomy( $tax_obj->attribute_name );
@@ -1797,7 +1797,7 @@ class HMPOS_REST {
 		$params = self::body( $request );
 		$name   = isset( $params['name'] ) ? sanitize_text_field( $params['name'] ) : '';
 		if ( '' === $name ) {
-			return new WP_Error( 'hmpos_bad_term', __( 'El nombre del valor es obligatorio.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_term', __( 'El nombre del valor es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Dedup: por nombre o por slug ya existente.
@@ -1814,7 +1814,7 @@ class HMPOS_REST {
 
 		$res = wp_insert_term( $name, $taxonomy );
 		if ( is_wp_error( $res ) ) {
-			return new WP_Error( 'hmpos_term_fail', $res->get_error_message(), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_term_fail', $res->get_error_message(), array( 'status' => 400 ) );
 		}
 		$term = get_term( (int) $res['term_id'], $taxonomy );
 		return new WP_REST_Response(
@@ -1909,9 +1909,9 @@ class HMPOS_REST {
 	public static function admin_scan_product( WP_REST_Request $request ) {
 		$params = self::body( $request );
 		$code   = preg_replace( '/\D/', '', (string) ( isset( $params['code'] ) ? $params['code'] : '' ) );
-		$decode = class_exists( 'HMPOS_Barcode' ) ? HMPOS_Barcode::decode( $code ) : false;
+		$decode = class_exists( 'KEYTILL_Barcode' ) ? KEYTILL_Barcode::decode( $code ) : false;
 		if ( ! $decode ) {
-			return new WP_Error( 'hmpos_bad_code', __( 'El código debe tener 12 dígitos.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_code', __( 'El código debe tener 12 dígitos.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// 1) ¿Ya existe exactamente ese código?
@@ -1966,7 +1966,7 @@ class HMPOS_REST {
 				'post_status'    => 'any',
 				'posts_per_page' => 1,
 				'fields'         => 'ids',
-				'meta_key'       => '_hmpos_barcode', // phpcs:ignore WordPress.DB.SlowDBQuery
+				'meta_key'       => '_keytill_barcode', // phpcs:ignore WordPress.DB.SlowDBQuery
 				'meta_value'     => (string) $code,   // phpcs:ignore WordPress.DB.SlowDBQuery
 			)
 		);
@@ -1986,7 +1986,7 @@ class HMPOS_REST {
 		$like = $wpdb->esc_like( (string) $prefix ) . '%';
 		$pid  = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_hmpos_barcode' AND meta_value LIKE %s LIMIT 1",
+				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_keytill_barcode' AND meta_value LIKE %s LIMIT 1",
 				$like
 			)
 		);
@@ -2114,8 +2114,8 @@ class HMPOS_REST {
 			$variation->save();
 		}
 
-		if ( (string) $variation->get_meta( '_hmpos_barcode' ) !== (string) $code ) {
-			$variation->update_meta_data( '_hmpos_barcode', (string) $code );
+		if ( (string) $variation->get_meta( '_keytill_barcode' ) !== (string) $code ) {
+			$variation->update_meta_data( '_keytill_barcode', (string) $code );
 			$variation->save();
 		}
 
@@ -2137,7 +2137,7 @@ class HMPOS_REST {
 	public static function admin_product_update( WP_REST_Request $request ) {
 		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Producto no encontrado.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		$params      = self::body( $request );
 		$is_variation = $product instanceof WC_Product_Variation;
@@ -2150,7 +2150,7 @@ class HMPOS_REST {
 			} else {
 				$price = wc_format_decimal( $raw );
 				if ( '' === $price || (float) $price < 0 ) {
-					return new WP_Error( 'hmpos_bad_price', __( 'Precio inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+					return new WP_Error( 'keytill_bad_price', __( 'Precio inválido.', 'keytill' ), array( 'status' => 400 ) );
 				}
 				$product->set_regular_price( $price );
 				// Sin oferta activa, el precio efectivo sigue al de lista.
@@ -2169,7 +2169,7 @@ class HMPOS_REST {
 			} else {
 				$qty = (int) $raw;
 				if ( $qty < 0 ) {
-					return new WP_Error( 'hmpos_bad_stock', __( 'Stock inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+					return new WP_Error( 'keytill_bad_stock', __( 'Stock inválido.', 'keytill' ), array( 'status' => 400 ) );
 				}
 				$product->set_manage_stock( true );
 				$product->set_stock_quantity( $qty );
@@ -2185,7 +2185,7 @@ class HMPOS_REST {
 			if ( '' !== $sku ) {
 				$existing = wc_get_product_id_by_sku( $sku );
 				if ( $existing && (int) $existing !== (int) $product->get_id() ) {
-					return new WP_Error( 'hmpos_dup_sku', __( 'Ya existe otro producto con ese SKU.', 'hm-pos' ), array( 'status' => 409 ) );
+					return new WP_Error( 'keytill_dup_sku', __( 'Ya existe otro producto con ese SKU.', 'keytill' ), array( 'status' => 409 ) );
 				}
 			}
 			$product->set_sku( $sku );
@@ -2203,7 +2203,7 @@ class HMPOS_REST {
 			} else {
 				$sale = wc_format_decimal( $raw );
 				if ( '' === $sale || (float) $sale < 0 ) {
-					return new WP_Error( 'hmpos_bad_price', __( 'Precio de oferta inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+					return new WP_Error( 'keytill_bad_price', __( 'Precio de oferta inválido.', 'keytill' ), array( 'status' => 400 ) );
 				}
 				$product->set_sale_price( $sale );
 				$product->set_price( $sale );
@@ -2223,7 +2223,7 @@ class HMPOS_REST {
 			if ( array_key_exists( 'name', $params ) ) {
 				$name = sanitize_text_field( $params['name'] );
 				if ( '' === $name ) {
-					return new WP_Error( 'hmpos_bad_name', __( 'El nombre es obligatorio.', 'hm-pos' ), array( 'status' => 400 ) );
+					return new WP_Error( 'keytill_bad_name', __( 'El nombre es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
 				}
 				$product->set_name( $name );
 			}
@@ -2232,7 +2232,7 @@ class HMPOS_REST {
 				if ( '' !== $sku ) {
 					$existing = wc_get_product_id_by_sku( $sku );
 					if ( $existing && (int) $existing !== (int) $product->get_id() ) {
-						return new WP_Error( 'hmpos_dup_sku', __( 'Ya existe otro producto con ese SKU.', 'hm-pos' ), array( 'status' => 409 ) );
+						return new WP_Error( 'keytill_dup_sku', __( 'Ya existe otro producto con ese SKU.', 'keytill' ), array( 'status' => 409 ) );
 					}
 				}
 				$product->set_sku( $sku );
@@ -2259,11 +2259,11 @@ class HMPOS_REST {
 		// Sucursal (informativa): aplica a cualquier ítem (simple o variación).
 		// '' la limpia; si no, debe existir en la lista.
 		if ( array_key_exists( 'branch_id', $params ) ) {
-			$branch = HMPOS_Branches::valid_id( $params['branch_id'] );
+			$branch = KEYTILL_Branches::valid_id( $params['branch_id'] );
 			if ( '' === $branch ) {
-				$product->delete_meta_data( HMPOS_Branches::META );
+				$product->delete_meta_data( KEYTILL_Branches::META );
 			} else {
-				$product->update_meta_data( HMPOS_Branches::META, $branch );
+				$product->update_meta_data( KEYTILL_Branches::META, $branch );
 			}
 		}
 
@@ -2272,20 +2272,20 @@ class HMPOS_REST {
 		if ( array_key_exists( 'barcode', $params ) ) {
 			$code = preg_replace( '/\D/', '', (string) $params['barcode'] );
 			if ( '' === $code ) {
-				$product->delete_meta_data( '_hmpos_barcode' );
+				$product->delete_meta_data( '_keytill_barcode' );
 			} elseif ( 12 !== strlen( $code ) ) {
-				return new WP_Error( 'hmpos_bad_barcode', __( 'El código de barras debe tener 12 dígitos.', 'hm-pos' ), array( 'status' => 400 ) );
+				return new WP_Error( 'keytill_bad_barcode', __( 'El código de barras debe tener 12 dígitos.', 'keytill' ), array( 'status' => 400 ) );
 			} elseif ( self::barcode_in_use( $code, (int) $product->get_id() ) ) {
-				return new WP_Error( 'hmpos_dup_barcode', __( 'Ya hay otro producto con ese código de barras.', 'hm-pos' ), array( 'status' => 409 ) );
+				return new WP_Error( 'keytill_dup_barcode', __( 'Ya hay otro producto con ese código de barras.', 'keytill' ), array( 'status' => 409 ) );
 			} else {
-				$product->update_meta_data( '_hmpos_barcode', $code );
+				$product->update_meta_data( '_keytill_barcode', $code );
 			}
 		}
 
 		try {
 			$product->save();
 		} catch ( WC_Data_Exception $e ) {
-			return new WP_Error( 'hmpos_save_fail', $e->getMessage(), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_save_fail', $e->getMessage(), array( 'status' => 400 ) );
 		}
 
 		// Stock por sucursal: si vienen cantidades por sucursal, son la fuente de
@@ -2296,7 +2296,7 @@ class HMPOS_REST {
 			foreach ( $params['branch_stock'] as $bid => $qty ) {
 				$bs[ (string) $bid ] = max( 0, (int) $qty );
 			}
-			HMPOS_Branch_Stock::set_bulk( $product->get_id(), $bs );
+			KEYTILL_Branch_Stock::set_bulk( $product->get_id(), $bs );
 		}
 
 		// Una variación puede cambiar el rango de precio/stock del padre.
@@ -2321,7 +2321,7 @@ class HMPOS_REST {
 				'posts_per_page' => 1,
 				'fields'         => 'ids',
 				'post__not_in'   => $exclude_id ? array( (int) $exclude_id ) : array(),
-				'meta_key'       => '_hmpos_barcode',   // phpcs:ignore WordPress.DB.SlowDBQuery
+				'meta_key'       => '_keytill_barcode',   // phpcs:ignore WordPress.DB.SlowDBQuery
 				'meta_value'     => (string) $code,     // phpcs:ignore WordPress.DB.SlowDBQuery
 				'no_found_rows'  => true,
 			)
@@ -2343,7 +2343,7 @@ class HMPOS_REST {
 
 		$name = isset( $params['name'] ) ? sanitize_text_field( $params['name'] ) : '';
 		if ( '' === $name ) {
-			return new WP_Error( 'hmpos_bad_name', __( 'El nombre es obligatorio.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_name', __( 'El nombre es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Tipo: simple (default) o variable. Para variable el precio/stock van por
@@ -2352,7 +2352,7 @@ class HMPOS_REST {
 
 		$sku = isset( $params['sku'] ) ? wc_clean( $params['sku'] ) : '';
 		if ( '' !== $sku && wc_get_product_id_by_sku( $sku ) ) {
-			return new WP_Error( 'hmpos_dup_sku', __( 'Ya existe un producto con ese SKU.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_dup_sku', __( 'Ya existe un producto con ese SKU.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		if ( 'variable' === $type ) {
@@ -2360,7 +2360,7 @@ class HMPOS_REST {
 		} else {
 			$price = isset( $params['regular_price'] ) ? wc_format_decimal( $params['regular_price'] ) : '';
 			if ( '' === $price || (float) $price < 0 ) {
-				return new WP_Error( 'hmpos_bad_price', __( 'El precio es obligatorio.', 'hm-pos' ), array( 'status' => 400 ) );
+				return new WP_Error( 'keytill_bad_price', __( 'El precio es obligatorio.', 'keytill' ), array( 'status' => 400 ) );
 			}
 			$product = new WC_Product_Simple();
 			$product->set_regular_price( $price );
@@ -2408,19 +2408,19 @@ class HMPOS_REST {
 			$product->set_gallery_image_ids( self::sanitize_gallery_ids( $params['gallery_ids'] ) );
 		}
 		if ( isset( $params['branch_id'] ) ) {
-			$branch = HMPOS_Branches::valid_id( $params['branch_id'] );
+			$branch = KEYTILL_Branches::valid_id( $params['branch_id'] );
 			if ( '' !== $branch ) {
-				$product->update_meta_data( HMPOS_Branches::META, $branch );
+				$product->update_meta_data( KEYTILL_Branches::META, $branch );
 			}
 		}
 
 		try {
 			$id = $product->save();
 		} catch ( WC_Data_Exception $e ) {
-			return new WP_Error( 'hmpos_create_fail', $e->getMessage(), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_create_fail', $e->getMessage(), array( 'status' => 400 ) );
 		}
 		if ( ! $id ) {
-			return new WP_Error( 'hmpos_create_fail', __( 'No se pudo crear el producto.', 'hm-pos' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_create_fail', __( 'No se pudo crear el producto.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		// Stock por sucursal al crear un simple (fuente de verdad; el nativo = suma).
@@ -2429,7 +2429,7 @@ class HMPOS_REST {
 			foreach ( $params['branch_stock'] as $bid => $qty ) {
 				$bs[ (string) $bid ] = max( 0, (int) $qty );
 			}
-			HMPOS_Branch_Stock::set_bulk( $id, $bs );
+			KEYTILL_Branch_Stock::set_bulk( $id, $bs );
 		}
 
 		return new WP_REST_Response( self::admin_product_row( wc_get_product( $id ) ), 201 );
@@ -2452,10 +2452,10 @@ class HMPOS_REST {
 	public static function admin_variations_generate( WP_REST_Request $request ) {
 		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Producto no encontrado.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
 		}
 		if ( ! $product->is_type( 'variable' ) ) {
-			return new WP_Error( 'hmpos_not_variable', __( 'El producto no es variable.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_not_variable', __( 'El producto no es variable.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		$params = self::body( $request );
@@ -2519,7 +2519,7 @@ class HMPOS_REST {
 		}
 
 		if ( empty( $slugs_by_tax ) ) {
-			return new WP_Error( 'hmpos_no_attrs', __( 'Elegí al menos un atributo con valores.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_no_attrs', __( 'Elegí al menos un atributo con valores.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Combinaciones deseadas (por slug, que es lo que usan las variaciones).
@@ -2623,9 +2623,9 @@ class HMPOS_REST {
 			return empty( $existing_sigs[ self::combo_signature( $c, array_keys( $chosen ) ) ] );
 		} ) ) > $max_total ) {
 			return new WP_Error(
-				'hmpos_too_many',
+				'keytill_too_many',
 				/* translators: %d: tope de variaciones. */
-				sprintf( __( 'Demasiadas variaciones (máx %d). Reducí valores o cargalas en Woo.', 'hm-pos' ), $max_total ),
+				sprintf( __( 'Demasiadas variaciones (máx %d). Reducí valores o cargalas en Woo.', 'keytill' ), $max_total ),
 				array( 'status' => 400 )
 			);
 		}
@@ -2729,7 +2729,7 @@ class HMPOS_REST {
 		$id      = absint( $request->get_param( 'id' ) );
 		$product = wc_get_product( $id );
 		if ( ! $product instanceof WC_Product ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Producto no encontrado.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Producto no encontrado.', 'keytill' ), array( 'status' => 404 ) );
 		}
 
 		if ( $product->is_type( 'variation' ) ) {
@@ -2757,13 +2757,13 @@ class HMPOS_REST {
 	public static function admin_media_upload( WP_REST_Request $request ) {
 		$files = $request->get_file_params();
 		if ( empty( $files['file'] ) || empty( $files['file']['name'] ) ) {
-			return new WP_Error( 'hmpos_no_file', __( 'No se recibió ninguna imagen.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_no_file', __( 'No se recibió ninguna imagen.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Solo imágenes.
 		$check = wp_check_filetype( $files['file']['name'] );
 		if ( empty( $check['type'] ) || 0 !== strpos( $check['type'], 'image/' ) ) {
-			return new WP_Error( 'hmpos_bad_file', __( 'El archivo debe ser una imagen.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_file', __( 'El archivo debe ser una imagen.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -2773,7 +2773,7 @@ class HMPOS_REST {
 		$_FILES['file'] = $files['file'];
 		$attach_id      = media_handle_upload( 'file', 0 );
 		if ( is_wp_error( $attach_id ) ) {
-			return new WP_Error( 'hmpos_upload_fail', $attach_id->get_error_message(), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_upload_fail', $attach_id->get_error_message(), array( 'status' => 500 ) );
 		}
 
 		return new WP_REST_Response(
@@ -2824,12 +2824,12 @@ class HMPOS_REST {
 	 */
 	public static function credit_lookup( WP_REST_Request $request ) {
 		$code = (string) $request->get_param( 'code' );
-		$row  = HMPOS_Credit::get_by_code( $code );
+		$row  = KEYTILL_Credit::get_by_code( $code );
 		if ( ! $row ) {
-			return new WP_Error( 'hmpos_credit_404', __( 'Código de crédito inexistente.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_credit_404', __( 'Código de crédito inexistente.', 'keytill' ), array( 'status' => 404 ) );
 		}
-		$payload               = HMPOS_Credit::payload( $row );
-		$payload['reason']     = HMPOS_Credit::is_redeemable( $row ) ? '' : HMPOS_Credit::reason_not_redeemable( $row );
+		$payload               = KEYTILL_Credit::payload( $row );
+		$payload['reason']     = KEYTILL_Credit::is_redeemable( $row ) ? '' : KEYTILL_Credit::reason_not_redeemable( $row );
 		$payload['expires_at'] = $row->expires_at ? mysql2date( 'd/m/Y', $row->expires_at ) : '';
 		return new WP_REST_Response( $payload, 200 );
 	}
@@ -2844,9 +2844,9 @@ class HMPOS_REST {
 	 * @return WP_REST_Response
 	 */
 	public static function cash_current() {
-		$id = HMPOS_Cash::get_open_session_id();
+		$id = KEYTILL_Cash::get_open_session_id();
 		return new WP_REST_Response(
-			array( 'session' => $id ? HMPOS_Cash::session_payload( $id ) : null ),
+			array( 'session' => $id ? KEYTILL_Cash::session_payload( $id ) : null ),
 			200
 		);
 	}
@@ -2861,10 +2861,10 @@ class HMPOS_REST {
 		$params = self::body( $request );
 		$float  = isset( $params['opening_float'] ) ? (float) $params['opening_float'] : 0.0;
 		if ( $float < 0 ) {
-			return new WP_Error( 'hmpos_bad_amount', __( 'Fondo inicial inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_amount', __( 'Fondo inicial inválido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		$branch = isset( $params['branch_id'] ) ? (string) $params['branch_id'] : '';
-		$res    = HMPOS_Cash::open_session( $float, get_current_user_id(), $branch );
+		$res    = KEYTILL_Cash::open_session( $float, get_current_user_id(), $branch );
 		return is_wp_error( $res ) ? $res : new WP_REST_Response( $res, 201 );
 	}
 
@@ -2876,13 +2876,13 @@ class HMPOS_REST {
 	 */
 	public static function cash_withdraw( WP_REST_Request $request ) {
 		$params = self::body( $request );
-		$id     = HMPOS_Cash::get_open_session_id();
+		$id     = KEYTILL_Cash::get_open_session_id();
 		if ( ! $id ) {
-			return new WP_Error( 'hmpos_cash_closed', __( 'No hay una caja abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$amount = isset( $params['amount'] ) ? (float) $params['amount'] : 0.0;
 		$reason = isset( $params['reason'] ) ? sanitize_text_field( $params['reason'] ) : '';
-		$res    = HMPOS_Cash::add_withdrawal( $id, $amount, $reason );
+		$res    = KEYTILL_Cash::add_withdrawal( $id, $amount, $reason );
 		return is_wp_error( $res ) ? $res : new WP_REST_Response( $res, 201 );
 	}
 
@@ -2895,16 +2895,16 @@ class HMPOS_REST {
 	public static function cash_close( WP_REST_Request $request ) {
 		// Cerrar/arquear la caja es una función de control: solo encargado/admin
 		// (no un cajero, para que no cierre su propio cajón y tape un faltante).
-		if ( ! current_user_can( HMPOS_CAP_MANAGE ) ) {
-			return new WP_Error( 'hmpos_forbidden', __( 'Solo un encargado o administrador puede cerrar la caja.', 'hm-pos' ), array( 'status' => 403 ) );
+		if ( ! current_user_can( KEYTILL_CAP_MANAGE ) ) {
+			return new WP_Error( 'keytill_forbidden', __( 'Solo un encargado o administrador puede cerrar la caja.', 'keytill' ), array( 'status' => 403 ) );
 		}
 		$params  = self::body( $request );
-		$id      = HMPOS_Cash::get_open_session_id();
+		$id      = KEYTILL_Cash::get_open_session_id();
 		if ( ! $id ) {
-			return new WP_Error( 'hmpos_cash_closed', __( 'No hay una caja abierta para cerrar.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta para cerrar.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$counted = isset( $params['counted_cash'] ) ? (float) $params['counted_cash'] : 0.0;
-		$res     = HMPOS_Cash::close_session( $id, $counted );
+		$res     = KEYTILL_Cash::close_session( $id, $counted );
 		return is_wp_error( $res ) ? $res : new WP_REST_Response( $res, 200 );
 	}
 
@@ -2923,25 +2923,25 @@ class HMPOS_REST {
 
 		if ( 'digital' === $account ) {
 			// La caja digital es la cuenta bancaria: moverla es de gestión.
-			if ( ! current_user_can( HMPOS_CAP_MANAGE ) ) {
-				return new WP_Error( 'hmpos_forbidden', __( 'Solo un encargado o administrador puede mover la caja digital.', 'hm-pos' ), array( 'status' => 403 ) );
+			if ( ! current_user_can( KEYTILL_CAP_MANAGE ) ) {
+				return new WP_Error( 'keytill_forbidden', __( 'Solo un encargado o administrador puede mover la caja digital.', 'keytill' ), array( 'status' => 403 ) );
 			}
-			$id = HMPOS_Cash_Digital::get_open_session_id();
+			$id = KEYTILL_Cash_Digital::get_open_session_id();
 			if ( ! $id ) {
-				return new WP_Error( 'hmpos_digital_closed', __( 'La caja digital no está abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+				return new WP_Error( 'keytill_digital_closed', __( 'La caja digital no está abierta.', 'keytill' ), array( 'status' => 409 ) );
 			}
-			$res = HMPOS_Cash_Digital::add_move( $id, $kind, $amount, $concept );
+			$res = KEYTILL_Cash_Digital::add_move( $id, $kind, $amount, $concept );
 			return is_wp_error( $res ) ? $res : new WP_REST_Response( array( 'account' => 'digital', 'digital' => $res ), 201 );
 		}
 
 		// Efectivo → caja física del cajero.
-		$id = HMPOS_Cash::get_open_session_id();
+		$id = KEYTILL_Cash::get_open_session_id();
 		if ( ! $id ) {
-			return new WP_Error( 'hmpos_cash_closed', __( 'No hay una caja abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		$res = ( 'ingreso' === $kind )
-			? HMPOS_Cash::add_deposit( $id, $amount, $concept )
-			: HMPOS_Cash::add_withdrawal( $id, $amount, $concept );
+			? KEYTILL_Cash::add_deposit( $id, $amount, $concept )
+			: KEYTILL_Cash::add_withdrawal( $id, $amount, $concept );
 		return is_wp_error( $res ) ? $res : new WP_REST_Response( array( 'account' => 'efectivo', 'session' => $res ), 201 );
 	}
 
@@ -2950,22 +2950,22 @@ class HMPOS_REST {
 	 * ------------------------------------------------------------------ */
 
 	public static function digital_current() {
-		return new WP_REST_Response( array( 'digital' => HMPOS_Cash_Digital::current_payload() ), 200 );
+		return new WP_REST_Response( array( 'digital' => KEYTILL_Cash_Digital::current_payload() ), 200 );
 	}
 
 	public static function digital_open( WP_REST_Request $request ) {
 		$params  = self::body( $request );
 		$initial = array_key_exists( 'initial', $params ) ? (float) $params['initial'] : null;
-		$res     = HMPOS_Cash_Digital::open_session( get_current_user_id(), $initial );
+		$res     = KEYTILL_Cash_Digital::open_session( get_current_user_id(), $initial );
 		return is_wp_error( $res ) ? $res : new WP_REST_Response( $res, 201 );
 	}
 
 	public static function digital_close() {
-		$id = HMPOS_Cash_Digital::get_open_session_id();
+		$id = KEYTILL_Cash_Digital::get_open_session_id();
 		if ( ! $id ) {
-			return new WP_Error( 'hmpos_digital_closed', __( 'La caja digital no está abierta.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_digital_closed', __( 'La caja digital no está abierta.', 'keytill' ), array( 'status' => 409 ) );
 		}
-		$res = HMPOS_Cash_Digital::close_session( $id );
+		$res = KEYTILL_Cash_Digital::close_session( $id );
 		return is_wp_error( $res ) ? $res : new WP_REST_Response( $res, 200 );
 	}
 
@@ -2974,19 +2974,19 @@ class HMPOS_REST {
 		$oid    = isset( $params['order_id'] ) ? absint( $params['order_id'] ) : 0;
 		$status = isset( $params['status'] ) ? sanitize_key( $params['status'] ) : '';
 		if ( ! $oid || ! wc_get_order( $oid ) ) {
-			return new WP_Error( 'hmpos_not_found', __( 'Orden no encontrada.', 'hm-pos' ), array( 'status' => 404 ) );
+			return new WP_Error( 'keytill_not_found', __( 'Orden no encontrada.', 'keytill' ), array( 'status' => 404 ) );
 		}
-		$new = HMPOS_Cash_Digital::set_verification( $oid, $status );
+		$new = KEYTILL_Cash_Digital::set_verification( $oid, $status );
 		return new WP_REST_Response( array( 'order_id' => $oid, 'verification' => $new ), 200 );
 	}
 
 	/** Resumen combinado para la pestaña Caja/Banco (ambas cajas). */
 	public static function cashbank_summary() {
-		$cash_id = HMPOS_Cash::get_open_session_id();
+		$cash_id = KEYTILL_Cash::get_open_session_id();
 		return new WP_REST_Response(
 			array(
-				'cash'    => $cash_id ? HMPOS_Cash::session_payload( $cash_id ) : null,
-				'digital' => HMPOS_Cash_Digital::current_payload(),
+				'cash'    => $cash_id ? KEYTILL_Cash::session_payload( $cash_id ) : null,
+				'digital' => KEYTILL_Cash_Digital::current_payload(),
 			),
 			200
 		);
@@ -3029,12 +3029,12 @@ class HMPOS_REST {
 			if ( ! $o instanceof WC_Order ) {
 				continue;
 			}
-			$local  = ( 'hmpos' === $o->get_created_via() );
+			$local  = ( 'keytill' === $o->get_created_via() );
 			$origen = $local ? 'local' : 'web';
 			$pm     = $o->get_payment_method();
 
 			if ( $local ) {
-				$credit_used = (float) $o->get_meta( '_hmpos_credit_used' );
+				$credit_used = (float) $o->get_meta( '_keytill_credit_used' );
 				$charged     = round( (float) $o->get_total() - $credit_used, 2 );
 				$account     = ( 'credito' === $pm ) ? '' : ( ( 'efectivo' === $pm ) ? 'efectivo' : 'digital' );
 			} else {
@@ -3055,19 +3055,19 @@ class HMPOS_REST {
 					'amount'       => $charged,
 					'detail'       => '#' . $o->get_order_number() . self::ledger_cust( $o ) . ( $o->get_payment_method_title() ? ' · ' . $o->get_payment_method_title() : '' ),
 					'order_id'     => $is_tx ? (int) $o->get_id() : 0,
-					'verification' => $is_tx ? HMPOS_Cash_Digital::verification_of( $o->get_id() ) : '',
+					'verification' => $is_tx ? KEYTILL_Cash_Digital::verification_of( $o->get_id() ) : '',
 				);
 			}
 
 			// Devoluciones de la orden (egresos).
 			foreach ( $o->get_refunds() as $refund ) {
-				$method = $refund->get_meta( '_hmpos_refund_method' );
+				$method = $refund->get_meta( '_keytill_refund_method' );
 				if ( 'efectivo' === $method ) {
 					$acc = 'efectivo';
 					$amt = abs( (float) $refund->get_total() );
 				} elseif ( 'transferencia' === $method ) {
 					$acc = 'digital';
-					$st  = (float) $refund->get_meta( '_hmpos_digital_refund' );
+					$st  = (float) $refund->get_meta( '_keytill_digital_refund' );
 					$amt = $st > 0 ? $st : abs( (float) $refund->get_total() );
 				} else {
 					continue; // crédito en tienda u otros: no mueven efectivo/banco.
@@ -3092,23 +3092,23 @@ class HMPOS_REST {
 
 		// --- Caja física: ingresos (depósitos) + retiros ---
 		$fsess = get_posts(
-			array( 'post_type' => HMPOS_Cash::CPT, 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids' )
+			array( 'post_type' => KEYTILL_Cash::CPT, 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids' )
 		);
 		foreach ( $fsess as $sid ) {
-			foreach ( (array) get_post_meta( $sid, '_hmpos_deposits', true ) as $d ) {
+			foreach ( (array) get_post_meta( $sid, '_keytill_deposits', true ) as $d ) {
 				self::ledger_push( $rows, $d, 'ingreso', 'ingreso', 'efectivo', isset( $d['concept'] ) ? $d['concept'] : '', $from, $to );
 			}
-			foreach ( (array) get_post_meta( $sid, '_hmpos_withdrawals', true ) as $w ) {
+			foreach ( (array) get_post_meta( $sid, '_keytill_withdrawals', true ) as $w ) {
 				self::ledger_push( $rows, $w, 'egreso', 'retiro', 'efectivo', isset( $w['reason'] ) ? $w['reason'] : '', $from, $to );
 			}
 		}
 
 		// --- Caja digital: ingresos/retiros manuales ---
 		$dsess = get_posts(
-			array( 'post_type' => HMPOS_Cash_Digital::CPT, 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids' )
+			array( 'post_type' => KEYTILL_Cash_Digital::CPT, 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids' )
 		);
 		foreach ( $dsess as $sid ) {
-			foreach ( (array) get_post_meta( $sid, '_hmpos_moves', true ) as $m ) {
+			foreach ( (array) get_post_meta( $sid, '_keytill_moves', true ) as $m ) {
 				$mv = ( 'ingreso' === $m['kind'] ) ? 'ingreso' : 'egreso';
 				$ty = ( 'ingreso' === $m['kind'] ) ? 'ingreso' : 'retiro';
 				self::ledger_push( $rows, $m, $mv, $ty, 'digital', isset( $m['concept'] ) ? $m['concept'] : '', $from, $to );
@@ -3166,7 +3166,7 @@ class HMPOS_REST {
 
 	/** Nombre del cliente para el detalle del libro ('' si no hay). */
 	private static function ledger_cust( $order ) {
-		$name = $order->get_meta( '_hmpos_customer_name' );
+		$name = $order->get_meta( '_keytill_customer_name' );
 		if ( '' === $name ) {
 			$name = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
 		}
@@ -3211,13 +3211,13 @@ class HMPOS_REST {
 	 * @return bool|WP_Error
 	 */
 	public static function can_operate() {
-		if ( current_user_can( HMPOS_CAP ) ) {
+		if ( current_user_can( KEYTILL_CAP ) ) {
 			self::$pos_context = true;
 			return true;
 		}
 		return new WP_Error(
-			'hmpos_forbidden',
-			__( 'No tenés permiso para operar el POS.', 'hm-pos' ),
+			'keytill_forbidden',
+			__( 'No tenés permiso para operar el POS.', 'keytill' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -3228,13 +3228,13 @@ class HMPOS_REST {
 	 * @return bool|WP_Error
 	 */
 	public static function can_manage() {
-		if ( current_user_can( HMPOS_CAP_MANAGE ) ) {
+		if ( current_user_can( KEYTILL_CAP_MANAGE ) ) {
 			self::$pos_context = true;
 			return true;
 		}
 		return new WP_Error(
-			'hmpos_forbidden',
-			__( 'No tenés permiso para gestionar productos.', 'hm-pos' ),
+			'keytill_forbidden',
+			__( 'No tenés permiso para gestionar productos.', 'keytill' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -3245,12 +3245,12 @@ class HMPOS_REST {
 	 * @return bool|WP_Error
 	 */
 	public static function can_upload() {
-		if ( current_user_can( HMPOS_CAP_MANAGE ) && current_user_can( 'upload_files' ) ) {
+		if ( current_user_can( KEYTILL_CAP_MANAGE ) && current_user_can( 'upload_files' ) ) {
 			return true;
 		}
 		return new WP_Error(
-			'hmpos_forbidden',
-			__( 'No tenés permiso para subir imágenes.', 'hm-pos' ),
+			'keytill_forbidden',
+			__( 'No tenés permiso para subir imágenes.', 'keytill' ),
 			array( 'status' => rest_authorization_required_code() )
 		);
 	}
@@ -3440,20 +3440,20 @@ class HMPOS_REST {
 			'category'           => $cat,
 			'image'              => $img_id ? wp_get_attachment_image_url( $img_id, 'thumbnail' ) : '',
 			'price'              => (float) $product->get_price(),
-			'barcode'            => (string) $product->get_meta( '_hmpos_barcode' ),
+			'barcode'            => (string) $product->get_meta( '_keytill_barcode' ),
 			'stock_qty'          => null !== $product->get_stock_quantity() ? (int) $product->get_stock_quantity() : null,
 			'manage_stock'       => (bool) $product->get_manage_stock(),
 			'backorders_allowed' => (bool) $product->backorders_allowed(),
 			'in_stock'           => $product->is_in_stock(),
-			'giftcard'           => HMPOS_Credit_Product::is_giftcard( $product ),
-			'giftcard_custom'    => HMPOS_Credit_Product::is_custom( $product ),
-			'giftcard_denoms'    => HMPOS_Credit_Product::denominations( $product ),
+			'giftcard'           => KEYTILL_Credit_Product::is_giftcard( $product ),
+			'giftcard_custom'    => KEYTILL_Credit_Product::is_custom( $product ),
+			'giftcard_denoms'    => KEYTILL_Credit_Product::denominations( $product ),
 			// Sucursal (informativa): cada ítem (simple o variación) tiene la suya.
-			'branch'             => HMPOS_Branches::name_of( $product->get_meta( HMPOS_Branches::META ) ),
+			'branch'             => KEYTILL_Branches::name_of( $product->get_meta( KEYTILL_Branches::META ) ),
 			// Stock por sucursal (si el ítem está distribuido): el front muestra el
 			// de la sucursal de la caja y lo usa para el flujo de faltante.
-			'branch_stock'       => HMPOS_Branch_Stock::map_for_active( $product->get_id() ),
-			'branch_managed'     => HMPOS_Branch_Stock::is_managed( $product->get_id() ),
+			'branch_stock'       => KEYTILL_Branch_Stock::map_for_active( $product->get_id() ),
+			'branch_managed'     => KEYTILL_Branch_Stock::is_managed( $product->get_id() ),
 		);
 	}
 
@@ -3477,7 +3477,7 @@ class HMPOS_REST {
 	 */
 	public static function create_order( WP_REST_Request $request ) {
 		if ( ! function_exists( 'wc_create_order' ) ) {
-			return new WP_Error( 'hmpos_no_woo', __( 'WooCommerce no está disponible.', 'hm-pos' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_no_woo', __( 'WooCommerce no está disponible.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		$params = $request->get_json_params();
@@ -3515,7 +3515,7 @@ class HMPOS_REST {
 			}
 		}
 		if ( empty( $items ) ) {
-			return new WP_Error( 'hmpos_empty', __( 'El carrito está vacío.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_empty', __( 'El carrito está vacío.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// --- idempotencia ---
@@ -3537,8 +3537,8 @@ class HMPOS_REST {
 				$dorder = wc_get_order( $dupe_id );
 				if ( $dorder ) {
 					$dtotal = (float) $dorder->get_total();
-					$dused  = (float) $dorder->get_meta( '_hmpos_credit_used' );
-					$dchg   = $dorder->get_meta( '_hmpos_change' );
+					$dused  = (float) $dorder->get_meta( '_keytill_credit_used' );
+					$dchg   = $dorder->get_meta( '_keytill_change' );
 					return new WP_REST_Response(
 						array(
 							'order_id'          => (int) $dorder->get_id(),
@@ -3547,8 +3547,8 @@ class HMPOS_REST {
 							'credit_used'       => $dused,
 							'amount_due'        => round( $dtotal - $dused, 2 ),
 							'change'            => ( '' !== $dchg ) ? (float) $dchg : null,
-							'giftcards'         => HMPOS_Credit_Product::codes_for_order( $dorder ),
-							'print_url'         => HMPOS_Print::print_url( $dorder->get_id() ),
+							'giftcards'         => KEYTILL_Credit_Product::codes_for_order( $dorder ),
+							'print_url'         => KEYTILL_Print::print_url( $dorder->get_id() ),
 							'idempotent_replay' => true,
 						),
 						200
@@ -3563,18 +3563,18 @@ class HMPOS_REST {
 		// register_session_id que manda el front) y, si no hay caja abierta, no se
 		// registra la venta. Va DESPUÉS de la idempotencia: un reintento de una
 		// orden ya creada se resuelve arriba aunque la caja se haya cerrado luego.
-		$open_session_id = HMPOS_Cash::get_open_session_id();
+		$open_session_id = KEYTILL_Cash::get_open_session_id();
 		if ( ! $open_session_id ) {
-			return new WP_Error( 'hmpos_cash_closed', __( 'No hay una caja abierta. Abrí la caja para cobrar.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_cash_closed', __( 'No hay una caja abierta. Abrí la caja para cobrar.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
 		// --- crédito en tienda (canje, opcional) ---
-		$credit_code = isset( $params['credit_code'] ) ? HMPOS_Credit::normalize_code( $params['credit_code'] ) : '';
+		$credit_code = isset( $params['credit_code'] ) ? KEYTILL_Credit::normalize_code( $params['credit_code'] ) : '';
 		$credit_row  = null;
 		if ( '' !== $credit_code ) {
-			$credit_row = HMPOS_Credit::get_by_code( $credit_code );
-			if ( ! HMPOS_Credit::is_redeemable( $credit_row ) ) {
-				return new WP_Error( 'hmpos_credit_invalid', HMPOS_Credit::reason_not_redeemable( $credit_row ), array( 'status' => 409 ) );
+			$credit_row = KEYTILL_Credit::get_by_code( $credit_code );
+			if ( ! KEYTILL_Credit::is_redeemable( $credit_row ) ) {
+				return new WP_Error( 'keytill_credit_invalid', KEYTILL_Credit::reason_not_redeemable( $credit_row ), array( 'status' => 409 ) );
 			}
 		}
 
@@ -3584,7 +3584,7 @@ class HMPOS_REST {
 		$methods = self::payment_methods();
 		$pm       = isset( $params['payment_method'] ) ? sanitize_key( $params['payment_method'] ) : '';
 		if ( '' !== $pm && ! isset( $methods[ $pm ] ) ) {
-			return new WP_Error( 'hmpos_bad_method', __( 'Medio de pago inválido.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_method', __( 'Medio de pago inválido.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		// No se exige medio acá: si tras el descuento/crédito queda saldo a cobrar y
 		// no hay medio válido, se rechaza más abajo (cuando ya se conoce el total).
@@ -3620,7 +3620,7 @@ class HMPOS_REST {
 		// --- construcción de la orden (CRUD de Woo) ---
 		$order = wc_create_order();
 		if ( is_wp_error( $order ) ) {
-			return new WP_Error( 'hmpos_order_fail', __( 'No se pudo crear la orden.', 'hm-pos' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_order_fail', __( 'No se pudo crear la orden.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		// Agrupa cantidades por producto (por si viniera repetido) y valida
@@ -3632,17 +3632,17 @@ class HMPOS_REST {
 		$src_by_id    = array(); // product_id => sucursal de origen elegida (stock por sucursal)
 		$force_by_id  = array(); // product_id => permitir negativo (vender igual)
 		$custom_lines = array();
-		$gc_max       = class_exists( 'HMPOS_Settings' ) ? HMPOS_Settings::giftcard_max() : 0;
+		$gc_max       = class_exists( 'KEYTILL_Settings' ) ? KEYTILL_Settings::giftcard_max() : 0;
 		foreach ( $items as $it ) {
 			$prod_it = wc_get_product( $it['product_id'] );
-			if ( $prod_it && HMPOS_Credit_Product::is_giftcard( $prod_it ) && null !== $it['amount'] && $it['amount'] > 0 ) {
+			if ( $prod_it && KEYTILL_Credit_Product::is_giftcard( $prod_it ) && null !== $it['amount'] && $it['amount'] > 0 ) {
 				// Tope al monto de gift card de monto libre (0 = sin tope).
 				if ( $gc_max > 0 && $it['amount'] > $gc_max ) {
 					$order->delete( true );
 					return new WP_Error(
-						'hmpos_giftcard_max',
+						'keytill_giftcard_max',
 						/* translators: %s: monto máximo. */
-						sprintf( __( 'El monto de la gift card supera el tope permitido (%s).', 'hm-pos' ), wp_strip_all_tags( wc_price( $gc_max ) ) ),
+						sprintf( __( 'El monto de la gift card supera el tope permitido (%s).', 'keytill' ), wp_strip_all_tags( wc_price( $gc_max ) ) ),
 						array( 'status' => 400 )
 					);
 				}
@@ -3662,7 +3662,7 @@ class HMPOS_REST {
 		}
 
 		// Sucursal de la caja: origen por defecto del stock por sucursal.
-		$caja_branch = HMPOS_Cash::session_branch( $open_session_id );
+		$caja_branch = KEYTILL_Cash::session_branch( $open_session_id );
 
 		$prepared   = array();
 		$errors     = array();
@@ -3671,31 +3671,31 @@ class HMPOS_REST {
 			$product = wc_get_product( $pid );
 			if ( ! $product ) {
 				/* translators: %d: product id. */
-				$errors[] = sprintf( __( 'Producto no encontrado (id %d).', 'hm-pos' ), $pid );
+				$errors[] = sprintf( __( 'Producto no encontrado (id %d).', 'keytill' ), $pid );
 				continue;
 			}
 			if ( ! $product->is_purchasable() ) {
 				// Motivo más frecuente: producto sin precio cargado. Se nombra el
 				// producto (no un id) para que el cajero sepa cuál corregir.
 				$reason   = ( '' === (string) $product->get_price() )
-					? __( 'sin precio cargado', 'hm-pos' )
-					: __( 'no disponible para la venta', 'hm-pos' );
+					? __( 'sin precio cargado', 'keytill' )
+					: __( 'no disponible para la venta', 'keytill' );
 				/* translators: 1: product name, 2: reason. */
-				$errors[] = sprintf( __( '%1$s: %2$s.', 'hm-pos' ), $product->get_name(), $reason );
+				$errors[] = sprintf( __( '%1$s: %2$s.', 'keytill' ), $product->get_name(), $reason );
 				continue;
 			}
 
-			if ( HMPOS_Branch_Stock::is_managed( $pid ) ) {
+			if ( KEYTILL_Branch_Stock::is_managed( $pid ) ) {
 				// Producto DISTRIBUIDO: descuenta de una sucursal (la elegida como
 				// origen, o la de la caja). Corte de sobreventa POR SUCURSAL, salvo
 				// que el cajero haya confirmado vender igual (force → puede negativo).
-				$src = ! empty( $src_by_id[ $pid ] ) ? HMPOS_Branches::valid_id( $src_by_id[ $pid ] ) : $caja_branch;
+				$src = ! empty( $src_by_id[ $pid ] ) ? KEYTILL_Branches::valid_id( $src_by_id[ $pid ] ) : $caja_branch;
 				if ( '' === $src ) {
-					$errors[] = sprintf( __( '%s: falta indicar la sucursal de origen.', 'hm-pos' ), $product->get_name() );
+					$errors[] = sprintf( __( '%s: falta indicar la sucursal de origen.', 'keytill' ), $product->get_name() );
 					continue;
 				}
 				$force = ! empty( $force_by_id[ $pid ] );
-				$have  = HMPOS_Branch_Stock::get( $pid, $src );
+				$have  = KEYTILL_Branch_Stock::get( $pid, $src );
 				if ( ! $force && $have < $qty ) {
 					// Faltante: se informa dónde SÍ hay, para que el cajero elija.
 					$shortages[] = array(
@@ -3703,9 +3703,9 @@ class HMPOS_REST {
 						'name'        => $product->get_name(),
 						'need'        => $qty,
 						'branch'      => $src,
-						'branch_name' => HMPOS_Branches::name_of( $src ),
+						'branch_name' => KEYTILL_Branches::name_of( $src ),
 						'have'        => $have,
-						'available'   => HMPOS_Branch_Stock::map_for_active( $pid ),
+						'available'   => KEYTILL_Branch_Stock::map_for_active( $pid ),
 					);
 					continue;
 				}
@@ -3716,9 +3716,9 @@ class HMPOS_REST {
 					$avail    = $product->get_stock_quantity();
 					$errors[] = sprintf(
 						/* translators: 1: product name, 2: available stock (o "sin stock"), 3: requested qty. */
-						__( 'Stock insuficiente: %1$s (disponible %2$s, pedido %3$d).', 'hm-pos' ),
+						__( 'Stock insuficiente: %1$s (disponible %2$s, pedido %3$d).', 'keytill' ),
 						$product->get_name(),
-						null === $avail ? __( 'sin stock', 'hm-pos' ) : (string) $avail,
+						null === $avail ? __( 'sin stock', 'keytill' ) : (string) $avail,
 						$qty
 					);
 					continue;
@@ -3729,7 +3729,7 @@ class HMPOS_REST {
 
 		if ( ! empty( $errors ) ) {
 			$order->delete( true );
-			return new WP_Error( 'hmpos_stock', implode( ' · ', $errors ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_stock', implode( ' · ', $errors ), array( 'status' => 409 ) );
 		}
 		if ( ! empty( $shortages ) ) {
 			// Faltante en la sucursal de la caja: NO se bloquea de plano. Se devuelve
@@ -3740,7 +3740,7 @@ class HMPOS_REST {
 			foreach ( $shortages as $s ) {
 				$parts[] = sprintf(
 					/* translators: 1: producto, 2: sucursal, 3: disponible, 4: pedido. */
-					__( '%1$s: sin stock en %2$s (hay %3$d, pedís %4$d).', 'hm-pos' ),
+					__( '%1$s: sin stock en %2$s (hay %3$d, pedís %4$d).', 'keytill' ),
 					$s['name'],
 					$s['branch_name'],
 					$s['have'],
@@ -3748,7 +3748,7 @@ class HMPOS_REST {
 				);
 			}
 			return new WP_Error(
-				'hmpos_branch_stock',
+				'keytill_branch_stock',
 				implode( ' · ', $parts ),
 				array( 'status' => 409, 'shortages' => $shortages )
 			);
@@ -3763,7 +3763,7 @@ class HMPOS_REST {
 			$order->add_product( $p['product'], $p['qty'] );
 			$line      = (float) $p['product']->get_price() * $p['qty'];
 			$subtotal += $line;
-			if ( HMPOS_Credit_Product::is_giftcard( $p['product'] ) ) {
+			if ( KEYTILL_Credit_Product::is_giftcard( $p['product'] ) ) {
 				$giftcard_subtotal += $line;
 			}
 		}
@@ -3783,7 +3783,7 @@ class HMPOS_REST {
 
 		if ( empty( $prepared ) && empty( $custom_lines ) ) {
 			$order->delete( true );
-			return new WP_Error( 'hmpos_empty', __( 'El carrito está vacío.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_empty', __( 'El carrito está vacío.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Descuento aplicado sobre los LINE ITEMS (subtotal original, total con
@@ -3798,8 +3798,8 @@ class HMPOS_REST {
 			} else {
 				$global_factor = $discountable > 0 ? max( 0.0, ( $discountable - $discount['value'] ) / $discountable ) : 1.0;
 			}
-			$order->add_meta_data( '_hmpos_discount_type', $discount['type'], true );
-			$order->add_meta_data( '_hmpos_discount_value', $discount['value'], true );
+			$order->add_meta_data( '_keytill_discount_type', $discount['type'], true );
+			$order->add_meta_data( '_keytill_discount_value', $discount['value'], true );
 		}
 
 		// Descuento por LÍNEA (por prenda) y/o global. En el front son excluyentes;
@@ -3809,7 +3809,7 @@ class HMPOS_REST {
 		// lo realmente pagado por cada línea.
 		foreach ( $order->get_items() as $item ) {
 			$prod = $item->get_product();
-			if ( $prod && HMPOS_Credit_Product::is_giftcard( $prod ) ) {
+			if ( $prod && KEYTILL_Credit_Product::is_giftcard( $prod ) ) {
 				continue;
 			}
 			$base        = (float) $item->get_subtotal();
@@ -3830,16 +3830,16 @@ class HMPOS_REST {
 
 		// Cliente guardado: liga el usuario de Woo y copia sus datos a la orden.
 		if ( $customer_id && get_userdata( $customer_id ) ) {
-			HMPOS_Customers::attach_to_order( $order, $customer_id );
+			KEYTILL_Customers::attach_to_order( $order, $customer_id );
 		} elseif ( $customer && ( '' !== $customer['name'] || '' !== $customer['doc'] ) ) {
 			// Venta anónima con datos sueltos: nombre en billing + campos fiscales
 			// como meta (aunque no se facture ni se guarde un cliente reutilizable).
 			if ( '' !== $customer['name'] ) {
 				$order->set_billing_first_name( $customer['name'] );
 			}
-			$order->add_meta_data( '_hmpos_customer_name', $customer['name'], true );
-			$order->add_meta_data( '_hmpos_customer_doc', $customer['doc'], true );
-			$order->add_meta_data( '_hmpos_customer_iva', $customer['iva'], true );
+			$order->add_meta_data( '_keytill_customer_name', $customer['name'], true );
+			$order->add_meta_data( '_keytill_customer_doc', $customer['doc'], true );
+			$order->add_meta_data( '_keytill_customer_iva', $customer['iva'], true );
 		}
 
 		// (El medio de pago se fija más abajo, cuando ya se conoce el total y el
@@ -3847,30 +3847,30 @@ class HMPOS_REST {
 
 		// Marca POS: distingue estas órdenes de las de la web.
 		$user = wp_get_current_user();
-		$order->set_created_via( 'hmpos' );
-		$order->add_meta_data( '_hmpos', 1, true );
-		$order->add_meta_data( '_hmpos_cajero_id', (int) $user->ID, true );
-		$order->add_meta_data( '_hmpos_cajero_login', $user->user_login, true );
-		$order->add_meta_data( '_hmpos_ts', current_time( 'mysql' ), true );
+		$order->set_created_via( 'keytill' );
+		$order->add_meta_data( '_keytill', 1, true );
+		$order->add_meta_data( '_keytill_cajero_id', (int) $user->ID, true );
+		$order->add_meta_data( '_keytill_cajero_login', $user->user_login, true );
+		$order->add_meta_data( '_keytill_ts', current_time( 'mysql' ), true );
 		if ( '' !== $idem ) {
-			$order->add_meta_data( '_hmpos_idempotency_key', $idem, true );
+			$order->add_meta_data( '_keytill_idempotency_key', $idem, true );
 		}
 
 		// Vendedor (opcional): etiqueta de quién atendió, para el reporte por
 		// vendedor. Se guarda el id + el nombre "congelado" (preserva el histórico
 		// si luego se renombra/quita el vendedor).
 		$seller_id = isset( $params['seller_id'] ) ? sanitize_key( (string) $params['seller_id'] ) : '';
-		if ( '' !== $seller_id && class_exists( 'HMPOS_Sellers' ) ) {
-			$srow = HMPOS_Sellers::get( $seller_id );
+		if ( '' !== $seller_id && class_exists( 'KEYTILL_Sellers' ) ) {
+			$srow = KEYTILL_Sellers::get( $seller_id );
 			if ( $srow ) {
-				$order->add_meta_data( '_hmpos_seller_id', $seller_id, true );
-				$order->add_meta_data( '_hmpos_seller', $srow['name'], true );
+				$order->add_meta_data( '_keytill_seller_id', $seller_id, true );
+				$order->add_meta_data( '_keytill_seller', $srow['name'], true );
 			}
 		}
 
 		// Liga la venta a la sesión de caja abierta del cajero (para el arqueo).
 		// El id se derivó del servidor más arriba, no del payload.
-		$order->add_meta_data( '_hmpos_session', $open_session_id, true );
+		$order->add_meta_data( '_keytill_session', $open_session_id, true );
 
 		$order->calculate_totals();
 		$total = (float) $order->get_total();
@@ -3886,7 +3886,7 @@ class HMPOS_REST {
 		// Si el crédito no cubre todo, hace falta un medio válido para el resto.
 		if ( $remainder > 0 && ! isset( $methods[ $pm ] ) ) {
 			$order->delete( true );
-			return new WP_Error( 'hmpos_bad_method', __( 'Elegí un medio de pago para el resto.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_bad_method', __( 'Elegí un medio de pago para el resto.', 'keytill' ), array( 'status' => 400 ) );
 		}
 
 		// Medio de pago a registrar: el del resto; si no hay resto a cobrar, la venta
@@ -3895,10 +3895,10 @@ class HMPOS_REST {
 		if ( $remainder <= 0 ) {
 			if ( $credit_used > 0 ) {
 				$order->set_payment_method( 'credito' );
-				$order->set_payment_method_title( __( 'Crédito en tienda', 'hm-pos' ) );
+				$order->set_payment_method_title( __( 'Crédito en tienda', 'keytill' ) );
 			} else {
 				$order->set_payment_method( 'bonificado' );
-				$order->set_payment_method_title( __( 'Bonificado (100%)', 'hm-pos' ) );
+				$order->set_payment_method_title( __( 'Bonificado (100%)', 'keytill' ) );
 			}
 		} else {
 			$order->set_payment_method( $pm );
@@ -3912,14 +3912,14 @@ class HMPOS_REST {
 		$stock_reduced = array();
 		foreach ( $prepared as $pp ) {
 			if ( ! empty( $pp['managed'] ) ) {
-				$ok = HMPOS_Branch_Stock::adjust( $pp['pid'], $pp['src'], -1 * (int) $pp['qty'], ! $pp['force'] );
+				$ok = KEYTILL_Branch_Stock::adjust( $pp['pid'], $pp['src'], -1 * (int) $pp['qty'], ! $pp['force'] );
 				if ( ! $ok ) {
 					self::rollback_stock( $stock_reduced );
 					$order->delete( true );
 					return new WP_Error(
-						'hmpos_branch_stock',
+						'keytill_branch_stock',
 						/* translators: %s: producto. */
-						sprintf( __( 'Se quedó sin stock en la sucursal: %s (lo vendió otra caja recién).', 'hm-pos' ), $pp['product']->get_name() ),
+						sprintf( __( 'Se quedó sin stock en la sucursal: %s (lo vendió otra caja recién).', 'keytill' ), $pp['product']->get_name() ),
 						array( 'status' => 409 )
 					);
 				}
@@ -3932,36 +3932,36 @@ class HMPOS_REST {
 		// Débito atómico del crédito ANTES de completar la venta. Si no se puede
 		// (carrera: otro canje lo dejó sin saldo), se aborta la venta.
 		if ( $credit_used > 0 ) {
-			$credit_after = HMPOS_Credit::debit( (int) $credit_row->id, $credit_used );
+			$credit_after = KEYTILL_Credit::debit( (int) $credit_row->id, $credit_used );
 			if ( false === $credit_after ) {
 				self::rollback_stock( $stock_reduced ); // reintegra el stock ya descontado
 				$order->delete( true );
-				return new WP_Error( 'hmpos_credit_race', __( 'El crédito ya no tiene saldo suficiente.', 'hm-pos' ), array( 'status' => 409 ) );
+				return new WP_Error( 'keytill_credit_race', __( 'El crédito ya no tiene saldo suficiente.', 'keytill' ), array( 'status' => 409 ) );
 			}
-			$order->add_meta_data( '_hmpos_credit_used', $credit_used, true );
-			$order->add_meta_data( '_hmpos_credit_code', $credit_row->code, true );
-			$order->add_meta_data( '_hmpos_credit_id', (int) $credit_row->id, true );
+			$order->add_meta_data( '_keytill_credit_used', $credit_used, true );
+			$order->add_meta_data( '_keytill_credit_code', $credit_row->code, true );
+			$order->add_meta_data( '_keytill_credit_id', (int) $credit_row->id, true );
 		}
 
 		// Cobro: descuenta stock y marca pagada. Para venta de mostrador, completada.
 		try {
 			$order->payment_complete();
 			if ( ! $order->has_status( 'completed' ) ) {
-				$order->update_status( 'completed', __( 'Venta de mostrador (POS).', 'hm-pos' ) );
+				$order->update_status( 'completed', __( 'Venta de mostrador (POS).', 'keytill' ) );
 			}
 		} catch ( \Exception $e ) {
 			// Reversa del crédito si la venta no llegó a concretarse.
 			if ( $credit_used > 0 ) {
-				HMPOS_Credit::credit_back( (int) $credit_row->id, $credit_used );
+				KEYTILL_Credit::credit_back( (int) $credit_row->id, $credit_used );
 			}
 			self::rollback_stock( $stock_reduced );
 			$order->delete( true );
-			return new WP_Error( 'hmpos_order_fail', __( 'No se pudo completar la venta.', 'hm-pos' ), array( 'status' => 500 ) );
+			return new WP_Error( 'keytill_order_fail', __( 'No se pudo completar la venta.', 'keytill' ), array( 'status' => 500 ) );
 		}
 
 		// Registra el canje en el ledger del crédito (ya con el order_id).
 		if ( $credit_used > 0 ) {
-			HMPOS_Credit::log(
+			KEYTILL_Credit::log(
 				(int) $credit_row->id,
 				'redeem',
 				-1 * $credit_used,
@@ -3976,15 +3976,15 @@ class HMPOS_REST {
 			$tendered = (float) $params['amount_tendered'];
 			if ( $tendered >= $remainder ) {
 				$change = round( $tendered - $remainder, 2 );
-				$order->add_meta_data( '_hmpos_tendered', $tendered, true );
-				$order->add_meta_data( '_hmpos_change', $change, true );
+				$order->add_meta_data( '_keytill_tendered', $tendered, true );
+				$order->add_meta_data( '_keytill_change', $change, true );
 				$order->save();
 			}
 		}
 
 		// Gift cards vendidas: el hook de "orden pagada" ya emitió los códigos al
 		// completar la venta. Se recargan de la orden para mostrarlos en el POS.
-		$giftcards = HMPOS_Credit_Product::codes_for_order( wc_get_order( $order->get_id() ) );
+		$giftcards = KEYTILL_Credit_Product::codes_for_order( wc_get_order( $order->get_id() ) );
 
 		self::bust_catalog_cache(); // stock fresco en la próxima precarga del POS
 
@@ -3997,8 +3997,8 @@ class HMPOS_REST {
 				'amount_due'   => $remainder,
 				'change'       => $change,
 				'giftcards'    => $giftcards,
-				'print_url'    => HMPOS_Print::print_url( $order->get_id() ),
-				'gift_url'     => HMPOS_Print::gift_url( $order->get_id() ),
+				'print_url'    => KEYTILL_Print::print_url( $order->get_id() ),
+				'gift_url'     => KEYTILL_Print::gift_url( $order->get_id() ),
 			),
 			201
 		);

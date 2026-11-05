@@ -1,5 +1,5 @@
 /* ============================================================
-   HM Sport POS — pos.js
+   Keytill POS — pos.js
    Pantalla de venta en Alpine, portada del prototipo
    (reference/POS Venta.dc.html). Comportamiento fiel:
    campo de comando siempre enfocado, re-foco por evento tras cada
@@ -13,7 +13,7 @@
 	'use strict';
 
 	var API = window.wpApiSettings || { root: '/wp-json/', nonce: '' };
-	var CONFIG = window.hmposConfig || { canManage: false };
+	var CONFIG = window.keytillConfig || { canManage: false };
 
 	/* --------------------------------------------------------------
 	   Keeper del nonce REST. La pantalla del POS queda abierta muchas
@@ -25,7 +25,7 @@
 	   actualizarlo acá se corrige en toda la app. Devuelve 0 si la sesión
 	   expiró → avisamos para reloguear.
 	   -------------------------------------------------------------- */
-	var HMPOSNonce = ( function () {
+	var KEYTILLNonce = ( function () {
 		var url = CONFIG.ajaxUrl || '/wp-admin/admin-ajax.php';
 		var last = 0;
 		var expired = false;
@@ -63,8 +63,8 @@
 			isExpired: function () { return expired; }
 		};
 	} )();
-	window.hmposRefreshNonce = HMPOSNonce.refresh;
-	window.hmposNonceExpired = HMPOSNonce.isExpired;
+	window.keytillRefreshNonce = KEYTILLNonce.refresh;
+	window.keytillNonceExpired = KEYTILLNonce.isExpired;
 
 	// Normaliza para búsquedas (minúsculas, sin acentos).
 	function norm( s ) {
@@ -82,7 +82,7 @@
 			{ key: '4', id: 'qr', name: 'QR' },
 		];
 
-	function hmposApp() {
+	function keytillApp() {
 		return {
 			// --- estado ---
 			cmd: '',
@@ -110,7 +110,7 @@
 			custError: '',
 			custConflict: null,   // payload del cliente existente (dedup)
 			newCust: { name: '', email: '', doc: '', phone: '', birthdate: '', iva: 'Consumidor Final' },
-			// Debe coincidir con HMPOS_Customers::fiscal_options() (default primero).
+			// Debe coincidir con KEYTILL_Customers::fiscal_options() (default primero).
 			fiscalOptions: [ 'Consumidor Final', 'Responsable Inscripto', 'Monotributista', 'Exento', 'No Responsable' ],
 			discount: 0, // valor aplicado (porcentaje o monto fijo según discountType)
 			discountType: 'percent', // 'percent' | 'fixed' — tipo aplicado
@@ -245,7 +245,7 @@
 						if ( self.mode !== 'sale' ) { self.mode = 'sale'; }
 					}
 				};
-				window.addEventListener( 'hmpos:view', this._onView );
+				window.addEventListener( 'keytill:view', this._onView );
 
 				// Un producto se editó en la consola (precio, stock, sucursal, variaciones,
 				// alta/baja): invalida el throttle del catálogo para que la vista de venta
@@ -254,7 +254,7 @@
 					self._lastCatalog = 0;
 					if ( self.$store.pos.view === 'venta' ) { self.loadCatalog( true ); }
 				};
-				window.addEventListener( 'hmpos:catalog-dirty', this._onCatalogDirty );
+				window.addEventListener( 'keytill:catalog-dirty', this._onCatalogDirty );
 
 				// Devolución pedida desde la pestaña Pedidos: reusa el flujo F7.
 				this._onReturnReq = function ( e ) {
@@ -266,7 +266,7 @@
 					self.returnNumber = String( num );
 					self.lookupOrder();
 				};
-				window.addEventListener( 'hmpos:return', this._onReturnReq );
+				window.addEventListener( 'keytill:return', this._onReturnReq );
 
 				this.refocus();
 			},
@@ -280,7 +280,7 @@
 				var now = Date.now();
 				if ( ! force && this._lastCatalog && ( now - this._lastCatalog ) < 30000 ) { return; }
 				var self = this;
-				fetch( API.root + 'hmpos/v1/products?all=1', {
+				fetch( API.root + 'keytill/v1/products?all=1', {
 					headers: { 'X-WP-Nonce': API.nonce },
 					credentials: 'same-origin',
 				} )
@@ -302,7 +302,7 @@
 			/* ---------------- arqueo de caja ---------------- */
 			loadSession: function () {
 				var self = this;
-				return fetch( API.root + 'hmpos/v1/cash/current', {
+				return fetch( API.root + 'keytill/v1/cash/current', {
 					headers: { 'X-WP-Nonce': API.nonce },
 					credentials: 'same-origin',
 				} )
@@ -331,7 +331,7 @@
 				this.cashError = '';
 				this.cashPost( 'cash/open', { opening_float: f, branch_id: this.openBranch }, function ( d ) {
 					var ctx = self.openCtx; // por qué se pidió abrir (cobro/devolución)
-					try { window.localStorage.setItem( 'hmpos_branch', self.openBranch || '' ); } catch ( e ) {}
+					try { window.localStorage.setItem( 'keytill_branch', self.openBranch || '' ); } catch ( e ) {}
 					self.session = d;
 					self.mode = 'sale';
 					self.openFloat = '';
@@ -351,7 +351,7 @@
 			maybeOfferDigital: function () {
 				if ( ! this.$store.pos.canManage ) { return; }
 				var self = this;
-				fetch( API.root + 'hmpos/v1/digital/current?_=' + Date.now(), { headers: { 'X-WP-Nonce': API.nonce }, credentials: 'same-origin' } )
+				fetch( API.root + 'keytill/v1/digital/current?_=' + Date.now(), { headers: { 'X-WP-Nonce': API.nonce }, credentials: 'same-origin' } )
 					.then( function ( r ) { return r.json(); } )
 					.then( function ( d ) {
 						var dig = d && d.digital;
@@ -509,7 +509,7 @@
 			// Helper POST para operaciones de caja.
 			cashPost: function ( path, body, onOk ) {
 				var self = this;
-				fetch( API.root + 'hmpos/v1/' + path, {
+				fetch( API.root + 'keytill/v1/' + path, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': API.nonce },
 					credentials: 'same-origin',
@@ -771,7 +771,7 @@
 				var self = this;
 				this.busy = true;
 				this.returnError = '';
-				fetch( API.root + 'hmpos/v1/orders/lookup?number=' + n, {
+				fetch( API.root + 'keytill/v1/orders/lookup?number=' + n, {
 					headers: { 'X-WP-Nonce': API.nonce },
 					credentials: 'same-origin',
 				} )
@@ -838,7 +838,7 @@
 				var self = this;
 				this.busy = true;
 				this.returnError = '';
-				fetch( API.root + 'hmpos/v1/orders/refund', {
+				fetch( API.root + 'keytill/v1/orders/refund', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': API.nonce },
 					credentials: 'same-origin',
@@ -1158,13 +1158,13 @@
 			initSeller: function () {
 				if ( ! this.sellers.length ) { this.sellerId = ''; return; }
 				var last = '';
-				try { last = window.localStorage.getItem( 'hmpos_seller' ) || ''; } catch ( e ) {}
+				try { last = window.localStorage.getItem( 'keytill_seller' ) || ''; } catch ( e ) {}
 				var ok = this.sellers.some( function ( s ) { return s.id === last; } );
 				this.sellerId = ok ? last : this.sellers[ 0 ].id;
 			},
 			// Persiste la elección para la próxima venta.
 			onSellerChange: function () {
-				try { window.localStorage.setItem( 'hmpos_seller', this.sellerId || '' ); } catch ( e ) {}
+				try { window.localStorage.setItem( 'keytill_seller', this.sellerId || '' ); } catch ( e ) {}
 			},
 
 			/* ---------------- sucursal de la caja ---------------- */
@@ -1173,7 +1173,7 @@
 			initBranch: function () {
 				if ( ! this.branches.length ) { this.openBranch = ''; return; }
 				var last = '';
-				try { last = window.localStorage.getItem( 'hmpos_branch' ) || ''; } catch ( e ) {}
+				try { last = window.localStorage.getItem( 'keytill_branch' ) || ''; } catch ( e ) {}
 				var ok = this.branches.some( function ( b ) { return b.id === last; } );
 				this.openBranch = ok ? last : this.branches[ 0 ].id;
 			},
@@ -1500,7 +1500,7 @@
 				var self = this;
 				this.busy = true;
 				this.creditError = '';
-				fetch( API.root + 'hmpos/v1/credit/lookup?code=' + encodeURIComponent( code ), {
+				fetch( API.root + 'keytill/v1/credit/lookup?code=' + encodeURIComponent( code ), {
 					headers: { 'X-WP-Nonce': API.nonce },
 					credentials: 'same-origin',
 				} )
@@ -1600,7 +1600,7 @@
 				this.busy = true;
 				this.status = 'Registrando venta…';
 
-				fetch( API.root + 'hmpos/v1/orders', {
+				fetch( API.root + 'keytill/v1/orders', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -1620,7 +1620,7 @@
 							// Faltante de stock por sucursal: no es un error a secas; se
 							// abre el flujo para que el cajero elija de dónde descontar.
 							var errData = ( res.data && res.data.data ) ? res.data.data : {};
-							if ( res.data && res.data.code === 'hmpos_branch_stock' && errData.shortages && errData.shortages.length ) {
+							if ( res.data && res.data.code === 'keytill_branch_stock' && errData.shortages && errData.shortages.length ) {
 								self.openStockFix( errData.shortages );
 								return;
 							}
@@ -1719,7 +1719,7 @@
 				var q = this.custQuery.trim();
 				if ( q.length < 1 ) { this.custResults = []; return; }
 				this.custBusy = true;
-				fetch( API.root + 'hmpos/v1/customers?q=' + encodeURIComponent( q ), {
+				fetch( API.root + 'keytill/v1/customers?q=' + encodeURIComponent( q ), {
 					headers: { 'X-WP-Nonce': API.nonce },
 					credentials: 'same-origin',
 				} )
@@ -1779,7 +1779,7 @@
 				}
 				this.custBusy = true;
 				this.custError = '';
-				fetch( API.root + 'hmpos/v1/customers', {
+				fetch( API.root + 'keytill/v1/customers', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': API.nonce },
 					credentials: 'same-origin',
@@ -2275,7 +2275,7 @@
 				// + barra de acciones). Añade .is-touch al root para el CSS de comportamiento.
 				this.touch = !! ( window.matchMedia && window.matchMedia( '(pointer: coarse)' ).matches );
 				if ( this.touch ) {
-					var root = document.getElementById( 'hmpos-app' );
+					var root = document.getElementById( 'keytill-app' );
 					if ( root ) { root.classList.add( 'is-touch' ); }
 				}
 				var fromHash = ( location.hash || '' ).replace( '#', '' );
@@ -2293,10 +2293,10 @@
 			_apply: function ( v ) {
 				this.view = v;
 				// Avisar al componente de venta para que ceda o retome el foco/teclado.
-				window.dispatchEvent( new CustomEvent( 'hmpos:view', { detail: v } ) );
+				window.dispatchEvent( new CustomEvent( 'keytill:view', { detail: v } ) );
 			}
 		} );
 
-		window.Alpine.data( 'hmposApp', hmposApp );
+		window.Alpine.data( 'keytillApp', keytillApp );
 	} );
 }() );

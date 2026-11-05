@@ -16,26 +16,26 @@
  * descuento al vender (POS y web) se conecta aparte, una vez definida la
  * política con el cliente.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
 
-class HMPOS_Branch_Stock {
+class KEYTILL_Branch_Stock {
 
 	/** Versión del esquema (subir si cambia la tabla). */
 	const DB_VERSION = '1';
 
 	/** Opción con la versión instalada del esquema. */
-	const DB_VERSION_OPTION = 'hmpos_branch_stock_db_version';
+	const DB_VERSION_OPTION = 'keytill_branch_stock_db_version';
 
 	/** Opción-bandera: la migración inicial del stock ya corrió. */
-	const MIGRATED_OPTION = 'hmpos_branch_stock_migrated';
+	const MIGRATED_OPTION = 'keytill_branch_stock_migrated';
 
 	/** Nombre de la tabla. */
 	public static function table() {
 		global $wpdb;
-		return $wpdb->prefix . 'hmpos_branch_stock';
+		return $wpdb->prefix . 'keytill_branch_stock';
 	}
 
 	public static function init() {
@@ -64,7 +64,7 @@ class HMPOS_Branch_Stock {
 
 	/** Sucursales activas ordenadas por prioridad web (menor primero, luego nombre). */
 	public static function web_order_branches() {
-		$rows = HMPOS_Branches::active();
+		$rows = KEYTILL_Branches::active();
 		usort(
 			$rows,
 			function ( $a, $b ) {
@@ -110,7 +110,7 @@ class HMPOS_Branch_Stock {
 
 	/** Descuento de stock de una venta WEB (por sucursal, según prioridad). */
 	public static function on_web_order_reduce( $order ) {
-		if ( ! $order instanceof WC_Order || 'hmpos' === $order->get_created_via() ) {
+		if ( ! $order instanceof WC_Order || 'keytill' === $order->get_created_via() ) {
 			return; // el POS lo maneja aparte
 		}
 		$priority = self::web_order_branches();
@@ -131,7 +131,7 @@ class HMPOS_Branch_Stock {
 
 	/** Reingreso de stock al cancelar una orden WEB: a la sucursal de 1ª prioridad. */
 	public static function on_web_order_restore( $order ) {
-		if ( ! $order instanceof WC_Order || 'hmpos' === $order->get_created_via() ) {
+		if ( ! $order instanceof WC_Order || 'keytill' === $order->get_created_via() ) {
 			return;
 		}
 		$priority = self::web_order_branches();
@@ -152,7 +152,7 @@ class HMPOS_Branch_Stock {
 
 	/** Reingreso por devolución de una orden WEB: a la sucursal de 1ª prioridad. */
 	public static function on_web_restock_refunded( $product_id, $old_stock, $new_stock, $order, $product = null ) {
-		if ( $order instanceof WC_Order && 'hmpos' === $order->get_created_via() ) {
+		if ( $order instanceof WC_Order && 'keytill' === $order->get_created_via() ) {
 			return; // el POS reintegra a la sucursal de la caja aparte
 		}
 		if ( ! self::is_managed( $product_id ) ) {
@@ -245,7 +245,7 @@ class HMPOS_Branch_Stock {
 	public static function map_for_active( $product_id ) {
 		$have = self::by_product( $product_id );
 		$out  = array();
-		foreach ( HMPOS_Branches::active() as $b ) {
+		foreach ( KEYTILL_Branches::active() as $b ) {
 			$bid         = (string) $b['id'];
 			$out[ $bid ] = isset( $have[ $bid ] ) ? (int) $have[ $bid ] : 0;
 		}
@@ -282,7 +282,7 @@ class HMPOS_Branch_Stock {
 
 	/** Fija la cantidad absoluta de una sucursal y recalcula el total nativo. */
 	public static function set( $product_id, $branch_id, $qty ) {
-		$branch_id = HMPOS_Branches::valid_id( $branch_id );
+		$branch_id = KEYTILL_Branches::valid_id( $branch_id );
 		if ( '' === $branch_id ) {
 			return;
 		}
@@ -293,7 +293,7 @@ class HMPOS_Branch_Stock {
 	/** Fija varias sucursales de una y recalcula el total nativo una sola vez. */
 	public static function set_bulk( $product_id, array $by_branch ) {
 		foreach ( $by_branch as $bid => $qty ) {
-			$bid = HMPOS_Branches::valid_id( $bid );
+			$bid = KEYTILL_Branches::valid_id( $bid );
 			if ( '' === $bid ) {
 				continue;
 			}
@@ -315,7 +315,7 @@ class HMPOS_Branch_Stock {
 	 */
 	public static function adjust( $product_id, $branch_id, $delta, $guard = false ) {
 		global $wpdb;
-		$branch_id = HMPOS_Branches::valid_id( $branch_id );
+		$branch_id = KEYTILL_Branches::valid_id( $branch_id );
 		if ( '' === $branch_id ) {
 			return false;
 		}
@@ -370,21 +370,21 @@ class HMPOS_Branch_Stock {
 	 * cambia. Devuelve true o WP_Error.
 	 */
 	public static function move( $product_id, $from, $to, $qty ) {
-		$from = HMPOS_Branches::valid_id( $from );
-		$to   = HMPOS_Branches::valid_id( $to );
+		$from = KEYTILL_Branches::valid_id( $from );
+		$to   = KEYTILL_Branches::valid_id( $to );
 		$qty  = (int) $qty;
 		if ( '' === $from || '' === $to ) {
-			return new WP_Error( 'hmpos_move_branch', __( 'Sucursal inválida.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_move_branch', __( 'Sucursal inválida.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( $from === $to ) {
-			return new WP_Error( 'hmpos_move_same', __( 'Elegí sucursales distintas.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_move_same', __( 'Elegí sucursales distintas.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		if ( $qty <= 0 ) {
-			return new WP_Error( 'hmpos_move_qty', __( 'Cantidad inválida.', 'hm-pos' ), array( 'status' => 400 ) );
+			return new WP_Error( 'keytill_move_qty', __( 'Cantidad inválida.', 'keytill' ), array( 'status' => 400 ) );
 		}
 		// Resta atómica en origen (con guard); si no alcanza, aborta sin tocar destino.
 		if ( ! self::adjust( $product_id, $from, -$qty, true ) ) {
-			return new WP_Error( 'hmpos_move_stock', __( 'No hay suficiente stock en la sucursal de origen.', 'hm-pos' ), array( 'status' => 409 ) );
+			return new WP_Error( 'keytill_move_stock', __( 'No hay suficiente stock en la sucursal de origen.', 'keytill' ), array( 'status' => 409 ) );
 		}
 		self::adjust( $product_id, $to, $qty );
 		return true;
@@ -414,14 +414,14 @@ class HMPOS_Branch_Stock {
 
 	/**
 	 * Siembra el stock actual de cada producto/variación (que gestiona stock) en
-	 * su sucursal asignada (`_hmpos_branch_id`) o en la sucursal por defecto si no
+	 * su sucursal asignada (`_keytill_branch_id`) o en la sucursal por defecto si no
 	 * tiene. Corre UNA sola vez, y solo cuando ya hay sucursales cargadas.
 	 */
 	public static function maybe_migrate() {
 		if ( get_option( self::MIGRATED_OPTION ) ) {
 			return;
 		}
-		$branches = HMPOS_Branches::all();
+		$branches = KEYTILL_Branches::all();
 		if ( ! $branches ) {
 			return; // sin sucursales todavía: se sembrará cuando existan
 		}
@@ -429,13 +429,13 @@ class HMPOS_Branch_Stock {
 	}
 
 	/**
-	 * @param string $default_branch Sucursal para los ítems sin `_hmpos_branch_id`.
+	 * @param string $default_branch Sucursal para los ítems sin `_keytill_branch_id`.
 	 */
 	public static function migrate( $default_branch ) {
 		global $wpdb;
-		$default = HMPOS_Branches::valid_id( $default_branch );
+		$default = KEYTILL_Branches::valid_id( $default_branch );
 		if ( '' === $default ) {
-			$all = HMPOS_Branches::all();
+			$all = KEYTILL_Branches::all();
 			if ( ! $all ) {
 				return;
 			}
@@ -448,7 +448,7 @@ class HMPOS_Branch_Stock {
 			"SELECT s.post_id AS pid, s.meta_value AS stock, b.meta_value AS branch
 			 FROM {$wpdb->postmeta} s
 			 INNER JOIN {$wpdb->postmeta} m ON m.post_id = s.post_id AND m.meta_key = '_manage_stock' AND m.meta_value = 'yes'
-			 LEFT JOIN {$wpdb->postmeta} b ON b.post_id = s.post_id AND b.meta_key = '" . esc_sql( HMPOS_Branches::META ) . "'
+			 LEFT JOIN {$wpdb->postmeta} b ON b.post_id = s.post_id AND b.meta_key = '" . esc_sql( KEYTILL_Branches::META ) . "'
 			 WHERE s.meta_key = '_stock' AND s.meta_value REGEXP '^-?[0-9]+$'",
 			ARRAY_A
 		);
@@ -456,7 +456,7 @@ class HMPOS_Branch_Stock {
 		foreach ( (array) $rows as $r ) {
 			$pid = (int) $r['pid'];
 			$qty = max( 0, (int) $r['stock'] );
-			$bid = HMPOS_Branches::valid_id( isset( $r['branch'] ) ? (string) $r['branch'] : '' );
+			$bid = KEYTILL_Branches::valid_id( isset( $r['branch'] ) ? (string) $r['branch'] : '' );
 			if ( '' === $bid ) {
 				$bid = $default;
 			}

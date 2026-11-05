@@ -6,13 +6,13 @@
  * paga (en el mostrador o en la web), emite un crédito al portador por su monto
  * y entrega el código (por email en la web; el POS lo muestra en pantalla).
  *
- * Mismo instrumento que el crédito de devolución: reusa {@see HMPOS_Credit},
+ * Mismo instrumento que el crédito de devolución: reusa {@see KEYTILL_Credit},
  * solo cambia la VÍA de emisión (kind = 'giftcard').
  *
  * Montos: fijos (el monto = el precio del producto) o a elección (el precio se
  * fija al comprar; ver monto libre en web/POS). Un código por unidad.
  *
- * @package HM_POS
+ * @package Keytill
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -20,19 +20,19 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Emisión de gift cards vendidas como producto.
  */
-class HMPOS_Credit_Product {
+class KEYTILL_Credit_Product {
 
 	/** Meta de producto: es una gift card. */
-	const META_FLAG = '_hmpos_giftcard';
+	const META_FLAG = '_keytill_giftcard';
 
 	/** Meta de producto: permite monto a elección en la web. */
-	const META_CUSTOM = '_hmpos_giftcard_custom';
+	const META_CUSTOM = '_keytill_giftcard_custom';
 
 	/** Meta de producto: denominaciones fijas (coma-separadas). */
-	const META_DENOMS = '_hmpos_giftcard_denoms';
+	const META_DENOMS = '_keytill_giftcard_denoms';
 
 	/** Meta del item de la orden: códigos emitidos [{code, amount, expires}]. */
-	const ITEM_META_CODES = '_hmpos_giftcard_codes';
+	const ITEM_META_CODES = '_keytill_giftcard_codes';
 
 	/**
 	 * Engancha admin de producto y emisión al pagarse la orden.
@@ -71,7 +71,7 @@ class HMPOS_Credit_Product {
 		$min    = $denoms ? min( $denoms ) : (float) $product->get_price();
 		if ( $min > 0 ) {
 			/* translators: %s: monto mínimo. */
-			return sprintf( esc_html__( 'desde %s', 'hm-pos' ), wc_price( $min ) );
+			return sprintf( esc_html__( 'desde %s', 'keytill' ), wc_price( $min ) );
 		}
 		return $html;
 	}
@@ -133,28 +133,28 @@ class HMPOS_Credit_Product {
 	 * Dibuja los checkboxes en la ficha de producto.
 	 */
 	public static function product_fields() {
-		echo '<div class="options_group hmpos-giftcard-fields">';
+		echo '<div class="options_group keytill-giftcard-fields">';
 		woocommerce_wp_checkbox(
 			array(
 				'id'          => self::META_FLAG,
-				'label'       => __( 'Gift card (HM Crédito)', 'hm-pos' ),
-				'description' => __( 'Al pagarse la orden, emite un crédito al portador por el monto elegido y entrega el código.', 'hm-pos' ),
+				'label'       => __( 'Gift card (HM Crédito)', 'keytill' ),
+				'description' => __( 'Al pagarse la orden, emite un crédito al portador por el monto elegido y entrega el código.', 'keytill' ),
 			)
 		);
 		woocommerce_wp_text_input(
 			array(
 				'id'          => self::META_DENOMS,
-				'label'       => __( 'Denominaciones fijas', 'hm-pos' ),
+				'label'       => __( 'Denominaciones fijas', 'keytill' ),
 				'placeholder' => '5000, 10000, 20000',
-				'description' => __( 'Montos sugeridos separados por coma. Se ofrecen como opciones rápidas en el POS y en la web.', 'hm-pos' ),
+				'description' => __( 'Montos sugeridos separados por coma. Se ofrecen como opciones rápidas en el POS y en la web.', 'keytill' ),
 				'desc_tip'    => true,
 			)
 		);
 		woocommerce_wp_checkbox(
 			array(
 				'id'          => self::META_CUSTOM,
-				'label'       => __( 'Permitir monto a elección (web)', 'hm-pos' ),
-				'description' => __( 'El cliente puede escribir un importe libre en la web además de las denominaciones. En el POS el cajero siempre puede tipear un monto.', 'hm-pos' ),
+				'label'       => __( 'Permitir monto a elección (web)', 'keytill' ),
+				'description' => __( 'El cliente puede escribir un importe libre en la web además de las denominaciones. En el POS el cajero siempre puede tipear un monto.', 'keytill' ),
 			)
 		);
 		echo '</div>';
@@ -206,14 +206,14 @@ class HMPOS_Credit_Product {
 		$custom  = self::is_custom( $product );
 		$default = $denoms ? $denoms[0] : ( (float) $product->get_price() );
 
-		echo '<div class="hmpos-giftcard-amount" style="margin:0 0 14px">';
-		echo '<label style="display:block;font-weight:600;margin-bottom:6px">' . esc_html__( 'Elegí el monto de la gift card', 'hm-pos' ) . '</label>';
+		echo '<div class="keytill-giftcard-amount" style="margin:0 0 14px">';
+		echo '<label style="display:block;font-weight:600;margin-bottom:6px">' . esc_html__( 'Elegí el monto de la gift card', 'keytill' ) . '</label>';
 
 		if ( $denoms ) {
-			echo '<div class="hmpos-gc-denoms" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px">';
+			echo '<div class="keytill-gc-denoms" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px">';
 			foreach ( $denoms as $idx => $d ) {
 				printf(
-					'<button type="button" class="button hmpos-gc-denom%s" data-amount="%s" onclick="hmposGcPick(this)">%s</button>',
+					'<button type="button" class="button keytill-gc-denom%s" data-amount="%s" onclick="keytillGcPick(this)">%s</button>',
 					0 === $idx ? ' is-active' : '',
 					esc_attr( $d ),
 					esc_html( wp_strip_all_tags( wc_price( $d ) ) )
@@ -223,21 +223,21 @@ class HMPOS_Credit_Product {
 		}
 
 		printf(
-			'<input type="number" min="1" step="0.01" name="hmpos_giftcard_amount" id="hmpos_giftcard_amount" value="%s" %s required style="max-width:200px" />',
+			'<input type="number" min="1" step="0.01" name="keytill_giftcard_amount" id="keytill_giftcard_amount" value="%s" %s required style="max-width:200px" />',
 			esc_attr( $default > 0 ? $default : '' ),
 			$custom ? '' : 'readonly'
 		);
 		if ( $custom ) {
-			echo '<p class="description" style="margin:4px 0 0">' . esc_html__( 'O escribí otro monto.', 'hm-pos' ) . '</p>';
+			echo '<p class="description" style="margin:4px 0 0">' . esc_html__( 'O escribí otro monto.', 'keytill' ) . '</p>';
 		}
 		echo '</div>';
 		?>
-		<style>.hmpos-gc-denom.is-active{outline:2px solid currentColor;outline-offset:1px;font-weight:700}</style>
+		<style>.keytill-gc-denom.is-active{outline:2px solid currentColor;outline-offset:1px;font-weight:700}</style>
 		<script>
-		function hmposGcPick( btn ) {
-			var inp = document.getElementById( 'hmpos_giftcard_amount' );
+		function keytillGcPick( btn ) {
+			var inp = document.getElementById( 'keytill_giftcard_amount' );
 			if ( inp ) { inp.value = btn.getAttribute( 'data-amount' ); }
-			var all = document.querySelectorAll( '.hmpos-gc-denom' );
+			var all = document.querySelectorAll( '.keytill-gc-denom' );
 			for ( var i = 0; i < all.length; i++ ) { all[ i ].classList.remove( 'is-active' ); }
 			btn.classList.add( 'is-active' );
 		}
@@ -257,16 +257,16 @@ class HMPOS_Credit_Product {
 		if ( ! self::is_giftcard( $product ) ) {
 			return $passed;
 		}
-		$amt = isset( $_POST['hmpos_giftcard_amount'] ) ? round( (float) wp_unslash( $_POST['hmpos_giftcard_amount'] ), 2 ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$amt = isset( $_POST['keytill_giftcard_amount'] ) ? round( (float) wp_unslash( $_POST['keytill_giftcard_amount'] ), 2 ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( $amt <= 0 ) {
-			wc_add_notice( __( 'Elegí un monto para la gift card.', 'hm-pos' ), 'error' );
+			wc_add_notice( __( 'Elegí un monto para la gift card.', 'keytill' ), 'error' );
 			return false;
 		}
 		// Sin monto libre: el importe debe ser una de las denominaciones.
 		if ( ! self::is_custom( $product ) ) {
 			$denoms = self::denominations( $product );
 			if ( $denoms && ! in_array( $amt, $denoms, false ) ) {
-				wc_add_notice( __( 'Elegí una de las denominaciones disponibles.', 'hm-pos' ), 'error' );
+				wc_add_notice( __( 'Elegí una de las denominaciones disponibles.', 'keytill' ), 'error' );
 				return false;
 			}
 		}
@@ -281,12 +281,12 @@ class HMPOS_Credit_Product {
 	 * @return array
 	 */
 	public static function web_add_cart_item_data( $data, $product_id ) {
-		if ( self::is_giftcard( wc_get_product( $product_id ) ) && isset( $_POST['hmpos_giftcard_amount'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$amt = round( (float) wp_unslash( $_POST['hmpos_giftcard_amount'] ), 2 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( self::is_giftcard( wc_get_product( $product_id ) ) && isset( $_POST['keytill_giftcard_amount'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$amt = round( (float) wp_unslash( $_POST['keytill_giftcard_amount'] ), 2 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( $amt > 0 ) {
-				$data['hmpos_giftcard_amount'] = $amt;
+				$data['keytill_giftcard_amount'] = $amt;
 				// Clave única: dos montos distintos no se fusionan en una línea.
-				$data['hmpos_unique'] = md5( $amt . microtime() . wp_rand() );
+				$data['keytill_unique'] = md5( $amt . microtime() . wp_rand() );
 			}
 		}
 		return $data;
@@ -303,8 +303,8 @@ class HMPOS_Credit_Product {
 			return;
 		}
 		foreach ( $cart->get_cart() as $item ) {
-			if ( ! empty( $item['hmpos_giftcard_amount'] ) && isset( $item['data'] ) ) {
-				$item['data']->set_price( (float) $item['hmpos_giftcard_amount'] );
+			if ( ! empty( $item['keytill_giftcard_amount'] ) && isset( $item['data'] ) ) {
+				$item['data']->set_price( (float) $item['keytill_giftcard_amount'] );
 			}
 		}
 	}
@@ -317,10 +317,10 @@ class HMPOS_Credit_Product {
 	 * @return array
 	 */
 	public static function web_display_amount( $item_data, $cart_item ) {
-		if ( ! empty( $cart_item['hmpos_giftcard_amount'] ) ) {
+		if ( ! empty( $cart_item['keytill_giftcard_amount'] ) ) {
 			$item_data[] = array(
-				'key'   => __( 'Monto', 'hm-pos' ),
-				'value' => wp_strip_all_tags( wc_price( $cart_item['hmpos_giftcard_amount'] ) ),
+				'key'   => __( 'Monto', 'keytill' ),
+				'value' => wp_strip_all_tags( wc_price( $cart_item['keytill_giftcard_amount'] ) ),
 			);
 		}
 		return $item_data;
@@ -351,10 +351,10 @@ class HMPOS_Credit_Product {
 		if ( ! $order instanceof WC_Order ) {
 			return array();
 		}
-		$is_pos  = (bool) $order->get_meta( '_hmpos' );
+		$is_pos  = (bool) $order->get_meta( '_keytill' );
 		$channel = $is_pos ? 'pos' : 'web';
-		$cajero  = (int) $order->get_meta( '_hmpos_cajero_id' );
-		$session = (int) $order->get_meta( '_hmpos_session' );
+		$cajero  = (int) $order->get_meta( '_keytill_cajero_id' );
+		$session = (int) $order->get_meta( '_keytill_session' );
 		$email   = $order->get_billing_email();
 
 		$new_codes = array();
@@ -376,7 +376,7 @@ class HMPOS_Credit_Product {
 
 			$codes = array();
 			for ( $i = 0; $i < $qty; $i++ ) {
-				$res = HMPOS_Credit::issue(
+				$res = KEYTILL_Credit::issue(
 					$unit,
 					array(
 						'kind'            => 'giftcard',
@@ -447,7 +447,7 @@ class HMPOS_Credit_Product {
 			$lines[] = $c['code'] . ' — ' . wp_strip_all_tags( wc_price( $c['amount'] ) );
 		}
 		$order->add_order_note(
-			__( 'Gift card(s) emitida(s):', 'hm-pos' ) . ' ' . implode( ' · ', $lines )
+			__( 'Gift card(s) emitida(s):', 'keytill' ) . ' ' . implode( ' · ', $lines )
 		);
 
 		if ( $is_pos ) {
@@ -460,14 +460,14 @@ class HMPOS_Credit_Product {
 		}
 
 		$store   = get_bloginfo( 'name' );
-		$subject = sprintf( __( 'Tu gift card de %s', 'hm-pos' ), $store );
-		$body    = sprintf( __( 'Hola %s,', 'hm-pos' ), $order->get_billing_first_name() ) . "\n\n";
-		$body   .= __( '¡Gracias por tu compra! Estos son los códigos de tu(s) gift card(s):', 'hm-pos' ) . "\n\n";
+		$subject = sprintf( __( 'Tu gift card de %s', 'keytill' ), $store );
+		$body    = sprintf( __( 'Hola %s,', 'keytill' ), $order->get_billing_first_name() ) . "\n\n";
+		$body   .= __( '¡Gracias por tu compra! Estos son los códigos de tu(s) gift card(s):', 'keytill' ) . "\n\n";
 		foreach ( $codes as $c ) {
-			$exp   = $c['expires'] ? sprintf( __( ' (vence %s)', 'hm-pos' ), mysql2date( 'd/m/Y', $c['expires'] ) ) : '';
+			$exp   = $c['expires'] ? sprintf( __( ' (vence %s)', 'keytill' ), mysql2date( 'd/m/Y', $c['expires'] ) ) : '';
 			$body .= '  • ' . $c['code'] . ' — ' . wp_strip_all_tags( wc_price( $c['amount'] ) ) . $exp . "\n";
 		}
-		$body .= "\n" . __( 'Canjealo en la tienda o en el checkout web ingresando el código.', 'hm-pos' ) . "\n";
+		$body .= "\n" . __( 'Canjealo en la tienda o en el checkout web ingresando el código.', 'keytill' ) . "\n";
 		$body .= "\n" . $store . "\n";
 
 		wp_mail( $email, $subject, $body );
