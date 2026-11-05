@@ -11,6 +11,17 @@
 
 	var API = window.wpApiSettings || { root: '/wp-json/', nonce: '' };
 
+	// Textos traducibles. wp.i18n lo encola WordPress como dependencia del script
+	// (ver wp_set_script_translations en keytill.php); el fallback deja el ingles.
+	var I18N = ( window.wp && window.wp.i18n ) || null;
+	var __ = I18N ? I18N.__ : function ( s ) { return s; };
+	var sprintf = I18N ? I18N.sprintf : function ( fmt ) {
+		var args = Array.prototype.slice.call( arguments, 1 ), i = 0;
+		return String( fmt ).replace( /%(?:(\d+)\$)?[sd]/g, function ( _m, pos ) {
+			return String( pos ? args[ pos - 1 ] : args[ i++ ] );
+		} );
+	};
+
 
 	function qs( obj ) {
 		var parts = [];
@@ -100,7 +111,7 @@
 						self.pages = ( d && d.pages ) || 1;
 						self.page = ( d && d.page ) || 1;
 					} )
-					.catch( function () { self.loading = false; self.error = 'No se pudo cargar el listado.'; } );
+					.catch( function () { self.loading = false; self.error = __( 'Could not load the list.', 'keytill' ); } );
 			},
 
 			onSearch: function () {
@@ -123,7 +134,7 @@
 				this.saveConflict = null;
 				getJSON( API.root + 'keytill/v1/customers/' + id )
 					.then( function ( d ) { self.detailLoading = false; self.selected = d; } )
-					.catch( function () { self.detailLoading = false; self.error = 'No se pudo abrir el cliente.'; } );
+					.catch( function () { self.detailLoading = false; self.error = __( 'Could not open the customer.', 'keytill' ); } );
 			},
 
 			closeDetail: function () { this.selected = null; },
@@ -140,13 +151,13 @@
 					phone: c.phone || '', birthdate: c.birthdate || ''
 				} ).then( function ( res ) {
 					self.saveBusy = false;
-					if ( res.status === 409 ) { self.saveConflict = conflictCustomer( res ); self.saveError = res.data.message || 'Ya existe otro cliente con esos datos.'; return; }
-					if ( ! res.ok ) { self.saveError = ( res.data && res.data.message ) || 'No se pudo guardar.'; return; }
+					if ( res.status === 409 ) { self.saveConflict = conflictCustomer( res ); self.saveError = res.data.message || __( 'Another customer with those details already exists.', 'keytill' ); return; }
+					if ( ! res.ok ) { self.saveError = ( res.data && res.data.message ) || __( 'Could not save.', 'keytill' ); return; }
 					self.selected = res.data;
 					// Refresca la fila en la lista sin recargar todo.
 					var i = self.items.findIndex( function ( x ) { return x.id === res.data.id; } );
 					if ( i !== -1 ) { self.items[ i ] = { id: res.data.id, name: res.data.name, email: res.data.email, doc: res.data.doc, doc_norm: res.data.doc_norm, iva: res.data.iva, stats: res.data.stats }; }
-				} ).catch( function () { self.saveBusy = false; self.saveError = 'No se pudo guardar.'; } );
+				} ).catch( function () { self.saveBusy = false; self.saveError = __( 'Could not save.', 'keytill' ); } );
 			},
 
 			/* ---------- alta ---------- */
@@ -164,7 +175,7 @@
 			submitCreate: function () {
 				if ( this.createBusy ) { return; }
 				var p = this.newCust;
-				if ( p.email === '' && p.doc === '' ) { this.createError = 'Cargá al menos email o DNI.'; return; }
+				if ( p.email === '' && p.doc === '' ) { this.createError = __( 'Enter at least an email or tax ID.', 'keytill' ); return; }
 				var self = this;
 				this.createBusy = true;
 				this.createError = '';
@@ -174,12 +185,12 @@
 					phone: ( p.phone || '' ).trim(), birthdate: p.birthdate || ''
 				} ).then( function ( res ) {
 					self.createBusy = false;
-					if ( res.status === 409 ) { self.createConflict = conflictCustomer( res ); self.createError = res.data.message || 'Ya existe un cliente con esos datos.'; return; }
-					if ( ! res.ok ) { self.createError = ( res.data && res.data.message ) || 'No se pudo crear.'; return; }
+					if ( res.status === 409 ) { self.createConflict = conflictCustomer( res ); self.createError = res.data.message || __( 'A customer with those details already exists.', 'keytill' ); return; }
+					if ( ! res.ok ) { self.createError = ( res.data && res.data.message ) || __( 'Could not create.', 'keytill' ); return; }
 					self.createOpen = false;
 					self.load( 1 );          // recarga con el nuevo arriba (orden por registro DESC)
 					self.open( res.data.id ); // abre su ficha
-				} ).catch( function () { self.createBusy = false; self.createError = 'No se pudo crear.'; } );
+				} ).catch( function () { self.createBusy = false; self.createError = __( 'Could not create.', 'keytill' ); } );
 			},
 
 			// Abre el cliente existente ofrecido en un conflicto (alta o edición).

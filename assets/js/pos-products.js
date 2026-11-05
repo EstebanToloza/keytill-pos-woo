@@ -12,6 +12,17 @@
 
 	var API = window.wpApiSettings || { root: '/wp-json/', nonce: '' };
 
+	// Textos traducibles. wp.i18n lo encola WordPress como dependencia del script
+	// (ver wp_set_script_translations en keytill.php); el fallback deja el ingles.
+	var I18N = ( window.wp && window.wp.i18n ) || null;
+	var __ = I18N ? I18N.__ : function ( s ) { return s; };
+	var sprintf = I18N ? I18N.sprintf : function ( fmt ) {
+		var args = Array.prototype.slice.call( arguments, 1 ), i = 0;
+		return String( fmt ).replace( /%(?:(\d+)\$)?[sd]/g, function ( _m, pos ) {
+			return String( pos ? args[ pos - 1 ] : args[ i++ ] );
+		} );
+	};
+
 	function qs( obj ) {
 		var parts = [];
 		Object.keys( obj ).forEach( function ( k ) {
@@ -45,7 +56,7 @@
 	}
 
 	// Mensaje claro cuando la sesión de WordPress caducó.
-	var SESSION_MSG = 'Tu sesión expiró. Recargá la página (F5) y volvé a iniciar sesión.';
+	var SESSION_MSG = __( 'Your session expired. Reload the page (F5) and sign in again.', 'keytill' );
 	function withSessionMsg( res ) {
 		if ( isNonceError( res ) ) { res.data = res.data || {}; res.data.message = SESSION_MSG; }
 		return res;
@@ -157,7 +168,7 @@
 						self.pages = ( d && d.pages ) || 1;
 						self.page = ( d && d.page ) || 1;
 					} )
-					.catch( function () { self.loading = false; self.error = 'No se pudo cargar el catálogo.'; } );
+					.catch( function () { self.loading = false; self.error = __( 'Could not load the catalog.', 'keytill' ); } );
 			},
 
 			// Guarda los valores originales para detectar cambios + estado de fila.
@@ -200,7 +211,7 @@
 						var rows = ( ( d && d.variations ) || [] ).map( self.decorate );
 						self.expanded[ r.id ] = { loading: false, error: '', rows: rows };
 					} )
-					.catch( function () { self.expanded[ r.id ] = { loading: false, error: 'No se pudieron cargar las variaciones.', rows: [] }; } );
+					.catch( function () { self.expanded[ r.id ] = { loading: false, error: __( 'Could not load the variations.', 'keytill' ), rows: [] }; } );
 			},
 
 			/* ---------- edición rápida ---------- */
@@ -259,7 +270,7 @@
 					.then( function ( res ) {
 						r._saving = false;
 						if ( ! res.ok ) {
-							self.error = ( res.data && res.data.message ) || 'No se pudo guardar.';
+							self.error = ( res.data && res.data.message ) || __( 'Could not save.', 'keytill' );
 							self.revert( r );
 							return;
 						}
@@ -269,7 +280,7 @@
 						r._saved = true;
 						setTimeout( function () { r._saved = false; }, 1200 );
 					} )
-					.catch( function () { r._saving = false; self.error = 'No se pudo guardar.'; self.revert( r ); } );
+					.catch( function () { r._saving = false; self.error = __( 'Could not save.', 'keytill' ); self.revert( r ); } );
 			},
 
 			applyRow: function ( r, d ) {
@@ -312,8 +323,8 @@
 			// pre-rellenada con el stock si está definido).
 			openLabels: function ( r ) {
 				if ( ! r || ! r.label_url ) { return; }
-				if ( ! r.barcode ) { this.error = 'Cargá primero el código de barras.'; return; }
-				var n = window.prompt( '¿Cuántas etiquetas querés generar?', String( this.labelDefaultQty( r ) ) );
+				if ( ! r.barcode ) { this.error = __( 'Set the barcode first.', 'keytill' ); return; }
+				var n = window.prompt( __( 'How many labels do you want to generate?', 'keytill' ), String( this.labelDefaultQty( r ) ) );
 				if ( n === null ) { return; }
 				var qty = Math.max( 1, Math.min( 1000, parseInt( n, 10 ) || 0 ) );
 				window.open( r.label_url + '&qty=' + qty, '_blank' );
@@ -382,15 +393,15 @@
 			clearBranchSel: function () { this.branchAll = false; this.branchSel = {}; this.branchTarget = ''; },
 			assignBranch: function () {
 				if ( this.branchBusy ) { return; }
-				if ( ! this.branchTarget ) { this.error = 'Elegí una sucursal.'; return; }
+				if ( ! this.branchTarget ) { this.error = __( 'Choose a location.', 'keytill' ); return; }
 				var count = this.branchAll ? this.total : this.branchSelCount;
-				if ( count < 1 ) { this.error = 'No seleccionaste ningún producto.'; return; }
+				if ( count < 1 ) { this.error = __( 'You did not select any product.', 'keytill' ); return; }
 				var clear = ( this.branchTarget === '__none__' );
 				var target = this.branchTarget;
 				var bname = clear ? '' : ( ( this.branches.filter( function ( b ) { return b.id === target; } )[ 0 ] || {} ).name || '' );
 				var msg = clear
-					? ( '¿Quitar la sucursal de ' + count + ' producto(s)?' )
-					: ( '¿Asignar ' + count + ' producto(s) a la sucursal "' + bname + '"?' );
+					? sprintf( __( 'Remove the location from %d product(s)?', 'keytill' ), count )
+					: sprintf( __( 'Assign %1$d product(s) to location “%2$s”?', 'keytill' ), count, bname );
 				if ( ! window.confirm( msg ) ) { return; }
 				var self = this;
 				var body = { branch_id: clear ? '' : target };
@@ -400,11 +411,11 @@
 				this.error = '';
 				sendJSON( API.root + 'keytill/v1/admin/products/bulk-branch', 'POST', body ).then( function ( res ) {
 					self.branchBusy = false;
-					if ( ! res.ok ) { self.error = ( res.data && res.data.message ) || 'No se pudo asignar la sucursal.'; return; }
+					if ( ! res.ok ) { self.error = ( res.data && res.data.message ) || __( 'Could not assign the location.', 'keytill' ); return; }
 					self._catalogDirty();
 					self.clearBranchSel();
 					self.load( self.page ); // refresca la columna Sucursal
-				} ).catch( function () { self.branchBusy = false; self.error = 'No se pudo asignar la sucursal.'; } );
+				} ).catch( function () { self.branchBusy = false; self.error = __( 'Could not assign the location.', 'keytill' ); } );
 			},
 
 			// Variaciones de un producto (ya expandido) que se pueden etiquetar
@@ -456,7 +467,7 @@
 			// Genera las etiquetas del lote: POST (nuevo tab) con items[<id>]=<qty>.
 			confirmLabelsBatch: function () {
 				var cfg = window.keytillConfig || {};
-				if ( ! cfg.labelsBatch || ! cfg.labelsNonce ) { this.error = 'No se pudo iniciar la impresión.'; return; }
+				if ( ! cfg.labelsBatch || ! cfg.labelsNonce ) { this.error = __( 'Could not start printing.', 'keytill' ); return; }
 				var rows = this.labelSelRows();
 				if ( ! rows.length ) { return; }
 				var form = document.createElement( 'form' );
@@ -529,8 +540,8 @@
 						return { txt: b.name + ': ' + v, cls: ( v <= 0 ) ? 'bs-out' : '' };
 					} );
 				}
-				if ( row && row.branch ) { return [ { txt: 'Sucursal: ' + row.branch, cls: '' } ]; }
-				return [ { txt: 'Sin sucursal asignada', cls: 'bs-none' } ];
+				if ( row && row.branch ) { return [ { txt: sprintf( __( 'Location: %s', 'keytill' ), row.branch ), cls: '' } ]; }
+				return [ { txt: __( 'No location', 'keytill' ), cls: 'bs-none' } ];
 			},
 
 			// "Nuevo producto".
@@ -566,7 +577,7 @@
 				getJSON( API.root + 'keytill/v1/admin/products/' + row.id )
 					.then( function ( d ) {
 						self.editorBusy = false;
-						if ( ! d || d.id === undefined ) { self.editorError = 'No se pudo cargar el producto.'; return; }
+						if ( ! d || d.id === undefined ) { self.editorError = __( 'Could not load the product.', 'keytill' ); return; }
 						self.form = {
 							id: d.id, type: d.type, name: d.name || '', sku: d.sku || '', barcode: d.barcode || '', label_url: d.label_url || '',
 							category_id: d.category_id || '', branch_id: d.branch_id || '', regular_price: d.regular_price || '',
@@ -585,7 +596,7 @@
 						}
 						self.$nextTick( function () { self.rteFill(); } );
 					} )
-					.catch( function () { self.editorBusy = false; self.editorError = 'No se pudo cargar el producto.'; } );
+					.catch( function () { self.editorBusy = false; self.editorError = __( 'Could not load the product.', 'keytill' ); } );
 			},
 
 			closeEditor: function () { this.editorOpen = false; },
@@ -615,12 +626,12 @@
 				sp.busy = true; sp.error = '';
 				sendJSON( API.root + 'keytill/v1/admin/products/' + sp.id, 'PATCH', { branch_stock: sp.draft } ).then( function ( res ) {
 					sp.busy = false;
-					if ( ! res.ok ) { sp.error = ( res.data && res.data.message ) || 'No se pudo guardar.'; return; }
+					if ( ! res.ok ) { sp.error = ( res.data && res.data.message ) || __( 'Could not save.', 'keytill' ); return; }
 					var v = ( self.form.variations || [] ).find( function ( x ) { return x.id === sp.id; } );
 					if ( v ) { self.applyRow( v, res.data ); }
 					self._catalogDirty();
 					sp.open = false;
-				} ).catch( function () { sp.busy = false; sp.error = 'No se pudo guardar.'; } );
+				} ).catch( function () { sp.busy = false; sp.error = __( 'Could not save.', 'keytill' ); } );
 			},
 
 			// Abre el diálogo de "mover stock" para un producto/variación.
@@ -633,12 +644,12 @@
 				var self = this, mb = this.moveBox;
 				if ( mb.busy ) { return; }
 				var qty = parseInt( mb.qty, 10 ) || 0;
-				if ( mb.from === mb.to ) { mb.error = 'Elegí sucursales distintas.'; return; }
-				if ( qty <= 0 ) { mb.error = 'Cantidad inválida.'; return; }
+				if ( mb.from === mb.to ) { mb.error = __( 'Choose different locations.', 'keytill' ); return; }
+				if ( qty <= 0 ) { mb.error = __( 'Invalid quantity.', 'keytill' ); return; }
 				mb.busy = true; mb.error = '';
 				sendJSON( API.root + 'keytill/v1/admin/products/' + mb.id + '/move-stock', 'POST', { from: mb.from, to: mb.to, qty: qty } ).then( function ( res ) {
 					mb.busy = false;
-					if ( ! res.ok ) { mb.error = ( res.data && res.data.message ) || 'No se pudo mover el stock.'; return; }
+					if ( ! res.ok ) { mb.error = ( res.data && res.data.message ) || __( 'Could not move the stock.', 'keytill' ); return; }
 					// Refresca donde corresponda: form simple, fila de variación y/o popover.
 					if ( self.form && self.form.id === mb.id && self.form.type === 'simple' ) {
 						self.form.branch_stock = self.normBranchStock( res.data.branch_stock );
@@ -648,7 +659,7 @@
 					if ( self.stockPop.open && self.stockPop.id === mb.id ) { self.stockPop.draft = self.normBranchStock( res.data.branch_stock ); }
 					self._catalogDirty();
 					mb.open = false;
-				} ).catch( function () { mb.busy = false; mb.error = 'No se pudo mover el stock.'; } );
+				} ).catch( function () { mb.busy = false; mb.error = __( 'Could not move the stock.', 'keytill' ); } );
 			},
 
 			/* ---------- editor de texto enriquecido (descripciones) ---------- */
@@ -663,7 +674,7 @@
 				this.rteSync( which );
 			},
 			rteLink: function ( which ) {
-				var url = window.prompt( 'URL del enlace (https://…)', 'https://' );
+				var url = window.prompt( __( 'Link URL (https://…)', 'keytill' ), 'https://' );
 				if ( url && url !== 'https://' ) {
 					document.execCommand( 'createLink', false, url );
 					this.rteSync( which );
@@ -741,7 +752,7 @@
 				this.editorError = '';
 				sendJSON( API.root + 'keytill/v1/admin/attributes', 'POST', { name: name } ).then( function ( res ) {
 					self.genBusy = false;
-					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo crear el atributo.'; return; }
+					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || __( 'Could not create the attribute.', 'keytill' ); return; }
 					var cat = res.data;
 					// Actualiza/inserta en el catálogo.
 					var i = self.attributes.findIndex( function ( a ) { return a.id === cat.id; } );
@@ -751,7 +762,7 @@
 					if ( self.form.attrRows.filter( function ( r ) { return r.taxonomy === cat.taxonomy; } ).length === 0 ) {
 						self.form.attrRows.push( self.makeAttrRow( cat, [] ) );
 					}
-				} ).catch( function () { self.genBusy = false; self.editorError = 'No se pudo crear el atributo.'; } );
+				} ).catch( function () { self.genBusy = false; self.editorError = __( 'Could not create the attribute.', 'keytill' ); } );
 			},
 
 			// Crea un término nuevo dentro de una fila de atributo.
@@ -763,7 +774,7 @@
 				this.editorError = '';
 				sendJSON( API.root + 'keytill/v1/admin/attributes/' + row.attrId + '/terms', 'POST', { name: name } ).then( function ( res ) {
 					self.genBusy = false;
-					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo crear el valor.'; return; }
+					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || __( 'Could not create the value.', 'keytill' ); return; }
 					var t = res.data;
 					if ( row.terms.filter( function ( x ) { return x.id === t.id; } ).length === 0 ) {
 						row.terms.push( { id: t.id, name: t.name, slug: t.slug, on: true } );
@@ -774,7 +785,7 @@
 						cat.terms.push( { id: t.id, name: t.name, slug: t.slug } );
 					}
 					row.newTerm = '';
-				} ).catch( function () { self.genBusy = false; self.editorError = 'No se pudo crear el valor.'; } );
+				} ).catch( function () { self.genBusy = false; self.editorError = __( 'Could not create the value.', 'keytill' ); } );
 			},
 
 			// Genera la grilla de variaciones con los términos marcados.
@@ -783,7 +794,7 @@
 				var attrs = ( this.form.attrRows || [] ).map( function ( row ) {
 					return { taxonomy: row.taxonomy, term_ids: row.terms.filter( function ( t ) { return t.on; } ).map( function ( t ) { return t.id; } ) };
 				} ).filter( function ( a ) { return a.term_ids.length > 0; } );
-				if ( ! attrs.length ) { this.editorError = 'Elegí al menos un atributo con valores.'; return; }
+				if ( ! attrs.length ) { this.editorError = __( 'Choose at least one attribute with values.', 'keytill' ); return; }
 				var self = this;
 				this.genBusy = true;
 				this.genMsg = '';
@@ -792,63 +803,63 @@
 				if ( prune ) { body.prune = true; }
 				sendJSON( API.root + 'keytill/v1/admin/products/' + this.form.id + '/variations', 'POST', body ).then( function ( res ) {
 					self.genBusy = false;
-					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudieron generar las variaciones.'; return; }
+					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || __( 'Could not generate the variations.', 'keytill' ); return; }
 					// El backend detectó variaciones que ya no corresponden a los
 					// atributos actuales: pedimos confirmación antes de borrarlas.
 					if ( res.data && res.data.needs_prune ) {
 						var orphans = res.data.orphans || [];
 						var names = orphans.slice( 0, 8 ).map( function ( o ) { return '• ' + ( o.label || ( '#' + o.id ) ); } ).join( '\n' );
-						if ( orphans.length > 8 ) { names += '\n• …y ' + ( orphans.length - 8 ) + ' más'; }
-						var msg = 'Hay ' + orphans.length + ' variación(es) que ya no corresponden a los atributos elegidos:\n\n' + names + '\n\n¿Borrarlas y regenerar?';
+						if ( orphans.length > 8 ) { names += sprintf( __( '\n• …and %d more', 'keytill' ), orphans.length - 8 ); }
+						var msg = sprintf( __( 'There are %1$d variation(s) that no longer match the chosen attributes:\n\n%2$s\n\nDelete them and regenerate?', 'keytill' ), orphans.length, names );
 						if ( window.confirm( msg ) ) {
 							self.generateVariations( true );
 						} else {
-							self.genMsg = 'No se generó nada: primero resolvé las variaciones que sobran.';
+							self.genMsg = __( 'Nothing was generated: resolve the leftover variations first.', 'keytill' );
 						}
 						return;
 					}
 					self.form.variations = ( res.data.variations || [] ).map( self.decorate );
 					var parts = [];
-					if ( res.data.created > 0 ) { parts.push( res.data.created + ' nueva(s)' ); }
-					if ( res.data.pruned > 0 ) { parts.push( res.data.pruned + ' borrada(s)' ); }
-					self.genMsg = parts.length ? ( 'Variaciones: ' + parts.join( ', ' ) + '.' ) : 'Sin cambios.';
+					if ( res.data.created > 0 ) { parts.push( sprintf( __( '%d new', 'keytill' ), res.data.created ) ); }
+					if ( res.data.pruned > 0 ) { parts.push( sprintf( __( '%d deleted', 'keytill' ), res.data.pruned ) ); }
+					self.genMsg = parts.length ? sprintf( __( 'Variations: %s.', 'keytill' ), parts.join( ', ' ) ) : __( 'No changes.', 'keytill' );
 					self.syncRowVariations();
 					self._catalogDirty();
-				} ).catch( function () { self.genBusy = false; self.editorError = 'No se pudieron generar las variaciones.'; } );
+				} ).catch( function () { self.genBusy = false; self.editorError = __( 'Could not generate the variations.', 'keytill' ); } );
 			},
 
 			// Borra el producto completo (va a la papelera de WordPress; recuperable).
 			deleteProduct: function () {
 				if ( this.genBusy || ! this.form.id ) { return; }
-				if ( ! window.confirm( '¿Enviar el producto "' + ( this.form.name || '' ) + '" a la papelera?\n\nSe puede recuperar desde WordPress si fue un error.' ) ) { return; }
+				if ( ! window.confirm( sprintf( __( 'Send the product “%s” to the trash?\n\nIt can be restored from WordPress if it was a mistake.', 'keytill' ), this.form.name || '' ) ) ) { return; }
 				var self = this;
 				var id = this.form.id;
 				this.genBusy = true;
 				this.editorError = '';
 				sendJSON( API.root + 'keytill/v1/admin/products/' + id, 'DELETE', {} ).then( function ( res ) {
 					self.genBusy = false;
-					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo borrar el producto.'; return; }
+					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || __( 'Could not delete the product.', 'keytill' ); return; }
 					self.items = self.items.filter( function ( x ) { return x.id !== id; } );
 					delete self.expanded[ id ];
 					if ( self.labelSel[ id ] ) { delete self.labelSel[ id ]; }
 					self._catalogDirty();
 					self.closeEditor();
-				} ).catch( function () { self.genBusy = false; self.editorError = 'No se pudo borrar el producto.'; } );
+				} ).catch( function () { self.genBusy = false; self.editorError = __( 'Could not delete the product.', 'keytill' ); } );
 			},
 
 			// Borra una variación (acotado a una variación puntual).
 			deleteVariation: function ( v ) {
 				if ( this.genBusy ) { return; }
-				if ( ! window.confirm( '¿Borrar la variación "' + ( v.label || '' ) + '"?' ) ) { return; }
+				if ( ! window.confirm( sprintf( __( 'Delete the variation “%s”?', 'keytill' ), v.label || '' ) ) ) { return; }
 				var self = this;
 				this.genBusy = true;
 				sendJSON( API.root + 'keytill/v1/admin/products/' + v.id, 'DELETE', {} ).then( function ( res ) {
 					self.genBusy = false;
-					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo borrar.'; return; }
+					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || __( 'Could not delete.', 'keytill' ); return; }
 					self.form.variations = self.form.variations.filter( function ( x ) { return x.id !== v.id; } );
 					self.syncRowVariations();
 					self._catalogDirty();
-				} ).catch( function () { self.genBusy = false; self.editorError = 'No se pudo borrar.'; } );
+				} ).catch( function () { self.genBusy = false; self.editorError = __( 'Could not delete.', 'keytill' ); } );
 			},
 
 			// Refleja el conteo de variaciones y refresca el expand del listado.
@@ -874,10 +885,10 @@
 					return r.json().then( function ( d ) { return { ok: r.ok, data: d }; } );
 				} ).then( function ( res ) {
 					self.uploadBusy = false;
-					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo subir la imagen.'; return; }
+					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || __( 'Could not upload the image.', 'keytill' ); return; }
 					self.form.image_id = res.data.id;
 					self.form.image_url = res.data.url;
-				} ).catch( function () { self.uploadBusy = false; self.editorError = 'No se pudo subir la imagen.'; } );
+				} ).catch( function () { self.uploadBusy = false; self.editorError = __( 'Could not upload the image.', 'keytill' ); } );
 				ev.target.value = '';
 			},
 
@@ -902,13 +913,13 @@
 						} ).then( function ( r ) {
 							return r.json().then( function ( d ) { return { ok: r.ok, data: d }; } );
 						} ).then( function ( res ) {
-							if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo subir una imagen.'; return; }
+							if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || __( 'Could not upload an image.', 'keytill' ); return; }
 							self.form.gallery.push( { id: res.data.id, url: res.data.thumb || res.data.url } );
 						} );
 					} );
 				} );
 				chain.then( function () { self.uploadBusy = false; } )
-					.catch( function () { self.uploadBusy = false; self.editorError = 'No se pudo subir una imagen.'; } );
+					.catch( function () { self.uploadBusy = false; self.editorError = __( 'Could not upload an image.', 'keytill' ); } );
 			},
 
 			removeGallery: function ( idx ) { this.form.gallery.splice( idx, 1 ); },
@@ -916,8 +927,8 @@
 			saveEditor: function () {
 				if ( this.editorBusy || ! this.form ) { return; }
 				var f = this.form;
-				if ( ! f.name.trim() ) { this.editorError = 'El nombre es obligatorio.'; return; }
-				if ( f.type === 'simple' && f.regular_price === '' ) { this.editorError = 'El precio es obligatorio.'; return; }
+				if ( ! f.name.trim() ) { this.editorError = __( 'The name is required.', 'keytill' ); return; }
+				if ( f.type === 'simple' && f.regular_price === '' ) { this.editorError = __( 'The price is required.', 'keytill' ); return; }
 				var self = this;
 				this.editorBusy = true;
 				this.editorError = '';
@@ -956,8 +967,8 @@
 				var url = isCreate ? API.root + 'keytill/v1/admin/products' : API.root + 'keytill/v1/admin/products/' + f.id;
 				sendJSON( url, isCreate ? 'POST' : 'PATCH', body ).then( function ( res ) {
 					self.editorBusy = false;
-					if ( res.status === 409 ) { self.editorError = ( res.data && res.data.message ) || 'Ya existe otro producto con ese SKU.'; return; }
-					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || 'No se pudo guardar.'; return; }
+					if ( res.status === 409 ) { self.editorError = ( res.data && res.data.message ) || __( 'Another product already uses that SKU.', 'keytill' ); return; }
+					if ( ! res.ok ) { self.editorError = ( res.data && res.data.message ) || __( 'Could not save.', 'keytill' ); return; }
 					self._catalogDirty();
 					if ( isCreate ) {
 						self.items.unshift( self.decorate( res.data ) );
@@ -971,11 +982,11 @@
 					if ( isCreate && f.type === 'variable' ) {
 						self.editorMode = 'edit';
 						self.form.id = res.data.id;
-						self.genMsg = 'Producto creado. Ahora definí los atributos y generá las variaciones.';
+						self.genMsg = __( 'Product created. Now define the attributes and generate the variations.', 'keytill' );
 						return;
 					}
 					self.editorOpen = false;
-				} ).catch( function () { self.editorBusy = false; self.editorError = 'No se pudo guardar.'; } );
+				} ).catch( function () { self.editorBusy = false; self.editorError = __( 'Could not save.', 'keytill' ); } );
 			}
 		};
 	}

@@ -13,6 +13,17 @@
 	'use strict';
 
 	var API = window.wpApiSettings || { root: '/wp-json/', nonce: '' };
+
+	// Textos traducibles. wp.i18n lo encola WordPress como dependencia del script
+	// (ver wp_set_script_translations en keytill.php); el fallback deja el ingles.
+	var I18N = ( window.wp && window.wp.i18n ) || null;
+	var __ = I18N ? I18N.__ : function ( s ) { return s; };
+	var sprintf = I18N ? I18N.sprintf : function ( fmt ) {
+		var args = Array.prototype.slice.call( arguments, 1 ), i = 0;
+		return String( fmt ).replace( /%(?:(\d+)\$)?[sd]/g, function ( _m, pos ) {
+			return String( pos ? args[ pos - 1 ] : args[ i++ ] );
+		} );
+	};
 	var CONFIG = window.keytillConfig || { canManage: false };
 
 	/**
@@ -144,7 +155,7 @@
 			discLineIdx: null, // null = descuento global (F8); nº = índice de línea (por prenda)
 			discStage: 'value', // paso del modal de descuento: 'scope' | 'line' | 'value'
 			saleKey: null, // clave de idempotencia del intento de venta en curso
-			statusText: 'Listo. Escaneá para empezar.',
+			statusText: __( 'Ready. Scan to start.', 'keytill' ),
 			// Nivel del mensaje de estado: info (neutro/ok) | warn (ámbar) | error (rojo).
 			// El setter de `status` lo resetea a 'info' en cada asignación; los casos
 			// negativos suben el nivel en la línea siguiente. Así el color se auto-
@@ -348,9 +359,9 @@
 			openCash: function () {
 				if ( this.busy ) { return; }
 				var f = parseFloat( ( this.openFloat || '0' ).toString().replace( ',', '.' ) ) || 0;
-				if ( f < 0 ) { this.cashError = 'Fondo inicial inválido'; return; }
+				if ( f < 0 ) { this.cashError = __( 'Invalid opening float', 'keytill' ); return; }
 				// Con sucursales, hay que elegir la de la caja (de dónde sale/entra stock).
-				if ( this.branches.length && ! this.openBranch ) { this.cashError = 'Elegí la sucursal de la caja'; return; }
+				if ( this.branches.length && ! this.openBranch ) { this.cashError = __( 'Choose the register\'s location', 'keytill' ); return; }
 				var self = this;
 				this.busy = true;
 				this.cashError = '';
@@ -361,7 +372,7 @@
 					self.mode = 'sale';
 					self.openFloat = '';
 					self.openCtx = '';
-					self.status = 'Caja abierta · fondo ' + self.money( d.opening_float );
+					self.status = sprintf( __( 'Register open · float %s', 'keytill' ), self.money( d.opening_float ) );
 					// Retoma la acción que disparó la apertura: el carrito sigue intacto.
 					if ( ctx === 'pay' ) { self.openPay(); }
 					else if ( ctx === 'return' ) { self.openReturn(); }
@@ -383,17 +394,17 @@
 						if ( ! dig || dig.open ) { return; } // ya abierta o sin datos
 						// Reapertura: abre con el saldo del último cierre (no pide monto).
 						var msg = dig.seeded
-							? 'La caja digital está cerrada. ¿Abrirla ahora?'
-							: 'La caja digital (cuenta bancaria) nunca se abrió. ¿Abrirla ahora? Vas a cargar el saldo inicial.';
+							? __( 'The digital register is closed. Open it now?', 'keytill' )
+							: __( 'The digital register (bank account) has never been opened. Open it now? You will set the opening balance.', 'keytill' );
 						if ( ! window.confirm( msg ) ) { return; }
 						var body = {};
 						if ( ! dig.seeded ) {
-							var v = window.prompt( 'Saldo inicial de la caja digital (solo la primera vez):', '0' );
+							var v = window.prompt( __( 'Opening balance of the digital register (first time only):', 'keytill' ), '0' );
 							if ( v === null ) { return; } // canceló
 							body.initial = parseFloat( ( v || '0' ).toString().replace( ',', '.' ) ) || 0;
 						}
 						self.busy = true;
-						self.cashPost( 'digital/open', body, function () { self.status = 'Caja digital abierta'; self.statusLevel = ''; } );
+						self.cashPost( 'digital/open', body, function () { self.status = __( 'Digital register open', 'keytill' ); self.statusLevel = ''; } );
 					} ).catch( function () {} );
 			},
 
@@ -440,7 +451,7 @@
 			confirmWithdraw: function () {
 				if ( this.busy ) { return; }
 				var a = parseFloat( ( this.withdrawAmount || '0' ).toString().replace( ',', '.' ) ) || 0;
-				if ( a <= 0 ) { this.cashError = 'Monto inválido'; return; }
+				if ( a <= 0 ) { this.cashError = __( 'Invalid amount', 'keytill' ); return; }
 				var self = this;
 				this.busy = true;
 				this.cashError = '';
@@ -448,7 +459,7 @@
 				if ( this.withdrawAccount === 'digital' && this.$store.pos.canManage ) {
 					this.cashPost( 'cash/move', { account: 'digital', kind: 'retiro', amount: a, concept: this.withdrawReason }, function () {
 						self.mode = 'sale';
-						self.status = 'Retiro digital ' + self.money( a );
+						self.status = sprintf( __( 'Digital withdrawal %s', 'keytill' ), self.money( a ) );
 					} );
 					return;
 				}
@@ -456,7 +467,7 @@
 				this.cashPost( 'cash/withdraw', { amount: a, reason: this.withdrawReason }, function ( d ) {
 					self.session = d;
 					self.mode = 'sale';
-					self.status = 'Retiro ' + self.money( a );
+					self.status = sprintf( __( 'Withdrawal %s', 'keytill' ), self.money( a ) );
 				} );
 			},
 
@@ -465,12 +476,12 @@
 				// Cerrar/arquear = función de control: solo encargado/admin (el server
 				// también lo valida). Un cajero no cierra su propio cajón.
 				if ( this.$store && this.$store.pos && ! this.$store.pos.canManage ) {
-					this.status = 'Solo el encargado puede cerrar la caja';
+					this.status = __( 'Only the manager can close the register', 'keytill' );
 				this.statusLevel = 'warn';
 					return;
 				}
 				if ( this.lines.length ) {
-					this.status = 'Terminá o cancelá la venta antes de cerrar la caja';
+					this.status = __( 'Finish or cancel the sale before closing the register', 'keytill' );
 				this.statusLevel = 'warn';
 					return;
 				}
@@ -504,7 +515,7 @@
 				this.closeStage = 'form';
 				this.countedCash = '';
 				this.mode = 'open';
-				this.status = 'Caja cerrada. Abrí una nueva para vender.';
+				this.status = __( 'Register closed. Open a new one to sell.', 'keytill' );
 				this.refocus();
 			},
 
@@ -544,7 +555,7 @@
 					.then( function ( res ) {
 						self.busy = false;
 						if ( ! res.ok ) {
-							self.cashError = ( res.data && res.data.message ) ? res.data.message : 'Operación de caja fallida';
+							self.cashError = ( res.data && res.data.message ) ? res.data.message : __( 'Register operation failed', 'keytill' );
 							self.refocus();
 							return;
 						}
@@ -553,7 +564,7 @@
 					} )
 					.catch( function () {
 						self.busy = false;
-						self.cashError = 'Error de red';
+						self.cashError = __( 'Network error', 'keytill' );
 						self.refocus();
 					} );
 			},
@@ -621,7 +632,7 @@
 				return this.stockFix.items.length > 0 && this.stockFix.items.every( function ( it ) { return !! it.choice; } );
 			},
 			confirmStockFix: function () {
-				if ( ! this.stockFixReady() ) { this.status = 'Elegí de dónde descontar cada prenda'; this.statusLevel = 'warn'; return; }
+				if ( ! this.stockFixReady() ) { this.status = __( 'Choose where each item comes from', 'keytill' ); this.statusLevel = 'warn'; return; }
 				var self = this;
 				this.stockChoices = this.stockChoices || {};
 				this.stockFix.items.forEach( function ( it ) { self.stockChoices[ it.product_id ] = it.choice; } );
@@ -664,10 +675,10 @@
 				if ( hereQty !== null ) {
 					parts.push( hereQty > 0
 						? { txt: hereName + ': ' + hereQty, cls: 'bl-here' }
-						: { txt: hereName + ': sin stock', cls: 'bl-out' } );
+						: { txt: sprintf( __( '%s: out of stock', 'keytill' ), hereName ), cls: 'bl-out' } );
 				}
 				others.forEach( function ( o ) { parts.push( { txt: o.name + ': ' + o.qty, cls: 'bl-other' } ); } );
-				if ( ! parts.length ) { parts.push( { txt: 'Sin stock', cls: 'bl-out' } ); }
+				if ( ! parts.length ) { parts.push( { txt: __( 'Out of stock', 'keytill' ), cls: 'bl-out' } ); }
 				return parts;
 			},
 
@@ -677,17 +688,17 @@
 				// (branchAvail); no se pinta badge aca para no duplicar.
 				if ( p.branch_managed ) { return null; }
 				var a = this.availableFor( p );
-				if ( a === 0 ) { return { cls: 'is-out', label: 'sin stock' }; }
-				if ( a !== null && a <= 3 ) { return { cls: 'is-low', label: 'stock ' + a }; }
+				if ( a === 0 ) { return { cls: 'is-out', label: __( 'out of stock', 'keytill' ) }; }
+				if ( a !== null && a <= 3 ) { return { cls: 'is-low', label: sprintf( __( 'stock %s', 'keytill' ), a ) }; }
 				return null;
 			},
 
 			// Badge de stock para una línea del carrito (usa el stock capturado al agregar).
 			lineBadge: function ( l ) {
 				var a = l.avail;
-				if ( a === 0 ) { return { cls: 'is-out', label: 'sin stock' }; }
-				if ( a !== null && a !== undefined && l.qty >= a ) { return { cls: 'is-out', label: 'máx ' + a }; }
-				if ( a !== null && a !== undefined && a <= 3 ) { return { cls: 'is-low', label: 'stock ' + a }; }
+				if ( a === 0 ) { return { cls: 'is-out', label: __( 'out of stock', 'keytill' ) }; }
+				if ( a !== null && a !== undefined && l.qty >= a ) { return { cls: 'is-out', label: sprintf( __( 'max %s', 'keytill' ), a ) }; }
+				if ( a !== null && a !== undefined && a <= 3 ) { return { cls: 'is-low', label: sprintf( __( 'stock %s', 'keytill' ), a ) }; }
 				return null;
 			},
 
@@ -789,7 +800,7 @@
 			lookupOrder: function () {
 				if ( this.busy ) { return; }
 				var n = parseInt( this.returnNumber, 10 ) || 0;
-				if ( ! n ) { this.returnError = 'Ingresá un número de venta'; return; }
+				if ( ! n ) { this.returnError = __( 'Enter a sale number', 'keytill' ); return; }
 				var self = this;
 				this.busy = true;
 				this.returnError = '';
@@ -801,7 +812,7 @@
 					.then( function ( res ) {
 						self.busy = false;
 						if ( ! res.ok ) {
-							self.returnError = ( res.data && res.data.message ) ? res.data.message : 'Venta no encontrada';
+							self.returnError = ( res.data && res.data.message ) ? res.data.message : __( 'Sale not found', 'keytill' );
 							self.refocus();
 							return;
 						}
@@ -817,7 +828,7 @@
 						self.returnStage = 'select';
 						self.refocus();
 					} )
-					.catch( function () { self.busy = false; self.returnError = 'Error de red'; self.refocus(); } );
+					.catch( function () { self.busy = false; self.returnError = __( 'Network error', 'keytill' ); self.refocus(); } );
 			},
 
 			returnMove: function ( dir ) {
@@ -856,7 +867,7 @@
 				var lines = this.returnData.items
 					.filter( function ( it ) { return it.rqty > 0; } )
 					.map( function ( it ) { return { item_id: it.item_id, qty: it.rqty }; } );
-				if ( ! lines.length ) { this.returnError = 'Elegí al menos una unidad a devolver (+)'; return; }
+				if ( ! lines.length ) { this.returnError = __( 'Choose at least one unit to refund (+)', 'keytill' ); return; }
 				var self = this;
 				this.busy = true;
 				this.returnError = '';
@@ -870,7 +881,7 @@
 					.then( function ( res ) {
 						self.busy = false;
 						if ( ! res.ok ) {
-							self.returnError = ( res.data && res.data.message ) ? res.data.message : 'No se pudo procesar la devolución';
+							self.returnError = ( res.data && res.data.message ) ? res.data.message : __( 'Could not process the refund', 'keytill' );
 							self.refocus();
 							return;
 						}
@@ -880,7 +891,7 @@
 						self.loadSession();  // arqueo actualizado (devolución en efectivo)
 						self.refocus();
 					} )
-					.catch( function () { self.busy = false; self.returnError = 'Error de red'; self.refocus(); } );
+					.catch( function () { self.busy = false; self.returnError = __( 'Network error', 'keytill' ); self.refocus(); } );
 			},
 
 			finishReturn: function () {
@@ -889,7 +900,7 @@
 				this.returnResult = null;
 				this.returnStage = 'lookup';
 				this.returnNumber = '';
-				this.status = 'Devolución registrada';
+				this.status = __( 'Refund recorded', 'keytill' );
 				this.refocus();
 			},
 
@@ -1019,7 +1030,7 @@
 				if ( n !== null && ! isNaN( n ) && n >= 0 ) {
 					return n + ( n === 1 ? ' unidad disponible' : ' unidades disponibles' ) + ' en sucursal ' + p.branch;
 				}
-				return 'Disponible en sucursal ' + p.branch;
+				return sprintf( __( 'Available at %s', 'keytill' ), p.branch );
 			},
 
 			addProduct: function ( prod, qty ) {
@@ -1029,7 +1040,7 @@
 				// Sin precio cargado: WooCommerce no lo deja vender. Se avisa acá con el
 				// nombre en vez de fallar recién al cobrar con un id.
 				if ( ! prod.price || Number( prod.price ) <= 0 ) {
-					this.status = prod.name + ': sin precio cargado. Cargalo en Productos antes de venderlo.';
+					this.status = sprintf( __( '%s: no price set. Set it in Products before selling it.', 'keytill' ), prod.name );
 					this.statusLevel = 'warn';
 					this.cmd = '';
 					this.qtyPrefix = 0;
@@ -1047,8 +1058,8 @@
 				if ( avail !== null ) {
 					if ( already >= avail ) {
 						this.status = avail > 0
-							? ( 'Stock máximo alcanzado: ' + prod.name + ' (' + avail + ')' )
-							: ( 'Sin stock: ' + prod.name );
+							? sprintf( __( 'Maximum stock reached: %1$s (%2$s)', 'keytill' ), prod.name, avail )
+							: sprintf( __( 'Out of stock: %s', 'keytill' ), prod.name );
 						this.statusLevel = 'warn';
 						if ( i >= 0 ) { // refresca el stock capturado en la línea existente
 							this.lines[ i ].avail = avail;
@@ -1094,7 +1105,7 @@
 				this.resIdx = 0;
 				var dispName = prod.name + ( prod.variation ? ' · ' + prod.variation : '' );
 				this.status = limited
-					? ( dispName + ': limitado al stock disponible (' + avail + ')' )
+					? sprintf( __( '%1$s: limited to available stock (%2$s)', 'keytill' ), dispName, avail )
 					: ( q + ' × ' + dispName );
 				if ( limited ) { this.statusLevel = 'warn'; }
 				if ( this.$refs.cmd ) { this.$refs.cmd.value = ''; }
@@ -1114,7 +1125,7 @@
 				};
 				this.giftAmountDraft = '';
 				this.mode = 'giftcard';
-				this.status = 'Monto de la gift card…';
+				this.status = __( 'Gift card amount…', 'keytill' );
 				this.refocus();
 			},
 			pickGiftDenom: function ( amount ) {
@@ -1132,10 +1143,10 @@
 				if ( ! this.giftPrompt ) { return; }
 				var amt = parseFloat( String( this.giftAmountDraft ).replace( ',', '.' ) ) || 0;
 				amt = Math.round( amt * 100 ) / 100;
-				if ( amt <= 0 ) { this.status = 'Monto inválido'; this.statusLevel = 'warn'; return; }
+				if ( amt <= 0 ) { this.status = __( 'Invalid amount', 'keytill' ); this.statusLevel = 'warn'; return; }
 				// Tope de gift card (0 = sin tope). El server igual lo valida.
 				var gcMax = Number( CONFIG.giftcardMax ) || 0;
-				if ( gcMax > 0 && amt > gcMax ) { this.status = 'Máximo por gift card: ' + this.money( gcMax ); this.statusLevel = 'warn'; return; }
+				if ( gcMax > 0 && amt > gcMax ) { this.status = sprintf( __( 'Gift card maximum: %s', 'keytill' ), this.money( gcMax ) ); this.statusLevel = 'warn'; return; }
 				var p = this.giftPrompt.product;
 				this.lines.push( {
 					id: p.id,
@@ -1152,7 +1163,7 @@
 				this.giftPrompt = null;
 				this.giftAmountDraft = '';
 				this.mode = 'sale';
-				this.status = 'Gift card ' + this.money( amt ) + ' agregada';
+				this.status = sprintf( __( 'Gift card %s added', 'keytill' ), this.money( amt ) );
 				this.refocus();
 			},
 			printSale: function () {
@@ -1170,7 +1181,7 @@
 			finishSaleResult: function () {
 				this.saleResult = null;
 				this.mode = 'sale';
-				this.status = 'Listo. Escaneá para empezar.';
+				this.status = __( 'Ready. Scan to start.', 'keytill' );
 				this.refocus();
 			},
 
@@ -1213,17 +1224,17 @@
 				this._lastCodeT = 0;
 				this.scanOpen = true;
 				if ( ! window.isSecureContext ) {
-					this.scanError = 'La cámara necesita una conexión segura (HTTPS).';
+					this.scanError = __( 'The camera needs a secure connection (HTTPS).', 'keytill' );
 					return;
 				}
 				if ( ! ( navigator.mediaDevices && navigator.mediaDevices.getUserMedia ) ) {
-					this.scanError = 'Este dispositivo/navegador no permite usar la cámara.';
+					this.scanError = __( 'This device/browser does not allow camera use.', 'keytill' );
 					return;
 				}
 				this.scanBusy = true;
 				this._loadZXing()
 					.then( function () { return self.$nextTick( function () { self.startScan(); } ); } )
-					.catch( function () { self.scanBusy = false; self.scanError = 'No se pudo cargar el lector de cámara.'; } );
+					.catch( function () { self.scanBusy = false; self.scanError = __( 'Could not load the camera reader.', 'keytill' ); } );
 			},
 
 			// Inyecta el bundle de ZXing una sola vez (global window.ZXing).
@@ -1267,12 +1278,12 @@
 						.catch( function ( e ) {
 							self.scanBusy = false;
 							self.scanError = ( e && e.name === 'NotAllowedError' )
-								? 'Permiso de cámara denegado. Habilitalo en el navegador y reintentá.'
-								: 'No se pudo abrir la cámara.';
+								? __( 'Camera permission denied. Enable it in the browser and retry.', 'keytill' )
+								: __( 'Could not open the camera.', 'keytill' );
 						} );
 				} catch ( e ) {
 					this.scanBusy = false;
-					this.scanError = 'No se pudo iniciar el lector.';
+					this.scanError = __( 'Could not start the reader.', 'keytill' );
 				}
 			},
 
@@ -1377,7 +1388,7 @@
 				if ( res.length ) {
 					return this.addProduct( res[ Math.min( this.resIdx, res.length - 1 ) ], qty );
 				}
-				this.status = 'Sin resultados para “' + rest + '”';
+				this.status = sprintf( __( 'No results for “%s”', 'keytill' ), rest );
 			},
 
 			adjustQty: function ( delta ) {
@@ -1388,17 +1399,17 @@
 				if ( q <= 0 ) {
 					var removed = this.lines.splice( i, 1 )[ 0 ];
 					this.sel = Math.max( 0, Math.min( i, this.lines.length - 1 ) );
-					this.status = 'Quitado: ' + removed.name;
+					this.status = sprintf( __( 'Removed: %s', 'keytill' ), removed.name );
 					return;
 				}
 				if ( delta > 0 && line.avail !== null && line.avail !== undefined && q > line.avail ) {
-					this.status = 'Sin stock para más: ' + line.name + ' (máx ' + line.avail + ')';
+					this.status = sprintf( __( 'No more stock: %1$s (max %2$s)', 'keytill' ), line.name, line.avail );
 				this.statusLevel = 'warn';
 					return;
 				}
 				this.lines[ i ].qty = q;
 				this.refreshLineBadge( i );
-				this.status = this.lines[ i ].name + ' → ' + q + ' u.';
+				this.status = sprintf( __( '%1$s → %2$s u.', 'keytill' ), this.lines[ i ].name, q );
 			},
 
 			removeLine: function () {
@@ -1406,7 +1417,7 @@
 				var i = Math.min( this.sel, this.lines.length - 1 );
 				var removed = this.lines.splice( i, 1 )[ 0 ];
 				this.sel = Math.max( 0, Math.min( i, this.lines.length - 1 ) );
-				this.status = 'Línea quitada: ' + removed.name;
+				this.status = sprintf( __( 'Line removed: %s', 'keytill' ), removed.name );
 			},
 
 			/* ---------------- táctil: steppers por línea ---------------- */
@@ -1433,7 +1444,7 @@
 			/* ---------------- cobro ---------------- */
 			openPay: function () {
 				if ( ! this.lines.length ) {
-					this.status = 'Carrito vacío: nada que cobrar';
+					this.status = __( 'Empty cart: nothing to charge', 'keytill' );
 				this.statusLevel = 'warn';
 					return;
 				}
@@ -1450,10 +1461,10 @@
 				if ( this.sellers.length ) {
 					if ( ! this.sellerId ) { this.sellerId = this.sellers[ 0 ].id; }
 					this.payStage = 'seller';
-					this.status = 'Cobro: elegí vendedor';
+					this.status = __( 'Payment: choose a salesperson', 'keytill' );
 				} else {
 					this.payStage = 'method';
-					this.status = 'Cobro: elegí medio de pago';
+					this.status = __( 'Payment: choose a payment method', 'keytill' );
 				}
 			},
 
@@ -1476,7 +1487,7 @@
 				if ( id ) { this.sellerId = id; }
 				this.onSellerChange();
 				this.payStage = 'method';
-				this.status = 'Cobro: elegí medio de pago';
+				this.status = __( 'Payment: choose a payment method', 'keytill' );
 				this.refocus();
 			},
 
@@ -1513,12 +1524,12 @@
 			clearCredit: function () {
 				this.creditApplied = null;
 				this.creditError = '';
-				this.status = 'Crédito quitado del cobro';
+				this.status = __( 'Credit removed from the payment', 'keytill' );
 			},
 			validateCredit: function () {
 				if ( this.busy ) { return; }
 				var code = ( this.creditCodeDraft || '' ).trim().toUpperCase();
-				if ( ! code ) { this.creditError = 'Ingresá un código'; return; }
+				if ( ! code ) { this.creditError = __( 'Enter a code', 'keytill' ); return; }
 				var self = this;
 				this.busy = true;
 				this.creditError = '';
@@ -1530,13 +1541,13 @@
 					.then( function ( res ) {
 						self.busy = false;
 						if ( ! res.ok ) {
-							self.creditError = ( res.data && res.data.message ) ? res.data.message : 'Crédito no encontrado';
+							self.creditError = ( res.data && res.data.message ) ? res.data.message : __( 'Credit not found', 'keytill' );
 							self.refocus();
 							return;
 						}
 						var d = res.data;
 						if ( ! d.redeemable ) {
-							self.creditError = d.reason || 'El crédito no es válido';
+							self.creditError = d.reason || __( 'The credit is not valid', 'keytill' );
 							self.refocus();
 							return;
 						}
@@ -1552,10 +1563,10 @@
 							// Falta el resto: elegir medio.
 							self.payStage = 'method';
 						}
-						self.status = 'Crédito ' + d.code + ' · aplica ' + self.money( apply );
+						self.status = sprintf( __( 'Credit %1$s · applies %2$s', 'keytill' ), d.code, self.money( apply ) );
 						self.refocus();
 					} )
-					.catch( function () { self.busy = false; self.creditError = 'Error de red'; self.refocus(); } );
+					.catch( function () { self.busy = false; self.creditError = __( 'Network error', 'keytill' ); self.refocus(); } );
 			},
 
 			recibido: function () {
@@ -1581,15 +1592,15 @@
 				var method = null;
 				if ( due > 0 ) {
 					method = METHODS.find( function ( m ) { return m.id === self.payMethod; } );
-					if ( ! method ) { this.payError = 'Elegí un medio de pago para el resto'; return; }
+					if ( ! method ) { this.payError = __( 'Choose a payment method for the remainder', 'keytill' ); return; }
 				}
-				var methodName = method ? method.name : ( this.creditApplied ? 'Crédito en tienda' : 'Bonificado' );
+				var methodName = method ? method.name : ( this.creditApplied ? __( 'Store credit', 'keytill' ) : __( 'Comped', 'keytill' ) );
 
 				var tendered = null;
 				if ( method && method.id === 'efectivo' ) {
 					tendered = this.padDigits ? parseInt( this.padDigits, 10 ) : due;
 					if ( tendered < due ) {
-						this.status = 'Efectivo insuficiente';
+						this.status = __( 'Not enough cash', 'keytill' );
 					this.statusLevel = 'warn';
 						return;
 					}
@@ -1620,7 +1631,7 @@
 				if ( tendered !== null ) { body.amount_tendered = tendered; }
 
 				this.busy = true;
-				this.status = 'Registrando venta…';
+				this.status = __( 'Recording sale…', 'keytill' );
 
 				fetch( API.root + 'keytill/v1/orders', {
 					method: 'POST',
@@ -1646,11 +1657,11 @@
 								self.openStockFix( errData.shortages );
 								return;
 							}
-							var msg = ( res.data && res.data.message ) ? res.data.message : 'No se pudo registrar la venta';
-							self.status = 'Error: ' + msg;
+							var msg = ( res.data && res.data.message ) ? res.data.message : __( 'Could not record the sale', 'keytill' );
+							self.status = sprintf( __( 'Error: %s', 'keytill' ), msg );
 							self.statusLevel = 'error';
 							self.payError = msg;          // visible dentro del modal de cobro
-							self.toastNow( 'ERROR', 'Venta no registrada', msg, 'error' );
+							self.toastNow( 'ERROR', __( 'Sale not recorded', 'keytill' ), msg, 'error' );
 							self.loadCatalog( true );     // re-sync stock (por si fue rechazo por stock)
 							self.refocus();
 							return;
@@ -1658,8 +1669,8 @@
 						var d = res.data;
 						var change = ( d.change !== null && d.change !== undefined ) ? d.change : 0;
 						self.lastOrder = d.number;
-						var creditNote = ( d.credit_used > 0 ) ? ' · crédito ' + self.money( d.credit_used ) : '';
-						self.status = 'Venta ' + d.number + ' cerrada · ' + methodName + creditNote;
+						var creditNote = ( d.credit_used > 0 ) ? sprintf( __( ' · credit %s', 'keytill' ), self.money( d.credit_used ) ) : '';
+						self.status = sprintf( __( 'Sale %1$s closed · %2$s', 'keytill' ), d.number, methodName ) + creditNote;
 						self.resetSale();
 						self.loadCatalog( true ); // stock fresco tras vender
 						// Modal de confirmación post-venta: resumen + imprimir + gift cards.
@@ -1678,10 +1689,10 @@
 					} )
 					.catch( function () {
 						self.busy = false;
-						self.status = 'Error de red al registrar la venta';
+						self.status = __( 'Network error while recording the sale', 'keytill' );
 					self.statusLevel = 'error';
-						self.payError = 'Sin conexión. Reintentá el cobro (Enter).';
-						self.toastNow( 'ERROR', 'Sin conexión', 'Reintentá el cobro', 'error' );
+						self.payError = __( 'No connection. Retry the payment (Enter).', 'keytill' );
+						self.toastNow( 'ERROR', __( 'No connection', 'keytill' ), __( 'Retry the payment', 'keytill' ), 'error' );
 						self.refocus();
 					} );
 			},
@@ -1766,13 +1777,13 @@
 			},
 			selectCustomer: function ( c ) {
 				this.customer = { id: c.id, name: c.name, email: c.email, doc: c.doc, iva: c.iva };
-				this.status = 'Cliente: ' + ( c.name || c.doc || c.email );
+				this.status = sprintf( __( 'Customer: %s', 'keytill' ), c.name || c.doc || c.email );
 				this.mode = 'sale';
 				this.refocus();
 			},
 			detachCustomer: function () {
 				this.customer = null;
-				this.status = 'Consumidor final';
+				this.status = __( 'Walk-in customer', 'keytill' );
 				this.mode = 'sale';
 				this.refocus();
 			},
@@ -1796,7 +1807,7 @@
 				var email = ( d.email || '' ).trim();
 				var doc = ( d.doc || '' ).trim();
 				if ( ! email && ! doc ) {
-					this.custError = 'Cargá al menos email o DNI.';
+					this.custError = __( 'Enter at least an email or tax ID.', 'keytill' );
 					return;
 				}
 				this.custBusy = true;
@@ -1814,14 +1825,14 @@
 						// 409: ya existe → mostrar el cliente para usarlo.
 						if ( res.status === 409 && res.data && res.data.data && res.data.data.customer ) {
 							self.custConflict = res.data.data.customer;
-							self.custError = res.data.message || 'Ya existe un cliente con esos datos.';
+							self.custError = res.data.message || __( 'A customer with those details already exists.', 'keytill' );
 							self.custStage = 'conflict';
 							self.refocus();
 							return;
 						}
-						self.custError = ( res.data && res.data.message ) ? res.data.message : 'No se pudo guardar el cliente.';
+						self.custError = ( res.data && res.data.message ) ? res.data.message : __( 'Could not save the customer.', 'keytill' );
 					} )
-					.catch( function () { self.custBusy = false; self.custError = 'Sin conexión. Reintentá.'; } );
+					.catch( function () { self.custBusy = false; self.custError = __( 'No connection. Retry.', 'keytill' ); } );
 			},
 			useConflictCustomer: function () {
 				if ( this.custConflict ) { return this.selectCustomer( this.custConflict ); }
@@ -1840,7 +1851,7 @@
 
 			// F8 / botón "Descuento": abre el flujo guiado (paso 1: alcance).
 			openDiscount: function () {
-				if ( ! this.lines.length ) { this.status = 'Carrito vacío: nada que bonificar'; this.statusLevel = 'warn'; return; }
+				if ( ! this.lines.length ) { this.status = __( 'Empty cart: nothing to discount', 'keytill' ); this.statusLevel = 'warn'; return; }
 				this.discLineIdx = null;
 				this.discountDraft = '';
 				this.discStage = 'scope';
@@ -1856,7 +1867,7 @@
 			// Paso 1 → elige el alcance del descuento.
 			pickDiscScope: function ( scope ) {
 				if ( 'line' === scope ) {
-					if ( ! this.discountableLines().length ) { this.status = 'No hay prendas para bonificar'; this.statusLevel = 'warn'; return; }
+					if ( ! this.discountableLines().length ) { this.status = __( 'There are no items to discount', 'keytill' ); this.statusLevel = 'warn'; return; }
 					this.discStage = 'line';
 					this.refocus();
 					return;
@@ -1882,7 +1893,7 @@
 			openLineDiscount: function ( i ) {
 				if ( i === null || i === undefined || ! this.lines[ i ] ) { return; }
 				var l = this.lines[ i ];
-				if ( l.giftcard ) { this.status = 'Las gift cards no se bonifican'; this.statusLevel = 'warn'; return; }
+				if ( l.giftcard ) { this.status = __( 'Gift cards cannot be discounted', 'keytill' ); this.statusLevel = 'warn'; return; }
 				this.discLineIdx = i;
 				this.discountTypeDraft = l.discType || 'percent';
 				this.discountDraft = String( l.disc || '' );
@@ -1959,10 +1970,10 @@
 					this.mode = 'sale';
 					this.discountDraft = '';
 					this.discLineIdx = null;
-					if ( ! v ) { this.status = l.name + ': sin descuento'; }
-					else if ( 'fixed' === l.discType ) { this.status = 'Bonificación ' + this.money( v ) + ' · ' + l.name; }
-					else { this.status = 'Bonificación ' + v + '% · ' + l.name; }
-					if ( hadGlobal ) { this.status += ' (se quitó el descuento general)'; }
+					if ( ! v ) { this.status = sprintf( __( '%s: no discount', 'keytill' ), l.name ); }
+					else if ( 'fixed' === l.discType ) { this.status = sprintf( __( 'Discount %1$s · %2$s', 'keytill' ), this.money( v ), l.name ); }
+					else { this.status = sprintf( __( 'Discount %1$s%% · %2$s', 'keytill' ), v, l.name ); }
+					if ( hadGlobal ) { this.status += __( ' (the overall discount was removed)', 'keytill' ); }
 					this.refocus();
 					return;
 				}
@@ -1975,13 +1986,13 @@
 				this.discountDraft = '';
 				this.discLineIdx = null;
 				if ( ! v ) {
-					this.status = 'Sin descuento';
+					this.status = __( 'No discount', 'keytill' );
 				} else if ( 'fixed' === this.discountType ) {
-					this.status = 'Descuento ' + this.money( v );
+					this.status = sprintf( __( 'Discount %s', 'keytill' ), this.money( v ) );
 				} else {
-					this.status = 'Descuento ' + v + '%';
+					this.status = sprintf( __( 'Discount %s%%', 'keytill' ), v );
 				}
-				if ( hadLine ) { this.status += ' (se quitaron los descuentos por prenda)'; }
+				if ( hadLine ) { this.status += __( ' (per-item discounts were removed)', 'keytill' ); }
 				this.refocus();
 			},
 
@@ -2234,7 +2245,7 @@
 						this.qtyPrefix = 0;
 						this.resIdx = 0;
 						if ( this.$refs.cmd ) { this.$refs.cmd.value = ''; }
-						this.status = 'Campo limpio';
+						this.status = __( 'Field cleared', 'keytill' );
 						return;
 					}
 					if ( this.lines.length ) {
@@ -2245,7 +2256,7 @@
 						this.discLineIdx = null;
 						this.customer = null;
 						this.stockChoices = {};
-						this.status = 'Venta cancelada';
+						this.status = __( 'Sale cancelled', 'keytill' );
 					}
 					return;
 				}
@@ -2279,13 +2290,13 @@
 			api: API,
 			tabs: ( function () {
 				var t = [
-					{ id: 'venta', label: 'Venta' },
+					{ id: 'venta', label: __( 'Sale', 'keytill' ) },
 					{ id: 'pedidos', label: 'Pedidos' },
 					{ id: 'productos', label: 'Productos' },
 					{ id: 'clientes', label: 'Clientes' }
 				];
 				// Caja/Banco: solo gestión (ve ambas cajas, abre/cierra la digital).
-				if ( CONFIG.canManage ) { t.push( { id: 'cajabanco', label: 'Caja / Banco' } ); }
+				if ( CONFIG.canManage ) { t.push( { id: 'cajabanco', label: __( 'Register / Bank', 'keytill' ) } ); }
 				return t;
 			} )(),
 			_valid: CONFIG.canManage

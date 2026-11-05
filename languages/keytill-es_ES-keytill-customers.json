@@ -1,0 +1,35 @@
+{
+ "translation-revision-date": "2026-11-05 22:00:35+00:00",
+ "generator": "keytill tools/make_json.py",
+ "domain": "messages",
+ "locale_data": {
+  "messages": {
+   "": {
+    "domain": "messages",
+    "lang": "es_ES",
+    "plural-forms": "nplurals=2; plural=n != 1;"
+   },
+   "A customer with those details already exists.": [
+    "Ya existe un cliente con esos datos."
+   ],
+   "Another customer with those details already exists.": [
+    "Ya existe otro cliente con esos datos."
+   ],
+   "Could not create.": [
+    "No se pudo crear."
+   ],
+   "Could not load the list.": [
+    "No se pudo cargar el listado."
+   ],
+   "Could not open the customer.": [
+    "No se pudo abrir el cliente."
+   ],
+   "Could not save.": [
+    "No se pudo guardar."
+   ],
+   "Enter at least an email or tax ID.": [
+    "Cargá al menos email o DNI."
+   ]
+  }
+ }
+}

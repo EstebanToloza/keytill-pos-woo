@@ -1,6 +1,6 @@
 /* ============================================================
    Keytill POS — pos-cashbank.js
-   Pestaña "Caja / Banco" (solo gestión). Muestra la caja física y la
+   Pestaña __( "Register / Bank", 'keytill' ) (solo gestión). Muestra la caja física y la
    caja digital (cuenta bancaria única) con su saldo vivo, los movimientos
    y la lista de transferencias con el tilde de verificación.
    Componente Alpine independiente (keytillCashBank).
@@ -9,6 +9,17 @@
 	'use strict';
 
 	var API = window.wpApiSettings || { root: '/wp-json/', nonce: '' };
+
+	// Textos traducibles. wp.i18n lo encola WordPress como dependencia del script
+	// (ver wp_set_script_translations en keytill.php); el fallback deja el ingles.
+	var I18N = ( window.wp && window.wp.i18n ) || null;
+	var __ = I18N ? I18N.__ : function ( s ) { return s; };
+	var sprintf = I18N ? I18N.sprintf : function ( fmt ) {
+		var args = Array.prototype.slice.call( arguments, 1 ), i = 0;
+		return String( fmt ).replace( /%(?:(\d+)\$)?[sd]/g, function ( _m, pos ) {
+			return String( pos ? args[ pos - 1 ] : args[ i++ ] );
+		} );
+	};
 
 	function getJSON( url ) {
 		return fetch( url, { headers: { 'X-WP-Nonce': API.nonce }, credentials: 'same-origin' } )
@@ -80,10 +91,10 @@
 				// Cache-buster: evita que un caché del hosting sirva un estado viejo.
 				getJSON( API.root + 'keytill/v1/cashbank/summary?_=' + Date.now() ).then( function ( d ) {
 					self.loading = false;
-					if ( ! d || d.code ) { self.error = ( d && d.message ) || 'No se pudo cargar.'; return; }
+					if ( ! d || d.code ) { self.error = ( d && d.message ) || __( 'Could not load.', 'keytill' ); return; }
 					self.cash = d.cash || null;
 					self.digital = d.digital || null;
-				} ).catch( function () { self.loading = false; self.error = 'No se pudo cargar.'; } );
+				} ).catch( function () { self.loading = false; self.error = __( 'Could not load.', 'keytill' ); } );
 			},
 
 			money: function ( n ) { return fmtMoney( Number( n ) || 0 ); },
@@ -112,24 +123,24 @@
 				sendJSON( API.root + 'keytill/v1/digital/open', 'POST', body ).then( function ( res ) {
 					self.busy = false;
 					if ( ! res.ok ) {
-						self.error = ( res.data && res.data.message ) || 'No se pudo abrir la caja digital.';
+						self.error = ( res.data && res.data.message ) || __( 'Could not open the digital register.', 'keytill' );
 						self.load(); // refresca el estado real (si ya estaba abierta en otro lado, se ve)
 						return;
 					}
 					self.load();
-				} ).catch( function () { self.busy = false; self.error = 'No se pudo abrir la caja digital.'; } );
+				} ).catch( function () { self.busy = false; self.error = __( 'Could not open the digital register.', 'keytill' ); } );
 			},
 			closeDigital: function () {
 				if ( this.busy ) { return; }
-				if ( ! window.confirm( 'Cerrar la caja digital? El saldo actual queda como apertura del próximo período.' ) ) { return; }
+				if ( ! window.confirm( __( 'Close the digital register? The current balance becomes the opening balance of the next period.', 'keytill' ) ) ) { return; }
 				var self = this;
 				this.busy = true;
 				this.error = '';
 				sendJSON( API.root + 'keytill/v1/digital/close', 'POST', {} ).then( function ( res ) {
 					self.busy = false;
-					if ( ! res.ok ) { self.error = ( res.data && res.data.message ) || 'No se pudo cerrar la caja digital.'; return; }
+					if ( ! res.ok ) { self.error = ( res.data && res.data.message ) || __( 'Could not close the digital register.', 'keytill' ); return; }
 					self.load();
-				} ).catch( function () { self.busy = false; self.error = 'No se pudo cerrar la caja digital.'; } );
+				} ).catch( function () { self.busy = false; self.error = __( 'Could not close the digital register.', 'keytill' ); } );
 			},
 
 			/* ---------- movimientos (retiro / ingreso) ---------- */
@@ -140,7 +151,7 @@
 				var m = this.move;
 				if ( m.busy ) { return; }
 				var amount = parseFloat( m.amount );
-				if ( isNaN( amount ) || amount <= 0 ) { m.error = 'Ingresá un monto válido.'; return; }
+				if ( isNaN( amount ) || amount <= 0 ) { m.error = __( 'Enter a valid amount.', 'keytill' ); return; }
 				var self = this;
 				m.busy = true;
 				m.error = '';
@@ -148,14 +159,17 @@
 					account: m.account, kind: m.kind, amount: amount, concept: m.concept
 				} ).then( function ( res ) {
 					m.busy = false;
-					if ( ! res.ok ) { m.error = ( res.data && res.data.message ) || 'No se pudo registrar el movimiento.'; return; }
+					if ( ! res.ok ) { m.error = ( res.data && res.data.message ) || __( 'Could not record the movement.', 'keytill' ); return; }
 					self.move.open = false;
 					self.load();
-				} ).catch( function () { m.busy = false; m.error = 'No se pudo registrar el movimiento.'; } );
+				} ).catch( function () { m.busy = false; m.error = __( 'Could not record the movement.', 'keytill' ); } );
 			},
 			moveTitle: function () {
-				var acc = this.move.account === 'digital' ? 'caja digital' : 'caja física';
-				return ( this.move.kind === 'ingreso' ? 'Ingreso a ' : 'Retiro de ' ) + acc;
+				var digital = this.move.account === 'digital';
+				if ( this.move.kind === 'ingreso' ) {
+					return digital ? __( 'Deposit to the digital register', 'keytill' ) : __( 'Deposit to the cash register', 'keytill' );
+				}
+				return digital ? __( 'Withdrawal from the digital register', 'keytill' ) : __( 'Withdrawal from the cash register', 'keytill' );
 			},
 
 			/* ---------- conciliación: tilde de verificación ---------- */
@@ -168,7 +182,7 @@
 			},
 			verifyLabel: function ( v ) {
 				if ( v === 'verificada' ) { return 'Verificada'; }
-				if ( v === 'no_llego' ) { return 'No llegó'; }
+				if ( v === 'no_llego' ) { return __( 'Not received', 'keytill' ); }
 				return 'Pendiente';
 			},
 
@@ -209,17 +223,17 @@
 			movementLabel: function ( m ) { return m === 'egreso' ? 'Egreso' : 'Ingreso'; },
 			accountLabel: function ( a ) { return a === 'digital' ? 'Digital' : 'Efectivo'; },
 			typeLabel: function ( t ) {
-				if ( t === 'venta' ) { return 'Venta'; }
+				if ( t === 'venta' ) { return __( 'Sale', 'keytill' ); }
 				if ( t === 'ingreso' ) { return 'Ingreso'; }
 				if ( t === 'retiro' ) { return 'Retiro'; }
-				if ( t === 'devolucion' ) { return 'Devolución'; }
+				if ( t === 'devolucion' ) { return __( 'Refund', 'keytill' ); }
 				return t;
 			},
 
 			// Exporta las filas visibles a CSV (se descarga).
 			exportCsv: function () {
 				var rows = this.ledger.rows || [];
-				var head = [ 'Fecha', 'Origen', 'Movimiento', 'Tipo', 'Cuenta', 'Monto', 'Detalle', 'Conciliación' ];
+				var head = [ __( 'Date', 'keytill' ), __( 'Source', 'keytill' ), __( 'Movement', 'keytill' ), __( 'Type', 'keytill' ), __( 'Account', 'keytill' ), __( 'Amount', 'keytill' ), __( 'Detail', 'keytill' ), __( 'Reconciliation', 'keytill' ) ];
 				var self = this;
 				var esc = function ( v ) { v = ( v === null || v === undefined ) ? '' : String( v ); return '"' + v.replace( /"/g, '""' ) + '"'; };
 				var lines = [ head.map( esc ).join( ',' ) ];

@@ -1,0 +1,134 @@
+{
+ "translation-revision-date": "2026-11-05 22:00:35+00:00",
+ "generator": "keytill tools/make_json.py",
+ "domain": "messages",
+ "locale_data": {
+  "messages": {
+   "": {
+    "domain": "messages",
+    "lang": "es_ES",
+    "plural-forms": "nplurals=2; plural=n != 1;"
+   },
+   "\n• …and %d more": [
+    "\n• …y %d más"
+   ],
+   "%d deleted": [
+    "%d borrada(s)"
+   ],
+   "%d new": [
+    "%d nueva(s)"
+   ],
+   "Another product already uses that SKU.": [
+    "Ya existe otro producto con ese SKU."
+   ],
+   "Assign %1$d product(s) to location “%2$s”?": [
+    "¿Asignar %1$d producto(s) a la sucursal «%2$s»?"
+   ],
+   "Choose a location.": [
+    "Elegí una sucursal."
+   ],
+   "Choose at least one attribute with values.": [
+    "Elegí al menos un atributo con valores."
+   ],
+   "Choose different locations.": [
+    "Elegí sucursales distintas."
+   ],
+   "Could not assign the location.": [
+    "No se pudo asignar la sucursal."
+   ],
+   "Could not create the attribute.": [
+    "No se pudo crear el atributo."
+   ],
+   "Could not create the value.": [
+    "No se pudo crear el valor."
+   ],
+   "Could not delete the product.": [
+    "No se pudo borrar el producto."
+   ],
+   "Could not delete.": [
+    "No se pudo borrar."
+   ],
+   "Could not generate the variations.": [
+    "No se pudieron generar las variaciones."
+   ],
+   "Could not load the catalog.": [
+    "No se pudo cargar el catálogo."
+   ],
+   "Could not load the product.": [
+    "No se pudo cargar el producto."
+   ],
+   "Could not load the variations.": [
+    "No se pudieron cargar las variaciones."
+   ],
+   "Could not move the stock.": [
+    "No se pudo mover el stock."
+   ],
+   "Could not save.": [
+    "No se pudo guardar."
+   ],
+   "Could not start printing.": [
+    "No se pudo iniciar la impresión."
+   ],
+   "Could not upload an image.": [
+    "No se pudo subir una imagen."
+   ],
+   "Could not upload the image.": [
+    "No se pudo subir la imagen."
+   ],
+   "Delete the variation “%s”?": [
+    "¿Borrar la variación «%s»?"
+   ],
+   "How many labels do you want to generate?": [
+    "¿Cuántas etiquetas querés generar?"
+   ],
+   "Invalid quantity.": [
+    "Cantidad inválida."
+   ],
+   "Link URL (https://…)": [
+    "URL del enlace (https://…)"
+   ],
+   "Location: %s": [
+    "Sucursal: %s"
+   ],
+   "No changes.": [
+    "Sin cambios."
+   ],
+   "No location": [
+    "Sin sucursal asignada"
+   ],
+   "Nothing was generated: resolve the leftover variations first.": [
+    "No se generó nada: primero resolvé las variaciones que sobran."
+   ],
+   "Product created. Now define the attributes and generate the variations.": [
+    "Producto creado. Ahora definí los atributos y generá las variaciones."
+   ],
+   "Remove the location from %d product(s)?": [
+    "¿Quitar la sucursal de %d producto(s)?"
+   ],
+   "Send the product “%s” to the trash?\n\nIt can be restored from WordPress if it was a mistake.": [
+    "¿Enviar el producto «%s» a la papelera?\n\nSe puede recuperar desde WordPress si fue un error."
+   ],
+   "Set the barcode first.": [
+    "Cargá primero el código de barras."
+   ],
+   "The name is required.": [
+    "El nombre es obligatorio."
+   ],
+   "The price is required.": [
+    "El precio es obligatorio."
+   ],
+   "There are %1$d variation(s) that no longer match the chosen attributes:\n\n%2$s\n\nDelete them and regenerate?": [
+    "Hay %1$d variación(es) que ya no corresponden a los atributos elegidos:\n\n%2$s\n\n¿Borrarlas y regenerar?"
+   ],
+   "Variations: %s.": [
+    "Variaciones: %s."
+   ],
+   "You did not select any product.": [
+    "No seleccionaste ningún producto."
+   ],
+   "Your session expired. Reload the page (F5) and sign in again.": [
+    "Tu sesión expiró. Recargá la página (F5) y volvé a iniciar sesión."
+   ]
+  }
+ }
+}

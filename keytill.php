@@ -534,7 +534,7 @@ function keytill_enqueue_assets() {
 	wp_enqueue_script(
 		'keytill-app',
 		KEYTILL_URL . 'assets/js/pos.js',
-		array(),
+		array( 'wp-i18n' ),
 		keytill_asset_ver( 'assets/js/pos.js' ),
 		array( 'in_footer' => true )
 	);
@@ -543,7 +543,7 @@ function keytill_enqueue_assets() {
 	wp_enqueue_script(
 		'keytill-orders',
 		KEYTILL_URL . 'assets/js/pos-orders.js',
-		array( 'keytill-app' ),
+		array( 'keytill-app', 'wp-i18n' ),
 		keytill_asset_ver( 'assets/js/pos-orders.js' ),
 		array( 'in_footer' => true )
 	);
@@ -552,7 +552,7 @@ function keytill_enqueue_assets() {
 	wp_enqueue_script(
 		'keytill-products',
 		KEYTILL_URL . 'assets/js/pos-products.js',
-		array( 'keytill-app' ),
+		array( 'keytill-app', 'wp-i18n' ),
 		keytill_asset_ver( 'assets/js/pos-products.js' ),
 		array( 'in_footer' => true )
 	);
@@ -561,7 +561,7 @@ function keytill_enqueue_assets() {
 	wp_enqueue_script(
 		'keytill-customers',
 		KEYTILL_URL . 'assets/js/pos-customers.js',
-		array( 'keytill-app' ),
+		array( 'keytill-app', 'wp-i18n' ),
 		keytill_asset_ver( 'assets/js/pos-customers.js' ),
 		array( 'in_footer' => true )
 	);
@@ -570,10 +570,16 @@ function keytill_enqueue_assets() {
 	wp_enqueue_script(
 		'keytill-cashbank',
 		KEYTILL_URL . 'assets/js/pos-cashbank.js',
-		array( 'keytill-app' ),
+		array( 'keytill-app', 'wp-i18n' ),
 		keytill_asset_ver( 'assets/js/pos-cashbank.js' ),
 		array( 'in_footer' => true )
 	);
+
+	// Textos que viven en el JS: WordPress los sirve desde
+	// languages/keytill-{locale}-{handle}.json (formato jed de wp.i18n).
+	foreach ( array( 'keytill-app', 'keytill-orders', 'keytill-products', 'keytill-customers', 'keytill-cashbank' ) as $keytill_handle ) {
+		wp_set_script_translations( $keytill_handle, 'keytill', KEYTILL_DIR . 'languages' );
+	}
 
 	// Nonce + raíz REST para las llamadas de Alpine (mismo origen).
 	wp_localize_script(

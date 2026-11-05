@@ -11,6 +11,17 @@
 
 	var API = window.wpApiSettings || { root: '/wp-json/', nonce: '' };
 
+	// Textos traducibles. wp.i18n lo encola WordPress como dependencia del script
+	// (ver wp_set_script_translations en keytill.php); el fallback deja el ingles.
+	var I18N = ( window.wp && window.wp.i18n ) || null;
+	var __ = I18N ? I18N.__ : function ( s ) { return s; };
+	var sprintf = I18N ? I18N.sprintf : function ( fmt ) {
+		var args = Array.prototype.slice.call( arguments, 1 ), i = 0;
+		return String( fmt ).replace( /%(?:(\d+)\$)?[sd]/g, function ( _m, pos ) {
+			return String( pos ? args[ pos - 1 ] : args[ i++ ] );
+		} );
+	};
+
 	function ymd( d ) {
 		var m = ( '0' + ( d.getMonth() + 1 ) ).slice( -2 );
 		var day = ( '0' + d.getDate() ).slice( -2 );
@@ -93,7 +104,7 @@
 						self.pages = ( d && d.pages ) || 1;
 						self.page = ( d && d.page ) || 1;
 					} )
-					.catch( function () { self.loading = false; self.error = 'No se pudo cargar el listado.'; } );
+					.catch( function () { self.loading = false; self.error = __( 'Could not load the list.', 'keytill' ); } );
 			},
 
 			apply: function () { this.load( 1 ); },
@@ -130,9 +141,9 @@
 			// rango de fechas (Desde y Hasta) para no exportar todo el histórico.
 			exportCsv: function () {
 				var cfg = window.keytillConfig || {};
-				if ( ! cfg.ordersExport ) { this.error = 'No se pudo generar la exportación.'; return; }
+				if ( ! cfg.ordersExport ) { this.error = __( 'Could not generate the export.', 'keytill' ); return; }
 				if ( ! this.filters.date_from || ! this.filters.date_to ) {
-					this.error = 'Elegí un rango de fechas (Desde y Hasta) para exportar.';
+					this.error = __( 'Choose a date range (From and To) to export.', 'keytill' );
 					return;
 				}
 				this.error = '';
@@ -152,7 +163,7 @@
 				this.selected = null;
 				getJSON( API.root + 'keytill/v1/orders/' + id )
 					.then( function ( d ) { self.detailLoading = false; self.selected = d; } )
-					.catch( function () { self.detailLoading = false; self.error = 'No se pudo abrir el pedido.'; } );
+					.catch( function () { self.detailLoading = false; self.error = __( 'Could not open the order.', 'keytill' ); } );
 			},
 
 			closeDetail: function () { this.selected = null; },

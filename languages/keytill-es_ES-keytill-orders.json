@@ -1,0 +1,26 @@
+{
+ "translation-revision-date": "2026-11-05 22:00:35+00:00",
+ "generator": "keytill tools/make_json.py",
+ "domain": "messages",
+ "locale_data": {
+  "messages": {
+   "": {
+    "domain": "messages",
+    "lang": "es_ES",
+    "plural-forms": "nplurals=2; plural=n != 1;"
+   },
+   "Choose a date range (From and To) to export.": [
+    "Elegí un rango de fechas (Desde y Hasta) para exportar."
+   ],
+   "Could not generate the export.": [
+    "No se pudo generar la exportación."
+   ],
+   "Could not load the list.": [
+    "No se pudo cargar el listado."
+   ],
+   "Could not open the order.": [
+    "No se pudo abrir el pedido."
+   ]
+  }
+ }
+}

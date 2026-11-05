@@ -1,0 +1,80 @@
+{
+ "translation-revision-date": "2026-11-05 22:00:35+00:00",
+ "generator": "keytill tools/make_json.py",
+ "domain": "messages",
+ "locale_data": {
+  "messages": {
+   "": {
+    "domain": "messages",
+    "lang": "es_ES",
+    "plural-forms": "nplurals=2; plural=n != 1;"
+   },
+   "Account": [
+    "Cuenta"
+   ],
+   "Amount": [
+    "Monto"
+   ],
+   "Close the digital register? The current balance becomes the opening balance of the next period.": [
+    "Cerrar la caja digital? El saldo actual queda como apertura del próximo período."
+   ],
+   "Could not close the digital register.": [
+    "No se pudo cerrar la caja digital."
+   ],
+   "Could not load.": [
+    "No se pudo cargar."
+   ],
+   "Could not open the digital register.": [
+    "No se pudo abrir la caja digital."
+   ],
+   "Could not record the movement.": [
+    "No se pudo registrar el movimiento."
+   ],
+   "Date": [
+    "Fecha"
+   ],
+   "Deposit to the cash register": [
+    "Ingreso a caja física"
+   ],
+   "Deposit to the digital register": [
+    "Ingreso a caja digital"
+   ],
+   "Detail": [
+    "Detalle"
+   ],
+   "Enter a valid amount.": [
+    "Ingresá un monto válido."
+   ],
+   "Movement": [
+    "Movimiento"
+   ],
+   "Not received": [
+    "No llegó"
+   ],
+   "Reconciliation": [
+    "Conciliación"
+   ],
+   "Refund": [
+    "Devolución"
+   ],
+   "Register / Bank": [
+    "Caja / Banco"
+   ],
+   "Sale": [
+    "Venta"
+   ],
+   "Source": [
+    "Origen"
+   ],
+   "Type": [
+    "Tipo"
+   ],
+   "Withdrawal from the cash register": [
+    "Retiro de caja física"
+   ],
+   "Withdrawal from the digital register": [
+    "Retiro de caja digital"
+   ]
+  }
+ }
+}

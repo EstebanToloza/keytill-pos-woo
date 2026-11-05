@@ -1,0 +1,281 @@
+{
+ "translation-revision-date": "2026-11-05 22:00:35+00:00",
+ "generator": "keytill tools/make_json.py",
+ "domain": "messages",
+ "locale_data": {
+  "messages": {
+   "": {
+    "domain": "messages",
+    "lang": "es_ES",
+    "plural-forms": "nplurals=2; plural=n != 1;"
+   },
+   " (per-item discounts were removed)": [
+    " (se quitaron los descuentos por prenda)"
+   ],
+   " (the overall discount was removed)": [
+    " (se quitó el descuento general)"
+   ],
+   " · credit %s": [
+    " · crédito %s"
+   ],
+   "%1$s → %2$s u.": [
+    "%1$s → %2$s u."
+   ],
+   "%1$s: limited to available stock (%2$s)": [
+    "%1$s: limitado al stock disponible (%2$s)"
+   ],
+   "%s: no discount": [
+    "%s: sin descuento"
+   ],
+   "%s: no price set. Set it in Products before selling it.": [
+    "%s: sin precio cargado. Cargalo en Productos antes de venderlo."
+   ],
+   "%s: out of stock": [
+    "%s: sin stock"
+   ],
+   "A customer with those details already exists.": [
+    "Ya existe un cliente con esos datos."
+   ],
+   "Available at %s": [
+    "Disponible en sucursal %s"
+   ],
+   "Camera permission denied. Enable it in the browser and retry.": [
+    "Permiso de cámara denegado. Habilitalo en el navegador y reintentá."
+   ],
+   "Choose a payment method for the remainder": [
+    "Elegí un medio de pago para el resto"
+   ],
+   "Choose at least one unit to refund (+)": [
+    "Elegí al menos una unidad a devolver (+)"
+   ],
+   "Choose the register's location": [
+    "Elegí la sucursal de la caja"
+   ],
+   "Choose where each item comes from": [
+    "Elegí de dónde descontar cada prenda"
+   ],
+   "Comped": [
+    "Bonificado"
+   ],
+   "Could not load the camera reader.": [
+    "No se pudo cargar el lector de cámara."
+   ],
+   "Could not open the camera.": [
+    "No se pudo abrir la cámara."
+   ],
+   "Could not process the refund": [
+    "No se pudo procesar la devolución"
+   ],
+   "Could not record the sale": [
+    "No se pudo registrar la venta"
+   ],
+   "Could not save the customer.": [
+    "No se pudo guardar el cliente."
+   ],
+   "Could not start the reader.": [
+    "No se pudo iniciar el lector."
+   ],
+   "Credit %1$s · applies %2$s": [
+    "Crédito %1$s · aplica %2$s"
+   ],
+   "Credit not found": [
+    "Crédito no encontrado"
+   ],
+   "Credit removed from the payment": [
+    "Crédito quitado del cobro"
+   ],
+   "Customer: %s": [
+    "Cliente: %s"
+   ],
+   "Digital register open": [
+    "Caja digital abierta"
+   ],
+   "Digital withdrawal %s": [
+    "Retiro digital %s"
+   ],
+   "Discount %1$s · %2$s": [
+    "Bonificación %1$s · %2$s"
+   ],
+   "Discount %1$s%% · %2$s": [
+    "Bonificación %1$s%% · %2$s"
+   ],
+   "Discount %s": [
+    "Descuento %s"
+   ],
+   "Discount %s%%": [
+    "Descuento %s%%"
+   ],
+   "Empty cart: nothing to charge": [
+    "Carrito vacío: nada que cobrar"
+   ],
+   "Empty cart: nothing to discount": [
+    "Carrito vacío: nada que bonificar"
+   ],
+   "Enter a code": [
+    "Ingresá un código"
+   ],
+   "Enter a sale number": [
+    "Ingresá un número de venta"
+   ],
+   "Enter at least an email or tax ID.": [
+    "Cargá al menos email o DNI."
+   ],
+   "Error: %s": [
+    "Error: %s"
+   ],
+   "Field cleared": [
+    "Campo limpio"
+   ],
+   "Finish or cancel the sale before closing the register": [
+    "Terminá o cancelá la venta antes de cerrar la caja"
+   ],
+   "Gift card %s added": [
+    "Gift card %s agregada"
+   ],
+   "Gift card amount…": [
+    "Monto de la gift card…"
+   ],
+   "Gift card maximum: %s": [
+    "Máximo por gift card: %s"
+   ],
+   "Gift cards cannot be discounted": [
+    "Las gift cards no se bonifican"
+   ],
+   "Invalid amount": [
+    "Monto inválido"
+   ],
+   "Invalid opening float": [
+    "Fondo inicial inválido"
+   ],
+   "Line removed: %s": [
+    "Línea quitada: %s"
+   ],
+   "Maximum stock reached: %1$s (%2$s)": [
+    "Stock máximo alcanzado: %1$s (%2$s)"
+   ],
+   "Network error": [
+    "Error de red"
+   ],
+   "Network error while recording the sale": [
+    "Error de red al registrar la venta"
+   ],
+   "No connection": [
+    "Sin conexión"
+   ],
+   "No connection. Retry the payment (Enter).": [
+    "Sin conexión. Reintentá el cobro (Enter)."
+   ],
+   "No connection. Retry.": [
+    "Sin conexión. Reintentá."
+   ],
+   "No discount": [
+    "Sin descuento"
+   ],
+   "No more stock: %1$s (max %2$s)": [
+    "Sin stock para más: %1$s (máx %2$s)"
+   ],
+   "No results for “%s”": [
+    "Sin resultados para «%s»"
+   ],
+   "Not enough cash": [
+    "Efectivo insuficiente"
+   ],
+   "Only the manager can close the register": [
+    "Solo el encargado puede cerrar la caja"
+   ],
+   "Opening balance of the digital register (first time only):": [
+    "Saldo inicial de la caja digital (solo la primera vez):"
+   ],
+   "Out of stock": [
+    "Sin stock"
+   ],
+   "Out of stock: %s": [
+    "Sin stock: %s"
+   ],
+   "Payment: choose a payment method": [
+    "Cobro: elegí medio de pago"
+   ],
+   "Payment: choose a salesperson": [
+    "Cobro: elegí vendedor"
+   ],
+   "Ready. Scan to start.": [
+    "Listo. Escaneá para empezar."
+   ],
+   "Recording sale…": [
+    "Registrando venta…"
+   ],
+   "Refund recorded": [
+    "Devolución registrada"
+   ],
+   "Register / Bank": [
+    "Caja / Banco"
+   ],
+   "Register closed. Open a new one to sell.": [
+    "Caja cerrada. Abrí una nueva para vender."
+   ],
+   "Register open · float %s": [
+    "Caja abierta · fondo %s"
+   ],
+   "Register operation failed": [
+    "Operación de caja fallida"
+   ],
+   "Removed: %s": [
+    "Quitado: %s"
+   ],
+   "Retry the payment": [
+    "Reintentá el cobro"
+   ],
+   "Sale": [
+    "Venta"
+   ],
+   "Sale %1$s closed · %2$s": [
+    "Venta %1$s cerrada · %2$s"
+   ],
+   "Sale cancelled": [
+    "Venta cancelada"
+   ],
+   "Sale not found": [
+    "Venta no encontrada"
+   ],
+   "Sale not recorded": [
+    "Venta no registrada"
+   ],
+   "Store credit": [
+    "Crédito en tienda"
+   ],
+   "The camera needs a secure connection (HTTPS).": [
+    "La cámara necesita una conexión segura (HTTPS)."
+   ],
+   "The credit is not valid": [
+    "El crédito no es válido"
+   ],
+   "The digital register (bank account) has never been opened. Open it now? You will set the opening balance.": [
+    "La caja digital (cuenta bancaria) nunca se abrió. ¿Abrirla ahora? Vas a cargar el saldo inicial."
+   ],
+   "The digital register is closed. Open it now?": [
+    "La caja digital está cerrada. ¿Abrirla ahora?"
+   ],
+   "There are no items to discount": [
+    "No hay prendas para bonificar"
+   ],
+   "This device/browser does not allow camera use.": [
+    "Este dispositivo/navegador no permite usar la cámara."
+   ],
+   "Walk-in customer": [
+    "Consumidor final"
+   ],
+   "Withdrawal %s": [
+    "Retiro %s"
+   ],
+   "max %s": [
+    "máx %s"
+   ],
+   "out of stock": [
+    "sin stock"
+   ],
+   "stock %s": [
+    "stock %s"
+   ]
+  }
+ }
+}
