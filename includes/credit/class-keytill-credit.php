@@ -188,7 +188,20 @@ class KEYTILL_Credit {
 	 * ------------------------------------------------------------------ */
 
 	/**
-	 * Genera un código único al portador tipo HM-XXXX-XXXX (sin caracteres
+	 * Prefijo de los códigos al portador. Dos letras, para que el código entre
+	 * en un ticket angosto y se dicte por teléfono sin ambigüedad.
+	 * Filtrable por si el comercio quiere su propia sigla.
+	 *
+	 * @return string
+	 */
+	public static function code_prefix() {
+		$prefix = (string) apply_filters( 'keytill_credit_code_prefix', 'KT' );
+		$prefix = strtoupper( preg_replace( '/[^A-Za-z]/', '', $prefix ) );
+		return ( '' === $prefix ) ? 'KT' : substr( $prefix, 0, 4 );
+	}
+
+	/**
+	 * Genera un código único al portador tipo KT-XXXX-XXXX (sin caracteres
 	 * ambiguos).
 	 *
 	 * @return string
@@ -197,13 +210,14 @@ class KEYTILL_Credit {
 		global $wpdb;
 		$alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sin I,O,0,1
 		$table    = self::table();
+		$prefix   = self::code_prefix();
 
 		do {
 			$chunk = '';
 			for ( $i = 0; $i < 8; $i++ ) {
 				$chunk .= $alphabet[ random_int( 0, strlen( $alphabet ) - 1 ) ];
 			}
-			$code   = 'HM-' . substr( $chunk, 0, 4 ) . '-' . substr( $chunk, 4, 4 );
+			$code   = $prefix . '-' . substr( $chunk, 0, 4 ) . '-' . substr( $chunk, 4, 4 );
 			$exists = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table WHERE code = %s", $code ) ); // phpcs:ignore
 		} while ( $exists );
 

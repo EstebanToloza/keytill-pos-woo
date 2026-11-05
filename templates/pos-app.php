@@ -1536,7 +1536,7 @@ $keytill_logo       = $keytill_biz['logo'] ? wp_get_attachment_image_url( $keyti
 			<div class="pay__credit-entry" x-show="payStage === 'credit'" x-cloak>
 				<span class="pay__col-label"><?php esc_html_e( 'STORE CREDIT', 'keytill' ); ?></span>
 				<span class="mono modal__sub"><?php esc_html_e( 'Enter the code · ENTER validate · ESC back', 'keytill' ); ?></span>
-				<input type="text" x-ref="payCredit" x-model="creditCodeDraft" class="modal__input mono cash-amount" placeholder="HM-XXXX-XXXX" autocomplete="off" spellcheck="false" style="text-transform:uppercase" />
+				<input type="text" x-ref="payCredit" x-model="creditCodeDraft" class="modal__input mono cash-amount" placeholder="KT-XXXX-XXXX" autocomplete="off" spellcheck="false" style="text-transform:uppercase" />
 				<div class="pay__error" x-show="creditError" x-cloak x-text="creditError"></div>
 				<div class="pay__enter" x-show="!$store.pos.touch"><kbd class="kbd-brand">ENTER</kbd> <?php esc_html_e( 'validate credit', 'keytill' ); ?></div>
 				<div class="pay__credit-actions sheet-actions" x-show="$store.pos.touch" x-cloak>

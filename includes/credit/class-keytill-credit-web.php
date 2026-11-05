@@ -90,14 +90,18 @@ class KEYTILL_Credit_Web {
 	 * ------------------------------------------------------------------ */
 
 	/**
-	 * ¿El código tiene forma de crédito HM-XXXX-XXXX?
+	 * ¿El código tiene forma de crédito XX-XXXX-XXXX?
+	 *
+	 * Acepta cualquier prefijo de 2 a 4 letras, no solo el actual: si el
+	 * comercio cambia el prefijo (filtro keytill_credit_code_prefix) los
+	 * códigos ya emitidos tienen que seguir canjeándose.
 	 *
 	 * @param string $code Código (ya normalizado o no).
 	 * @return bool
 	 */
 	public static function is_credit_code( $code ) {
 		$code = KEYTILL_Credit::normalize_code( $code );
-		return (bool) preg_match( '/^HM-[A-Z0-9]{4}-[A-Z0-9]{4}$/', $code );
+		return (bool) preg_match( '/^[A-Z]{2,4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/', $code );
 	}
 
 	/* ------------------------------------------------------------------ *

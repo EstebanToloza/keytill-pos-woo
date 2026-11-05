@@ -204,360 +204,379 @@ $keytill_brand = KEYTILL_Settings::business()['name'];
     <div class="brandbar">
       <div class="brandbar__id">
         <span class="logo"><?php echo esc_html( $keytill_brand ); ?></span>
-        <span class="kicker">POS &middot; Manual de mostrador</span>
+        <span class="kicker">POS &middot; Counter manual</span>
       </div>
-      <button class="theme-btn" id="themeToggle" type="button" aria-label="Cambiar tema">
-        <span id="themeIcon">&#9680;</span><span id="themeLabel">Tema</span>
+      <button class="theme-btn" id="themeToggle" type="button" aria-label="Switch theme">
+        <span id="themeIcon">&#9680;</span><span id="themeLabel">Theme</span>
       </button>
     </div>
-    <h1>Cómo se opera la caja</h1>
-    <p class="lede">Todo lo que se hace desde el mostrador, paso a paso: abrir la caja, vender, cobrar, devolver, cambiar, cerrar el turno y administrar el catálogo. Operado por teclado — cada tecla de función dispara una acción.</p>
+    <h1>How to run the register</h1>
+    <p class="lede">Everything you do from the counter, step by step: open the register, sell, take payment, refund, exchange, close the shift and manage the catalog. Keyboard-driven — every function key fires an action.</p>
 
-    <div class="legend" aria-label="Teclas de función">
-      <span class="legend__item"><kbd class="key key--brand">F2</kbd><span class="legend__lbl">Cobrar</span></span>
-      <span class="legend__item"><kbd class="key">F4</kbd><span class="legend__lbl">Cliente</span></span>
-      <span class="legend__item"><kbd class="key">F7</kbd><span class="legend__lbl">Devolución</span></span>
-      <span class="legend__item"><kbd class="key">F8</kbd><span class="legend__lbl">Descuento</span></span>
-      <span class="legend__item"><kbd class="key">F9</kbd><span class="legend__lbl">Cerrar caja</span></span>
-      <span class="legend__item"><kbd class="key">F10</kbd><span class="legend__lbl">Retiro</span></span>
-      <span class="legend__item"><kbd class="key">ESC</kbd><span class="legend__lbl">Cancelar</span></span>
+    <div class="legend" aria-label="Function keys">
+      <span class="legend__item"><kbd class="key key--brand">F2</kbd><span class="legend__lbl">Take payment</span></span>
+      <span class="legend__item"><kbd class="key">F4</kbd><span class="legend__lbl">Customer</span></span>
+      <span class="legend__item"><kbd class="key">F7</kbd><span class="legend__lbl">Refund</span></span>
+      <span class="legend__item"><kbd class="key">F8</kbd><span class="legend__lbl">Discount</span></span>
+      <span class="legend__item"><kbd class="key">F9</kbd><span class="legend__lbl">Close register</span></span>
+      <span class="legend__item"><kbd class="key">F10</kbd><span class="legend__lbl">Withdrawal</span></span>
+      <span class="legend__item"><kbd class="key">ESC</kbd><span class="legend__lbl">Cancel</span></span>
     </div>
   </div>
 </header>
 
 <div class="wrap">
   <div class="shell">
-    <nav class="toc" aria-label="Contenido">
+    <nav class="toc" aria-label="Contents">
       <div class="toc__group">
-        <p class="toc__h">Caja y venta</p>
-        <a href="#antes"><span class="num">00</span>Antes de empezar</a>
-        <a href="#abrir"><span class="num">01</span>Abrir la caja</a>
-        <a href="#vender"><span class="num">02</span>Vender</a>
-        <a href="#cobrar"><span class="num">03</span>Cobrar</a>
+        <p class="toc__h">Register and sale</p>
+        <a href="#before"><span class="num">00</span>Before you start</a>
+        <a href="#open"><span class="num">01</span>Open the register</a>
+        <a href="#sell"><span class="num">02</span>Sell</a>
+        <a href="#pay"><span class="num">03</span>Take payment</a>
       </div>
       <div class="toc__group">
-        <p class="toc__h">Cliente y ajustes</p>
-        <a href="#cliente"><span class="num">04</span>Asignar cliente</a>
-        <a href="#descuento"><span class="num">05</span>Descuento</a>
+        <p class="toc__h">Customer and adjustments</p>
+        <a href="#customer"><span class="num">04</span>Assign a customer</a>
+        <a href="#discount"><span class="num">05</span>Discount</a>
       </div>
       <div class="toc__group">
-        <p class="toc__h">Devoluciones y crédito</p>
-        <a href="#devolucion"><span class="num">06</span>Devoluciones y cambios</a>
-        <a href="#credito"><span class="num">07</span>Crédito y gift cards</a>
+        <p class="toc__h">Refunds and credit</p>
+        <a href="#refund"><span class="num">06</span>Refunds and exchanges</a>
+        <a href="#credit"><span class="num">07</span>Credit and gift cards</a>
       </div>
       <div class="toc__group">
-        <p class="toc__h">Cierre de turno</p>
-        <a href="#retiro"><span class="num">08</span>Retiro de efectivo</a>
-        <a href="#cierre"><span class="num">09</span>Cerrar la caja</a>
+        <p class="toc__h">End of shift</p>
+        <a href="#withdrawal"><span class="num">08</span>Cash withdrawal</a>
+        <a href="#close"><span class="num">09</span>Close the register</a>
       </div>
       <div class="toc__group">
-        <p class="toc__h">Consola</p>
-        <a href="#pedidos"><span class="num">10</span>Pedidos</a>
-        <a href="#productos"><span class="num">11</span>Productos</a>
-        <a href="#clientes"><span class="num">12</span>Clientes</a>
-        <a href="#cajabanco"><span class="num">13</span>Caja / Banco</a>
+        <p class="toc__h">Console</p>
+        <a href="#orders"><span class="num">10</span>Orders</a>
+        <a href="#products"><span class="num">11</span>Products</a>
+        <a href="#customers"><span class="num">12</span>Customers</a>
+        <a href="#cashbank"><span class="num">13</span>Register / Bank</a>
       </div>
       <div class="toc__group">
-        <p class="toc__h">Referencia</p>
-        <a href="#atajos"><span class="num">&#9733;</span>Teclas y avisos</a>
+        <p class="toc__h">Reference</p>
+        <a href="#keys"><span class="num">&#9733;</span>Keys and notices</a>
       </div>
     </nav>
 
     <main>
-      <section class="op" id="antes">
-        <div class="op__head"><span class="op__no">00</span><h2 class="op__title">Antes de empezar</h2></div>
-        <p class="op__when">Tres cosas que conviene tener claras antes de tocar una tecla.</p>
+      <section class="op" id="before">
+        <div class="op__head"><span class="op__no">00</span><h2 class="op__title">Before you start</h2></div>
+        <p class="op__when">Three things worth knowing before you touch a key.</p>
 
-        <p class="section-band">El campo de comando</p>
-        <p style="color:var(--ink-soft);margin:0">La caja tiene un cuadro grande que está <strong>siempre enfocado</strong>: ahí se escanea o se busca. Funciona como lector de código de barras — el <strong>SKU es el código</strong>. También se puede escribir el nombre del producto y elegir con las flechas.</p>
+        <p class="section-band">The command field</p>
+        <p style="color:var(--ink-soft);margin:0">The register has one large box that is <strong>always focused</strong>: that is where you scan or search. It works with a barcode reader — the <strong>SKU is the code</strong>. You can also type a product name and pick it with the arrow keys.</p>
         <ul class="plain">
-          <li>Escaneá o escribí y presioná <kbd class="key">ENTER</kbd> para agregar al ticket.</li>
-          <li>Para varias unidades de una: escribí <code>N*</code> antes del código (ej. <code>3*</code> y escaneás = 3 unidades).</li>
-          <li>Un producto con talles/colores tiene <strong>un código por variación</strong>: cada talle se escanea y descuenta su propio stock.</li>
+          <li>Scan or type, then press <kbd class="key">ENTER</kbd> to add it to the ticket.</li>
+          <li>For several units at once: type <code>N*</code> before the code (e.g. <code>3*</code> then scan = 3 units).</li>
+          <li>A product with sizes or colors has <strong>one code per variation</strong>: each one is scanned and draws down its own stock.</li>
         </ul>
 
-        <p class="section-band">Quién puede hacer qué</p>
+        <p class="section-band">Who can do what</p>
         <div class="tablewrap"><table>
-          <thead><tr><th>Rol</th><th>Puede</th></tr></thead>
+          <thead><tr><th>Role</th><th>Can</th></tr></thead>
           <tbody>
-            <tr><td><span class="pill pill--role">Cajero</span></td><td>Vender, cobrar, asignar/crear clientes, hacer devoluciones, retirar y cerrar caja, y <strong>ver</strong> las pestañas de la consola.</td></tr>
-            <tr><td><span class="pill pill--role">Encargado / Admin</span></td><td>Todo lo del cajero, y además <strong>editar productos</strong>: precio, stock, activar/desactivar y dar de alta.</td></tr>
+            <tr><td><span class="pill pill--role">Cashier</span></td><td>Sell, take payment, assign and create customers, process refunds, record withdrawals, close the register, and <strong>view</strong> the console tabs.</td></tr>
+            <tr><td><span class="pill pill--role">Manager / Admin</span></td><td>Everything a cashier can, plus <strong>edit products</strong>: price, stock, enable/disable and create new ones.</td></tr>
           </tbody>
         </table></div>
 
-        <div class="note note--warn"><span class="note__tag">Requisito</span>
-          <p>No se puede vender con la caja cerrada. Lo primero de cada turno es <a href="#abrir">abrir la caja</a> con el fondo inicial. Usar siempre <strong>Google Chrome</strong>.</p>
+        <div class="note note--warn"><span class="note__tag">Requirement</span>
+          <p>You cannot sell with the register closed. The first thing every shift is to <a href="#open">open the register</a> with its opening float. A current version of Chrome, Edge, Firefox or Safari is required; the camera scanner also needs the site served over <strong>HTTPS</strong>.</p>
         </div>
       </section>
 
-      <section class="op" id="abrir">
-        <div class="op__head"><span class="op__no">01</span><h2 class="op__title">Abrir la caja</h2></div>
-        <p class="op__when">Al inicio del turno. Registra el efectivo con el que arranca el cajón (fondo inicial) para poder arquear al cierre.</p>
+      <section class="op" id="open">
+        <div class="op__head"><span class="op__no">01</span><h2 class="op__title">Open the register</h2></div>
+        <p class="op__when">At the start of the shift. Records the cash the drawer starts with (the opening float) so the count adds up at closing.</p>
         <ol class="steps">
-          <li>Al entrar sin caja abierta aparece la pantalla <strong>Abrir caja</strong>.</li>
-          <li>Escribí el <strong>fondo inicial</strong> de efectivo (lo que hay en el cajón para dar vuelto).</li>
-          <li>Presioná <kbd class="key key--brand">ENTER</kbd>. La caja queda abierta y ya podés vender.</li>
+          <li>When you sign in with no register open, the <strong>Open register</strong> screen appears.</li>
+          <li>Type the cash <strong>opening float</strong> (what is in the drawer to give change).</li>
+          <li>Press <kbd class="key key--brand">ENTER</kbd>. The register is open and you can sell.</li>
         </ol>
-        <div class="note note--info"><span class="note__tag">Una sola caja</span>
-          <p>Hay una caja a la vez. Si ya hay una abierta, el sistema no deja abrir otra: primero se cierra la anterior.</p>
+        <div class="note note--info"><span class="note__tag">One register at a time</span>
+          <p>There is one register per cashier at a time. If one is already open, the system will not open another: close the previous one first.</p>
         </div>
       </section>
 
-      <section class="op" id="vender">
-        <div class="op__head"><span class="op__no">02</span><h2 class="op__title">Vender: armar el ticket</h2></div>
-        <p class="op__when">Cargar los productos que lleva el cliente antes de cobrar.</p>
+      <section class="op" id="sell">
+        <div class="op__head"><span class="op__no">02</span><h2 class="op__title">Sell: build the ticket</h2></div>
+        <p class="op__when">Load what the customer is buying before taking payment.</p>
         <ol class="steps">
-          <li>Escaneá el producto (o escribí el nombre y elegí con <kbd class="key">↑</kbd> <kbd class="key">↓</kbd> + <kbd class="key">ENTER</kbd>). Se agrega al ticket.</li>
-          <li>Para elegir una línea del ticket usá <kbd class="key">↑</kbd> <kbd class="key">↓</kbd>; para cambiar la cantidad, <kbd class="key">+</kbd> <kbd class="key">−</kbd>.</li>
-          <li>Para quitar la línea elegida: <kbd class="key">SUPR</kbd>.</li>
-          <li>Cuando el ticket esté completo, cobrá con <kbd class="key key--brand">F2</kbd>.</li>
+          <li>Scan the product (or type the name and pick it with <kbd class="key">↑</kbd> <kbd class="key">↓</kbd> + <kbd class="key">ENTER</kbd>). It is added to the ticket.</li>
+          <li>To select a ticket line use <kbd class="key">↑</kbd> <kbd class="key">↓</kbd>; to change the quantity, <kbd class="key">+</kbd> <kbd class="key">−</kbd>.</li>
+          <li>To remove the selected line: <kbd class="key">DEL</kbd>.</li>
+          <li>When the ticket is complete, take payment with <kbd class="key key--brand">F2</kbd>.</li>
         </ol>
-        <div class="note"><span class="note__tag">Nota</span>
-          <p>El total se ve siempre a la derecha. El stock que muestra es una referencia; el descuento real de stock ocurre al cobrar.</p>
+        <div class="note"><span class="note__tag">Note</span>
+          <p>The total is always on the right. The stock shown is a reference; stock is actually drawn down when you take payment.</p>
         </div>
       </section>
 
-      <section class="op" id="cobrar">
-        <div class="op__head"><span class="op__no">03</span><h2 class="op__title">Cobrar</h2><div class="op__keys"><kbd class="key key--brand key--lg">F2</kbd></div></div>
-        <p class="op__when">Elegir el medio de pago, cobrar y (si hace falta) calcular el vuelto.</p>
+      <section class="op" id="pay">
+        <div class="op__head"><span class="op__no">03</span><h2 class="op__title">Take payment</h2><div class="op__keys"><kbd class="key key--brand key--lg">F2</kbd></div></div>
+        <p class="op__when">Pick the payment method, take the money and (if needed) work out the change.</p>
         <ol class="steps">
-          <li>Con <kbd class="key key--brand">F2</kbd> se abre el cobro. Elegí el medio con el número:
+          <li><kbd class="key key--brand">F2</kbd> opens payment. Pick the method by number — <kbd class="key">1</kbd> is always <strong>Cash</strong>, and <kbd class="key">2</kbd> onward are the methods you configured in settings (card, bank transfer, a wallet app, whatever you use).
             <ul class="plain" style="margin-top:10px">
-              <li><kbd class="key">1</kbd> Efectivo &nbsp; <kbd class="key">2</kbd> Tarjeta &nbsp; <kbd class="key">3</kbd> Transferencia &nbsp; <kbd class="key">4</kbd> QR</li>
-              <li><kbd class="key">C</kbd> Crédito en tienda (canje de un código — ver <a href="#credito">§07</a>).</li>
+              <li><kbd class="key">C</kbd> Store credit (redeem a code — see <a href="#credit">§07</a>).</li>
             </ul>
           </li>
-          <li>Si es <strong>efectivo</strong>, tipeá lo que recibís y el sistema muestra el <strong>vuelto</strong>.</li>
-          <li>Confirmá con <kbd class="key key--brand">ENTER</kbd>. La venta queda registrada y el stock descontado.</li>
-          <li>En el resumen de venta: <kbd class="key">P</kbd> imprime el comprobante &nbsp;·&nbsp; <kbd class="key">C</kbd> imprime el <strong>ticket de cambio</strong> &nbsp;·&nbsp; <kbd class="key">ENTER</kbd> continúa. El resumen <strong>no se cierra</strong> al imprimir, así que podés sacar los dos.</li>
+          <li>For <strong>cash</strong>, type what you received and the system shows the <strong>change</strong>.</li>
+          <li>Confirm with <kbd class="key key--brand">ENTER</kbd>. The sale is recorded and stock is drawn down.</li>
+          <li>On the sale summary: <kbd class="key">P</kbd> prints the receipt &nbsp;·&nbsp; <kbd class="key">C</kbd> prints the <strong>gift receipt</strong> &nbsp;·&nbsp; <kbd class="key">ENTER</kbd> continues. The summary <strong>does not close</strong> when you print, so you can take both.</li>
         </ol>
-        <div class="note note--info"><span class="note__tag">Ticket de cambio (para regalos)</span>
-          <p>Es el mismo ticket pero <strong>sin precios</strong>, para meter en un regalo. Lleva un <strong>código de barras</strong>: cuando traen la prenda a cambiar, en <strong>Devolución</strong> (<a href="#devolucion">§06</a>) lo <strong>escaneás</strong> y carga la venta directo. Se puede reimprimir después desde <strong>Pedidos</strong>.</p>
+        <div class="note note--info"><span class="note__tag">Gift receipt</span>
+          <p>The same receipt but <strong>without prices</strong>, to put in a gift. It carries a <strong>barcode</strong>: when the item comes back for an exchange, go to <strong>Refund</strong> (<a href="#refund">§06</a>) and <strong>scan it</strong> — the sale loads straight away. It can be reprinted later from <strong>Orders</strong>.</p>
         </div>
-        <div class="note note--info"><span class="note__tag">Pago combinado</span>
-          <p>Se puede pagar parte con un <strong>crédito en tienda</strong> (tecla <kbd class="key">C</kbd>) y el resto con otro medio. El sistema calcula solo cuánto cubre el crédito y cuánto queda por cobrar.</p>
+        <div class="note note--info"><span class="note__tag">Split payment</span>
+          <p>Part of a sale can be paid with a <strong>store credit</strong> (key <kbd class="key">C</kbd>) and the rest with another method. The system works out how much the credit covers and how much is still owed.</p>
         </div>
-        <div class="note note--warn"><span class="note__tag">No es factura</span>
-          <p>El comprobante que imprime el POS es <strong>interno, no fiscal</strong> (“no válido como factura”). La factura fiscal se emite aparte desde la administración.</p>
+        <div class="note note--warn"><span class="note__tag">Not a tax invoice</span>
+          <p>The receipt the POS prints is an <strong>internal, non-fiscal</strong> document (“not valid as an invoice”). If your country requires a tax invoice, issue it separately from your accounting or invoicing system.</p>
         </div>
       </section>
 
-      <section class="op" id="cliente">
-        <div class="op__head"><span class="op__no">04</span><h2 class="op__title">Asignar un cliente</h2><div class="op__keys"><kbd class="key key--lg">F4</kbd></div></div>
-        <p class="op__when">Opcional. Sirve para dejar registrado quién compró (y sus datos fiscales). Una venta puede ser anónima.</p>
+      <section class="op" id="customer">
+        <div class="op__head"><span class="op__no">04</span><h2 class="op__title">Assign a customer</h2><div class="op__keys"><kbd class="key key--lg">F4</kbd></div></div>
+        <p class="op__when">Optional. Use it to record who bought (and their tax details). A sale can stay anonymous.</p>
         <ol class="steps">
-          <li>Con <kbd class="key">F4</kbd> se abre el buscador. Escribí <strong>nombre, email o DNI</strong>.</li>
-          <li>Elegí de la lista con <kbd class="key">↑</kbd> <kbd class="key">↓</kbd> y asigná con <kbd class="key">ENTER</kbd>.</li>
-          <li>Si no existe, presioná <kbd class="key">TAB</kbd> para <strong>crear uno nuevo</strong>: nombre, email o DNI (al menos uno), y condición fiscal (por defecto <em>Consumidor Final</em>). <kbd class="key">ENTER</kbd> guarda.</li>
-          <li>Para quitar el cliente asignado: <kbd class="key">SUPR</kbd> con el buscador vacío.</li>
+          <li><kbd class="key">F4</kbd> opens the search. Type a <strong>name, email or tax ID</strong>.</li>
+          <li>Pick from the list with <kbd class="key">↑</kbd> <kbd class="key">↓</kbd> and assign with <kbd class="key">ENTER</kbd>.</li>
+          <li>If there is no match, press <kbd class="key">TAB</kbd> to <strong>create one</strong>: name, plus an email or tax ID (at least one). <kbd class="key">ENTER</kbd> saves.</li>
+          <li>To remove the assigned customer: <kbd class="key">DEL</kbd> with the search box empty.</li>
         </ol>
-        <div class="note note--ok"><span class="note__tag">Sin emails</span>
-          <p>Los clientes del POS son los mismos de la tienda web, pero <strong>el POS nunca manda emails</strong> — ni al crear el cliente ni al cerrar la venta. Los emails son solo para las compras online.</p>
+        <div class="note note--ok"><span class="note__tag">No emails</span>
+          <p>POS customers are the same customers as your online store, but <strong>the POS never sends email</strong> — not when creating a customer, not when closing a sale. Email stays with online orders.</p>
         </div>
-        <div class="note"><span class="note__tag">Sin duplicados</span>
-          <p>Si el email o el DNI ya existen, el sistema no crea otro cliente: te ofrece el existente para seleccionarlo.</p>
+        <div class="note"><span class="note__tag">No duplicates</span>
+          <p>If the email or tax ID already exists, the system will not create a second customer: it offers you the existing one to select.</p>
+        </div>
+        <div class="note"><span class="note__tag">Tax status field</span>
+          <p>Some countries need a tax status on the customer record (VAT status, tax category). It is <strong>off by default</strong>; turn it on in <strong>Keytill → Settings</strong> if you need it.</p>
         </div>
       </section>
 
-      <section class="op" id="descuento">
-        <div class="op__head"><span class="op__no">05</span><h2 class="op__title">Aplicar un descuento</h2><div class="op__keys"><kbd class="key key--lg">F8</kbd></div></div>
-        <p class="op__when">Un descuento porcentual sobre el total del ticket.</p>
+      <section class="op" id="discount">
+        <div class="op__head"><span class="op__no">05</span><h2 class="op__title">Apply a discount</h2><div class="op__keys"><kbd class="key key--lg">F8</kbd></div></div>
+        <p class="op__when">A discount on the whole ticket, or on a single item.</p>
         <ol class="steps">
-          <li>Con <kbd class="key">F8</kbd> se abre el descuento.</li>
-          <li>Escribí el <strong>porcentaje</strong> (0 a 100). El nuevo total se previsualiza.</li>
-          <li><kbd class="key key--brand">ENTER</kbd> aplica; <kbd class="key">ESC</kbd> cancela.</li>
+          <li><kbd class="key">F8</kbd> opens the discount. Choose what it applies to: <kbd class="key">1</kbd> the whole sale, <kbd class="key">2</kbd> a single item.</li>
+          <li>Type a <strong>percentage</strong> or a <strong>fixed amount</strong> — <kbd class="key">TAB</kbd> switches between the two. The new total is previewed.</li>
+          <li><kbd class="key key--brand">ENTER</kbd> applies; <kbd class="key">ESC</kbd> cancels.</li>
         </ol>
+        <div class="note"><span class="note__tag">Note</span>
+          <p>A whole-sale discount and per-item discounts do not stack: applying one clears the other, and the status line tells you so.</p>
+        </div>
       </section>
 
-      <section class="op" id="devolucion">
-        <div class="op__head"><span class="op__no">06</span><h2 class="op__title">Devoluciones y cambios</h2><div class="op__keys"><kbd class="key key--lg">F7</kbd></div></div>
-        <p class="op__when">Devolver productos de una venta (del POS <em>o</em> de la web) reingresando el stock, y hacer cambios. Un cambio se resuelve como <strong>devolución + venta nueva</strong>: no se modifica ni se borra la orden original.</p>
+      <section class="op" id="refund">
+        <div class="op__head"><span class="op__no">06</span><h2 class="op__title">Refunds and exchanges</h2><div class="op__keys"><kbd class="key key--lg">F7</kbd></div></div>
+        <p class="op__when">Refund items from a sale (made at the POS <em>or</em> online), putting the stock back, and handle exchanges. An exchange is settled as a <strong>refund plus a new sale</strong>: the original order is never edited or deleted.</p>
 
-        <p class="section-band">Devolver</p>
+        <p class="section-band">Refund</p>
         <ol class="steps">
-          <li>Con <kbd class="key">F7</kbd>, ingresá el <strong>N° de venta</strong> y <kbd class="key">ENTER</kbd> para buscarla.</li>
-          <li>Elegí la línea con <kbd class="key">↑</kbd> <kbd class="key">↓</kbd> y la cantidad a devolver con <kbd class="key">+</kbd> <kbd class="key">−</kbd>.</li>
-          <li>Elegí el <strong>medio de reintegro</strong>: <kbd class="key">C</kbd> crédito en tienda &nbsp;·&nbsp; <kbd class="key">E</kbd> efectivo del cajón &nbsp;·&nbsp; <kbd class="key">T</kbd> transferencia (se devuelve por transferencia y <strong>resta de la caja digital</strong>, no del cajón).</li>
-          <li><kbd class="key key--brand">ENTER</kbd> procesa. Reingresa el stock y, según el medio, emite un código de crédito o descuenta del cajón.</li>
+          <li>Press <kbd class="key">F7</kbd>, enter the <strong>sale number</strong> and <kbd class="key">ENTER</kbd> to find it. You can also scan the gift receipt barcode.</li>
+          <li>Pick the line with <kbd class="key">↑</kbd> <kbd class="key">↓</kbd> and the quantity to refund with <kbd class="key">+</kbd> <kbd class="key">−</kbd>.</li>
+          <li>Pick the <strong>refund method</strong>: <kbd class="key">C</kbd> store credit &nbsp;·&nbsp; <kbd class="key">E</kbd> cash from the drawer &nbsp;·&nbsp; <kbd class="key">T</kbd> bank transfer (refunded by transfer, so it <strong>comes off the digital register</strong>, not the drawer).</li>
+          <li><kbd class="key key--brand">ENTER</kbd> processes it. Stock goes back and, depending on the method, a credit code is issued or the drawer is drawn down.</li>
         </ol>
 
-        <p class="section-band">Hacer un cambio</p>
-        <p style="color:var(--ink-soft);margin:0">La forma limpia es <strong>devolver a crédito</strong> y usar ese crédito en la venta nueva. Así la plata queda contabilizada en las dos patas y la caja no se descuadra.</p>
+        <p class="section-band">Handling an exchange</p>
+        <p style="color:var(--ink-soft);margin:0">The clean way is to <strong>refund to credit</strong> and spend that credit on the new sale. Both halves are then accounted for and the register still balances.</p>
 
         <div class="example">
-          <p class="example__h">Mismo producto, otro talle · mismo precio</p>
+          <p class="example__h">Same product, different size · same price</p>
           <div class="flow">
-            <span class="step"><kbd class="key">F7</kbd> devolver talle M → crédito</span>
+            <span class="step"><kbd class="key">F7</kbd> refund size M → credit</span>
             <span class="arr">→</span>
-            <span class="step"><kbd class="key">F2</kbd> vender talle L, canjear crédito <kbd class="key">C</kbd></span>
+            <span class="step"><kbd class="key">F2</kbd> sell size L, redeem credit <kbd class="key">C</kbd></span>
             <span class="arr">→</span>
-            <span class="zero">Total $0 · sin mover el cajón</span>
+            <span class="zero">Total 0 · drawer untouched</span>
           </div>
         </div>
 
-        <p style="color:var(--ink-soft);margin:18px 0 0">Cuando el producto nuevo <strong>vale distinto</strong>:</p>
+        <p style="color:var(--ink-soft);margin:18px 0 0">When the new product <strong>costs something different</strong>:</p>
         <div class="tablewrap"><table>
-          <thead><tr><th>Diferencia</th><th>Cómo se maneja</th></tr></thead>
+          <thead><tr><th>Difference</th><th>How to handle it</th></tr></thead>
           <tbody>
-            <tr><td><span class="pill pill--up">Nuevo cuesta más</span></td><td>El crédito cubre una parte y <strong>cobrás el resto</strong> por cualquier medio (efectivo/tarjeta/QR). El cobro calcula solo el faltante y el vuelto.</td></tr>
-            <tr><td><span class="pill pill--down">Nuevo cuesta menos</span></td><td><strong>Opción A —</strong> queda <strong>saldo en el código</strong> de crédito y el cliente se lo lleva para otra compra.<br><strong>Opción B —</strong> si querés devolver la diferencia <em>en efectivo</em>, hacé la devolución original en <strong>efectivo</strong> (no crédito) y cobrás el producto nuevo aparte.</td></tr>
+            <tr><td><span class="pill pill--up">New one costs more</span></td><td>The credit covers part of it and you <strong>charge the rest</strong> by any method. Payment works out the shortfall and the change on its own.</td></tr>
+            <tr><td><span class="pill pill--down">New one costs less</span></td><td><strong>Option A —</strong> the leftover <strong>stays on the credit code</strong> and the customer keeps it for another purchase.<br><strong>Option B —</strong> to hand back the difference <em>in cash</em>, make the original refund in <strong>cash</strong> (not credit) and charge the new product separately.</td></tr>
           </tbody>
         </table></div>
 
-        <div class="note note--warn"><span class="note__tag">Importante · antes de devolver</span>
-          <p>No hay forma de “sacar en efectivo” el saldo que sobra de un crédito. Por eso <strong>preguntá antes</strong>: <em>¿lo cambia por algo, o quiere la plata?</em> — y elegí el medio de reintegro en consecuencia (crédito si va a comprar otra cosa, efectivo si quiere la diferencia).</p>
+        <div class="note note--warn"><span class="note__tag">Important · before refunding</span>
+          <p>There is no way to cash out the leftover balance on a credit. So <strong>ask first</strong>: <em>are they swapping it for something, or do they want the money?</em> — and pick the refund method accordingly (credit if they are buying something else, cash if they want the difference).</p>
         </div>
-        <div class="note"><span class="note__tag">Por qué no se “edita” la orden</span>
-          <p>Modificar una venta ya cobrada rompería el control de caja y el stock. La devolución es la vía correcta: deja registro, reingresa stock y mueve la plata de forma contabilizada.</p>
+        <div class="note"><span class="note__tag">Why the order is not “edited”</span>
+          <p>Changing a sale that has already been paid would break both the register count and stock. A refund is the correct route: it leaves a record, puts stock back and moves the money in an accounted way.</p>
         </div>
       </section>
 
-      <section class="op" id="credito">
-        <div class="op__head"><span class="op__no">07</span><h2 class="op__title">Crédito en tienda y gift cards</h2></div>
-        <p class="op__when">El crédito en tienda es un instrumento <strong>al portador</strong>: un código tipo <code>HM-4K7P-9QX2</code> con saldo. Se emite al devolver, o se vende como gift card.</p>
+      <section class="op" id="credit">
+        <div class="op__head"><span class="op__no">07</span><h2 class="op__title">Store credit and gift cards</h2></div>
+        <p class="op__when">Store credit is a <strong>bearer</strong> instrument: a code like <code>KT-4K7P-9QX2</code> with a balance on it. It is issued on a refund, or sold as a gift card.</p>
 
-        <p class="section-band">Canjear un crédito</p>
+        <p class="section-band">Redeem a credit</p>
         <ul class="plain">
-          <li>En el cobro (<kbd class="key">F2</kbd>) presioná <kbd class="key">C</kbd> e ingresá el código. Se valida el saldo.</li>
-          <li>Cubre <strong>total o parcial</strong>: si no alcanza, el resto se paga con otro medio.</li>
-          <li>El saldo no usado <strong>queda en el mismo código</strong> para la próxima.</li>
+          <li>At payment (<kbd class="key">F2</kbd>) press <kbd class="key">C</kbd> and enter the code. The balance is validated.</li>
+          <li>It covers the sale <strong>fully or partly</strong>: if it falls short, the rest is paid by another method.</li>
+          <li>Any unused balance <strong>stays on the same code</strong> for next time.</li>
         </ul>
 
-        <p class="section-band">Vender una gift card</p>
+        <p class="section-band">Sell a gift card</p>
         <ol class="steps">
-          <li>Escaneá o buscá el producto <strong>gift card</strong> y agregalo al ticket.</li>
-          <li>Elegí una <strong>denominación fija</strong> (ej. <span class="money">$ 10.000</span>) o tipeá un <strong>monto libre</strong>.</li>
-          <li>Cobrá normal con <kbd class="key key--brand">F2</kbd>. Al confirmar, el sistema <strong>genera el código</strong> y lo muestra para entregárselo al cliente (también sale en el comprobante).</li>
+          <li>Scan or search the <strong>gift card</strong> product and add it to the ticket.</li>
+          <li>Pick a <strong>fixed denomination</strong> or type an <strong>open amount</strong>.</li>
+          <li>Take payment as usual with <kbd class="key key--brand">F2</kbd>. On confirmation the system <strong>generates the code</strong> and shows it so you can hand it over (it is also on the receipt).</li>
         </ol>
-        <div class="note note--info"><span class="note__tag">Vigencia</span>
-          <p>Los créditos tienen vencimiento (por defecto 30 días). El vencimiento se ve al consultar el código. La administración de créditos vive en el panel, en <strong>Créditos (POS)</strong>.</p>
+        <div class="note note--info"><span class="note__tag">Validity</span>
+          <p>Credits expire (30 days by default; <code>0</code> means never). The expiry date is shown when you look up the code. Denominations, the open-amount limit and the default validity are all set in <strong>Keytill → Settings</strong>, and credits are administered in the dashboard under <strong>Credits (POS)</strong>.</p>
         </div>
       </section>
 
-      <section class="op" id="retiro">
-        <div class="op__head"><span class="op__no">08</span><h2 class="op__title">Retiro de efectivo</h2><div class="op__keys"><kbd class="key key--lg">F10</kbd></div></div>
-        <p class="op__when">Sacar efectivo del cajón durante el turno (pago a proveedor, depósito, etc.). Queda registrado para que el arqueo cierre.</p>
+      <section class="op" id="withdrawal">
+        <div class="op__head"><span class="op__no">08</span><h2 class="op__title">Cash withdrawal</h2><div class="op__keys"><kbd class="key key--lg">F10</kbd></div></div>
+        <p class="op__when">Take cash out of the drawer during the shift (paying a supplier, a bank deposit, and so on). It is recorded so the count still adds up.</p>
         <ol class="steps">
-          <li>Con <kbd class="key">F10</kbd>, escribí el <strong>monto</strong> y el <strong>motivo</strong> (<kbd class="key">TAB</kbd> entre campos).</li>
-          <li><kbd class="key key--brand">ENTER</kbd> registra el retiro. El efectivo esperado del cierre se ajusta solo.</li>
+          <li>Press <kbd class="key">F10</kbd>, type the <strong>amount</strong> and the <strong>reason</strong> (<kbd class="key">TAB</kbd> between fields).</li>
+          <li><kbd class="key key--brand">ENTER</kbd> records the withdrawal. The expected cash at closing adjusts on its own.</li>
         </ol>
-        <div class="note"><span class="note__tag"><span class="pill pill--role">Encargado / Admin</span> Origen del retiro</span>
-          <p>Con permiso de gestión, el retiro deja elegir el <strong>origen</strong>: <strong>caja física</strong> (efectivo del cajón) o <strong>caja digital</strong> (sale de la cuenta bancaria, ej. una transferencia a un proveedor). El cajero común solo retira efectivo. Ver <a href="#cajabanco">§13</a>.</p>
+        <div class="note"><span class="note__tag"><span class="pill pill--role">Manager / Admin</span> Where it comes from</span>
+          <p>With management permission the withdrawal lets you choose the <strong>source</strong>: the <strong>cash register</strong> (money in the drawer) or the <strong>digital register</strong> (money leaving the bank account, e.g. a transfer to a supplier). A plain cashier can only withdraw cash. See <a href="#cashbank">§13</a>.</p>
         </div>
       </section>
 
-      <section class="op" id="cierre">
-        <div class="op__head"><span class="op__no">09</span><h2 class="op__title">Cerrar la caja (arqueo)</h2><div class="op__keys"><kbd class="key key--lg">F9</kbd></div></div>
-        <p class="op__when">Al final del turno. Compara lo que el sistema espera en el cajón contra lo que contás físicamente.</p>
+      <section class="op" id="close">
+        <div class="op__head"><span class="op__no">09</span><h2 class="op__title">Close the register (cash count)</h2><div class="op__keys"><kbd class="key key--lg">F9</kbd></div></div>
+        <p class="op__when">At the end of the shift. Compares what the system expects in the drawer against what you physically count.</p>
         <ol class="steps">
-          <li>Con <kbd class="key">F9</kbd> se abre el arqueo. Muestra el <strong>desglose por medio</strong> y el <strong>efectivo esperado</strong>.</li>
-          <li>Contá el efectivo del cajón y escribí el <strong>monto contado</strong>. Se calcula la <strong>diferencia</strong> (sobra / falta).</li>
-          <li><kbd class="key key--brand">ENTER</kbd> cierra la caja y guarda el resumen del turno.</li>
+          <li><kbd class="key">F9</kbd> opens the count. It shows the <strong>breakdown by method</strong> and the <strong>expected cash</strong>.</li>
+          <li>Count the drawer and type the <strong>counted amount</strong>. The <strong>difference</strong> is worked out (over / short).</li>
+          <li><kbd class="key key--brand">ENTER</kbd> closes the register and saves the shift summary.</li>
         </ol>
-        <div class="note"><span class="note__tag">Cómo se calcula el esperado</span>
-          <p><span class="money">Fondo inicial</span> + <span class="money">ventas en efectivo</span> − <span class="money">retiros</span> − <span class="money">devoluciones en efectivo</span>. Tarjeta, transferencia, QR y crédito se listan aparte (no son efectivo del cajón).</p>
+        <div class="note"><span class="note__tag">How the expected amount is worked out</span>
+          <p><span class="money">Opening float</span> + <span class="money">cash sales</span> − <span class="money">withdrawals</span> − <span class="money">cash refunds</span>. Every non-cash method and store credit are listed separately, since they are not cash in the drawer.</p>
+        </div>
+        <div class="note note--info"><span class="note__tag">Who closes</span>
+          <p>Only a <strong>manager or administrator</strong> can close the register. Finish or cancel the sale in progress first.</p>
         </div>
       </section>
 
-      <section class="op" id="pedidos">
-        <p class="section-band">La consola · administrar sin salir del POS</p>
-        <div class="op__head"><span class="op__no">10</span><h2 class="op__title">Pedidos</h2></div>
-        <p class="op__when">Buscar y revisar cualquier pedido — del POS y de la web — sin entrar al panel.</p>
+      <section class="op" id="orders">
+        <p class="section-band">The console · manage without leaving the POS</p>
+        <div class="op__head"><span class="op__no">10</span><h2 class="op__title">Orders</h2></div>
+        <p class="op__when">Find and review any order — from the POS and from the web — without going into the dashboard.</p>
         <ol class="steps">
-          <li>Entrá a la pestaña <strong>Pedidos</strong> (arriba).</li>
-          <li>Buscá por <strong>N° de pedido</strong> o por <strong>nombre del cliente</strong>; filtrá por fecha, origen, medio, estado o cajero.</li>
-          <li>Tocá un pedido para ver el detalle. Desde ahí: <strong>Reimprimir</strong> el comprobante o <strong>Devolver</strong> (abre el flujo de devolución de <a href="#devolucion">§06</a>).</li>
+          <li>Go to the <strong>Orders</strong> tab (top).</li>
+          <li>Search by <strong>order number</strong> or <strong>customer name</strong>; filter by date, source, method, status or cashier.</li>
+          <li>Open an order to see the detail. From there: <strong>Reprint</strong> the receipt, print the <strong>gift receipt</strong>, or <strong>Refund</strong> (opens the refund flow from <a href="#refund">§06</a>).</li>
+          <li><strong>Export CSV</strong> downloads everything matching your filters, not just the page on screen.</li>
         </ol>
       </section>
 
-      <section class="op" id="productos">
-        <div class="op__head"><span class="op__no">11</span><h2 class="op__title">Productos</h2></div>
-        <p class="op__when">Ver el catálogo y, con permiso de gestión, hacer ediciones rápidas. El cajero ve en <strong>solo lectura</strong>.</p>
+      <section class="op" id="products">
+        <div class="op__head"><span class="op__no">11</span><h2 class="op__title">Products</h2></div>
+        <p class="op__when">Browse the catalog and, with management permission, make quick edits. A cashier sees it <strong>read only</strong>.</p>
         <ol class="steps">
-          <li>Buscá por <strong>nombre o SKU</strong>; filtrá por categoría, estado o stock.</li>
-          <li><span class="pill pill--role">Encargado / Admin</span> — editá <strong>precio</strong> y <strong>stock</strong> directo en la fila (se guarda al salir del campo o con <kbd class="key">ENTER</kbd>), y activá/desactivá con el interruptor.</li>
-          <li>Un producto con variaciones (talle/color) se <strong>despliega</strong> para editar precio y stock de cada una.</li>
-          <li>Botón <strong>Nuevo producto</strong> para un alta simple (nombre, SKU, precio, stock, categoría). Imágenes y variaciones se cargan desde el panel.</li>
+          <li>Search by <strong>name, SKU or barcode</strong>; filter by category, status or stock.</li>
+          <li><span class="pill pill--role">Manager / Admin</span> — edit <strong>price</strong> and <strong>stock</strong> right in the row (saved when you leave the field or press <kbd class="key">ENTER</kbd>), and switch a product on or off with the toggle.</li>
+          <li>A product with variations (size, color) <strong>expands</strong> so you can edit the price and stock of each one.</li>
+          <li><strong>New product</strong> creates one from the counter: name, SKU, price, stock, category, description and images. For a <strong>variable</strong> product, pick the attributes and their values and let it <strong>generate the variations</strong>.</li>
         </ol>
-        <div class="note"><span class="note__tag"><span class="pill pill--role">Encargado / Admin</span> Alta por escaneo</span>
-          <p>Escaneá (o escribí) un <strong>código de barras de 12 dígitos</strong> en el buscador. Si <strong>ya existe</strong>, abre ese producto. Si <strong>no existe</strong>, aparece <strong>“crear / agregar desde el código”</strong>: el sistema decodifica <strong>color y talle</strong> del código y, si es de un <strong>modelo que ya cargaste</strong>, le agrega esa variación; si no, crea un <strong>producto nuevo</strong> con esa variación precargada. Solo completás <strong>nombre y precio</strong>.</p>
+        <div class="note"><span class="note__tag">Labels</span>
+          <p>Select products with a barcode and use <strong>Generate labels</strong> to print a sheet of 3.5 × 3.5 cm labels. Which variation attributes appear on the label is set in <strong>Keytill → Settings</strong>.</p>
+        </div>
+        <div class="note"><span class="note__tag">Stock by location</span>
+          <p>If you defined locations, stock is tracked per location and the native WooCommerce stock is their sum. Pick a location on a product to place <strong>all</strong> of its stock there, or distribute it by hand. <strong>Move stock</strong> transfers units between two locations.</p>
         </div>
       </section>
 
-      <section class="op" id="clientes">
-        <div class="op__head"><span class="op__no">12</span><h2 class="op__title">Clientes</h2></div>
-        <p class="op__when">Administrar los clientes de la tienda desde el mostrador.</p>
+      <section class="op" id="customers">
+        <div class="op__head"><span class="op__no">12</span><h2 class="op__title">Customers</h2></div>
+        <p class="op__when">Manage the store's customers from the counter.</p>
         <ol class="steps">
-          <li>Buscá por <strong>nombre, email o DNI</strong>.</li>
-          <li>Abrí un cliente para ver sus <strong>estadísticas</strong> (pedidos, total gastado) y su <strong>historial de compras</strong> (con reimpresión de las ventas del POS).</li>
-          <li><strong>Editá</strong> sus datos (nombre, email, DNI, condición fiscal) o creá uno nuevo. Igual que en la venta: sin duplicados y <strong>sin enviar emails</strong>.</li>
+          <li>Search by <strong>name, email or tax ID</strong>.</li>
+          <li>Open a customer to see their <strong>statistics</strong> (orders, total spent) and their <strong>purchase history</strong>, with reprinting of POS sales.</li>
+          <li><strong>Edit</strong> their details or create a new one. Same as during a sale: no duplicates and <strong>no email is sent</strong>.</li>
         </ol>
       </section>
 
-      <section class="op" id="cajabanco">
-        <div class="op__head"><span class="op__no">13</span><h2 class="op__title">Caja / Banco</h2><div class="op__keys"><span class="pill pill--role">Encargado / Admin</span></div></div>
-        <p class="op__when">Una pestaña (solo gestión) que muestra las <strong>dos cajas</strong> con su saldo al día: la <strong>caja física</strong> (el efectivo del cajón) y la <strong>caja digital</strong> (la cuenta bancaria única a la que entran transferencias, QR, tarjeta y demás medios digitales). El cajero común no la ve.</p>
+      <section class="op" id="cashbank">
+        <div class="op__head"><span class="op__no">13</span><h2 class="op__title">Register / Bank</h2><div class="op__keys"><span class="pill pill--role">Manager / Admin</span></div></div>
+        <p class="op__when">A management-only tab showing <strong>both registers</strong> with their balance to date: the <strong>cash register</strong> (money in the drawer) and the <strong>digital register</strong> (the single bank account that receives transfers, card payments and every other non-cash method). A plain cashier does not see it.</p>
 
-        <p class="section-band">Las dos cajas</p>
+        <p class="section-band">The two registers</p>
         <div class="tablewrap"><table>
-          <thead><tr><th>Caja</th><th>Qué registra</th><th>Apertura</th></tr></thead>
+          <thead><tr><th>Register</th><th>What it records</th><th>Opening</th></tr></thead>
           <tbody>
-            <tr><td><strong>Física</strong></td><td>Efectivo del cajón. Es por cajero (cada uno abre la suya).</td><td>Se abre contando el <strong>fondo inicial</strong> (ver <a href="#abrir">§01</a>).</td></tr>
-            <tr><td><strong>Digital</strong></td><td>La cuenta bancaria. Es <strong>una sola y global</strong> (compartida). Suma todo lo cobrado por medios no-efectivo.</td><td>El saldo <strong>se arrastra</strong>: la apertura = el saldo del último cierre. La primera vez se carga a mano.</td></tr>
+            <tr><td><strong>Cash</strong></td><td>Money in the drawer. It is per cashier — each one opens their own.</td><td>Opened by counting the <strong>opening float</strong> (see <a href="#open">§01</a>).</td></tr>
+            <tr><td><strong>Digital</strong></td><td>The bank account. There is <strong>a single global one</strong>, shared. It adds up everything taken by non-cash methods.</td><td>The balance <strong>carries over</strong>: the opening equals the balance at the last close. The very first time you enter it by hand.</td></tr>
           </tbody>
         </table></div>
 
-        <p class="section-band">Abrir y cerrar la caja digital</p>
+        <p class="section-band">Opening and closing the digital register</p>
         <ol class="steps">
-          <li>En la pestaña <strong>Caja / Banco</strong>, botón <strong>Abrir caja digital</strong>. La <strong>primera vez</strong> pedís el <strong>saldo inicial</strong> (cuánto hay hoy en la cuenta); después abre directo con el saldo del último cierre.</li>
-          <li>Mientras está abierta: cada <strong>cobro por transferencia/QR/tarjeta</strong> suma solo, y podés cargar <strong>ingresos y retiros</strong> a mano.</li>
-          <li><strong>Cerrar</strong> hace el corte: el saldo final queda como apertura del próximo período. <strong>No hace falta cerrarla todos los días</strong> — podés dejarla abierta; es un corte administrativo.</li>
+          <li>In the <strong>Register / Bank</strong> tab, use <strong>Open digital register</strong>. The <strong>first time</strong> it asks for the <strong>opening balance</strong> (what is in the account today); after that it opens straight away with the balance from the last close.</li>
+          <li>While it is open, every <strong>non-cash payment</strong> adds to it on its own, and you can record <strong>deposits and withdrawals</strong> by hand.</li>
+          <li><strong>Closing</strong> draws the line: the final balance becomes the opening of the next period. You <strong>do not have to close it daily</strong> — leaving it open is fine; it is an administrative cut-off.</li>
         </ol>
-        <div class="note"><span class="note__tag">No se pierde nada si está cerrada</span>
-          <p>Aunque la caja digital esté cerrada, las ventas por transferencia <strong>igual se registran</strong> y aparecen en el próximo período al reabrirla. Al abrir tu caja física, si sos encargado/admin y la digital está cerrada, el POS te ofrece abrirla.</p>
+        <div class="note"><span class="note__tag">Nothing is lost while it is closed</span>
+          <p>Even with the digital register closed, transfer sales <strong>are still recorded</strong> and show up in the next period when you reopen it. When you open your cash register, if you are a manager or admin and the digital one is closed, the POS offers to open it.</p>
         </div>
 
-        <p class="section-band">Ingresos y retiros (con origen)</p>
+        <p class="section-band">Deposits and withdrawals (with a source)</p>
         <ol class="steps">
-          <li>En cada caja, botones <strong>Ingreso</strong> y <strong>Retiro</strong>: cargás <strong>monto</strong> y <strong>concepto</strong> (ej. “pago proveedor”, “aporte”).</li>
-          <li>Un <strong>retiro de la digital</strong> = plata que sale de la cuenta (ej. transferís a un proveedor). Un <strong>ingreso</strong> = plata que entra que no es una venta.</li>
-          <li>El retiro rápido desde <strong>Venta</strong> (<kbd class="key">F10</kbd>) también deja elegir el <strong>origen</strong> (física / digital) si sos gestión.</li>
+          <li>Each register has <strong>Deposit</strong> and <strong>Withdrawal</strong> buttons: enter an <strong>amount</strong> and a <strong>reason</strong> (e.g. “supplier payment”, “owner contribution”).</li>
+          <li>A <strong>withdrawal from the digital register</strong> is money leaving the account (e.g. you transfer it to a supplier). A <strong>deposit</strong> is money coming in that is not a sale.</li>
+          <li>The quick withdrawal from the <strong>Sale</strong> screen (<kbd class="key">F10</kbd>) also lets management pick the <strong>source</strong> — cash or digital.</li>
         </ol>
 
-        <p class="section-band">Conciliación · transferencias</p>
-        <p class="op__when" style="margin:0 0 10px">Para controlar que una transferencia <strong>realmente entró</strong> al banco (y cazar comprobantes truchos).</p>
+        <p class="section-band">Reconciliation · transfers</p>
+        <p class="op__when" style="margin:0 0 10px">To check that a transfer <strong>actually arrived</strong> in the bank, and to catch forged payment screenshots.</p>
         <ol class="steps">
-          <li>Abajo de la caja digital se listan las <strong>transferencias del período</strong> (venta, cliente, monto).</li>
-          <li>Cotejá con tu homebanking y marcá cada una: <strong>✓ Verificada</strong> (entró) o <strong>✕ No llegó</strong>. Tocar de nuevo vuelve a <em>pendiente</em>.</li>
+          <li>Below the digital register you get the <strong>transfers for the period</strong> (sale, customer, amount).</li>
+          <li>Check them against your online banking and mark each one: <strong>✓ Verified</strong> (it arrived) or <strong>✕ Not received</strong>. Tapping again returns it to <em>pending</em>.</li>
         </ol>
 
-        <div class="note"><span class="note__tag">Histórico · dónde ver los cierres</span>
-          <p>En el panel de WordPress → menú <strong>Keytill POS</strong>: <strong>Cajas (POS)</strong> (física) y <strong>Caja digital</strong>. Cada período se lista con sus totales; al hacer clic en la <strong>fecha de apertura</strong> se abre el <strong>detalle</strong> (movimientos con su motivo, desglose por medio y transferencias con su verificación).</p>
+        <p class="section-band">Movement log</p>
+        <ol class="steps">
+          <li><strong>Movement log</strong> shows every movement across periods, not just today: date, movement (in or out), type (sale, deposit, withdrawal, refund), source (local or web), account, amount and detail.</li>
+          <li>Filter by whatever you need and <strong>export to CSV</strong> — the export covers everything matching the filter, not just the page on screen.</li>
+        </ol>
+
+        <div class="note"><span class="note__tag">History · where to find the closes</span>
+          <p>In the WordPress dashboard under the <strong>Keytill</strong> menu: <strong>Registers (POS)</strong> for cash and <strong>Digital register</strong> for the account. Each period is listed with its totals; clicking the <strong>opening date</strong> opens the <strong>detail</strong> — movements with their reason, the breakdown by method, and transfers with their verification state.</p>
         </div>
       </section>
 
-      <section class="op ref" id="atajos">
-        <p class="section-band">Referencia rápida</p>
-        <div class="op__head"><span class="op__no">&#9733;</span><h2 class="op__title">Teclas y avisos</h2></div>
+      <section class="op ref" id="keys">
+        <p class="section-band">Quick reference</p>
+        <div class="op__head"><span class="op__no">&#9733;</span><h2 class="op__title">Keys and notices</h2></div>
         <div class="tablewrap"><table>
-          <thead><tr><th>Tecla</th><th>Qué hace</th><th>Dónde</th></tr></thead>
+          <thead><tr><th>Key</th><th>What it does</th><th>Where</th></tr></thead>
           <tbody>
-            <tr><td><kbd class="key key--brand">F2</kbd></td><td>Cobrar</td><td>Venta</td></tr>
-            <tr><td><kbd class="key">F4</kbd></td><td>Asignar / crear cliente</td><td>Venta</td></tr>
-            <tr><td><kbd class="key">F7</kbd></td><td>Devolución / cambio</td><td>Venta</td></tr>
-            <tr><td><kbd class="key">F8</kbd></td><td>Descuento (%)</td><td>Venta</td></tr>
-            <tr><td><kbd class="key">F9</kbd></td><td>Cerrar caja / arqueo</td><td>Venta</td></tr>
-            <tr><td><kbd class="key">F10</kbd></td><td>Retiro de efectivo</td><td>Venta</td></tr>
-            <tr><td><kbd class="key">ENTER</kbd></td><td>Agregar / confirmar</td><td>Todo</td></tr>
-            <tr><td><kbd class="key">↑</kbd> <kbd class="key">↓</kbd></td><td>Elegir línea / resultado</td><td>Venta</td></tr>
-            <tr><td><kbd class="key">+</kbd> <kbd class="key">−</kbd></td><td>Cantidad de la línea</td><td>Venta</td></tr>
-            <tr><td><kbd class="key">SUPR</kbd></td><td>Quitar línea / cliente</td><td>Venta</td></tr>
-            <tr><td><kbd class="key">P</kbd></td><td>Imprimir comprobante</td><td>Tras cobrar</td></tr>
-            <tr><td><kbd class="key">C</kbd></td><td>Canjear crédito · reintegro a crédito</td><td>Cobro · Devolución</td></tr>
-            <tr><td><kbd class="key">E</kbd></td><td>Reintegro en efectivo</td><td>Devolución</td></tr>
-            <tr><td><kbd class="key">1</kbd>–<kbd class="key">4</kbd></td><td>Efectivo · Tarjeta · Transferencia · QR</td><td>Cobro</td></tr>
-            <tr><td><kbd class="key">N</kbd><kbd class="key">*</kbd></td><td>N unidades del próximo código</td><td>Campo de comando</td></tr>
-            <tr><td><kbd class="key">ESC</kbd></td><td>Cancelar / cerrar</td><td>Todo</td></tr>
+            <tr><td><kbd class="key key--brand">F2</kbd></td><td>Take payment</td><td>Sale</td></tr>
+            <tr><td><kbd class="key">F4</kbd></td><td>Assign / create customer</td><td>Sale</td></tr>
+            <tr><td><kbd class="key">F7</kbd></td><td>Refund / exchange</td><td>Sale</td></tr>
+            <tr><td><kbd class="key">F8</kbd></td><td>Discount (% or amount)</td><td>Sale</td></tr>
+            <tr><td><kbd class="key">F9</kbd></td><td>Close register / cash count</td><td>Sale</td></tr>
+            <tr><td><kbd class="key">F10</kbd></td><td>Withdrawal</td><td>Sale</td></tr>
+            <tr><td><kbd class="key">ENTER</kbd></td><td>Add / confirm</td><td>Everywhere</td></tr>
+            <tr><td><kbd class="key">↑</kbd> <kbd class="key">↓</kbd></td><td>Select line / result</td><td>Sale</td></tr>
+            <tr><td><kbd class="key">+</kbd> <kbd class="key">−</kbd></td><td>Line quantity</td><td>Sale</td></tr>
+            <tr><td><kbd class="key">DEL</kbd></td><td>Remove line / customer</td><td>Sale</td></tr>
+            <tr><td><kbd class="key">P</kbd></td><td>Print receipt</td><td>After payment</td></tr>
+            <tr><td><kbd class="key">C</kbd></td><td>Redeem credit · refund to credit</td><td>Payment · Refund</td></tr>
+            <tr><td><kbd class="key">E</kbd></td><td>Refund in cash</td><td>Refund</td></tr>
+            <tr><td><kbd class="key">T</kbd></td><td>Refund by bank transfer</td><td>Refund</td></tr>
+            <tr><td><kbd class="key">1</kbd>…<kbd class="key">9</kbd></td><td>Payment method (1 is always Cash)</td><td>Payment</td></tr>
+            <tr><td><kbd class="key">N</kbd><kbd class="key">*</kbd></td><td>N units of the next code</td><td>Command field</td></tr>
+            <tr><td><kbd class="key">ESC</kbd></td><td>Cancel / close</td><td>Everywhere</td></tr>
           </tbody>
         </table></div>
       </section>
@@ -568,11 +587,11 @@ $keytill_brand = KEYTILL_Settings::business()['name'];
 <footer>
   <div class="foot">
     <div class="foot__grid">
-      <div><h4>No es factura</h4><p>El comprobante del POS es interno y <strong>no fiscal</strong>. La factura se emite aparte desde la administración.</p></div>
-      <div><h4>Sin emails</h4><p>El POS <strong>no envía ningún email</strong>: ni al crear clientes ni al cerrar ventas. Eso es solo para la tienda web.</p></div>
-      <div><h4>Navegador</h4><p>Usar <strong>Google Chrome</strong> a pantalla completa. La caja debe estar abierta para poder vender.</p></div>
+      <div><h4>Not a tax invoice</h4><p>The POS receipt is internal and <strong>non-fiscal</strong>. If your country requires an invoice, issue it separately.</p></div>
+      <div><h4>No emails</h4><p>The POS <strong>never sends email</strong>: not when creating customers, not when closing sales. That belongs to the online store.</p></div>
+      <div><h4>Browser</h4><p>Use a current browser in full screen. The register must be open to sell, and the camera scanner needs <strong>HTTPS</strong>.</p></div>
     </div>
-    <p style="margin-top:24px;color:var(--ink-faint);font-family:var(--font-mono);font-size:12px;letter-spacing:.04em"><?php echo esc_html( $keytill_brand ); ?> · POS de mostrador · Manual de operatoria</p>
+    <p style="margin-top:24px;color:var(--ink-faint);font-family:var(--font-mono);font-size:12px;letter-spacing:.04em"><?php echo esc_html( $keytill_brand ); ?> &middot; Counter POS &middot; Operating manual</p>
   </div>
 </footer>
 
@@ -585,7 +604,7 @@ $keytill_brand = KEYTILL_Settings::business()['name'];
       else{root.removeAttribute('data-theme');}
       var dark = t==='dark' || (t!=='light' && window.matchMedia('(prefers-color-scheme:dark)').matches);
       icon.textContent = dark ? '☀' : '☾';
-      label.textContent = dark ? 'Claro' : 'Oscuro';
+      label.textContent = dark ? 'Light' : 'Dark';
     }
     var saved;
     try { saved = localStorage.getItem('keytill-manual-theme'); } catch(e){}
