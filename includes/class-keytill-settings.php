@@ -46,6 +46,7 @@ class KEYTILL_Settings {
 			'register_label'   => __( 'REGISTER 01', 'keytill' ),
 			'exchange_days'    => 30, // validez del ticket de cambio (0 = sin plazo)
 			'tax_status_field' => 0,  // mostrar el campo "condicion fiscal" del cliente
+			'delete_data'      => 0,  // borrar datos al DESINSTALAR (ver uninstall.php)
 		);
 	}
 
@@ -280,6 +281,7 @@ class KEYTILL_Settings {
 		$out['register_label']   = sanitize_text_field( $input['register_label'] ?? $d['register_label'] );
 		$out['exchange_days']    = max( 0, (int) ( $input['exchange_days'] ?? $d['exchange_days'] ) );
 		$out['tax_status_field'] = empty( $input['tax_status_field'] ) ? 0 : 1;
+		$out['delete_data']      = empty( $input['delete_data'] ) ? 0 : 1;
 		return $out;
 	}
 
@@ -427,6 +429,18 @@ class KEYTILL_Settings {
 								<?php esc_html_e( 'Show the «Tax status» field on the customer record', 'keytill' ); ?>
 							</label>
 							<p class="description"><?php esc_html_e( 'Disabled by default. Enable it if your country requires it (e.g. VAT status). It is a free-text field; an extension can provide a list with the keytill_fiscal_options filter.', 'keytill' ); ?></p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'On uninstall', 'keytill' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="<?php echo esc_attr( self::OPTION ); ?>[delete_data]" value="1" <?php checked( ! empty( $opt['delete_data'] ) ); ?> />
+								<?php esc_html_e( 'Delete all Keytill data when the plugin is uninstalled', 'keytill' ); ?>
+							</label>
+							<p class="description">
+								<?php esc_html_e( 'Off by default: uninstalling keeps your register history and the balance of any gift card still in circulation, so reinstalling loses nothing. Turn this on only if you want a clean removal — it permanently deletes settings, locations, salespeople, register sessions and every store credit. Deactivating the plugin never deletes anything.', 'keytill' ); ?>
+							</p>
 						</td>
 					</tr>
 				</table>

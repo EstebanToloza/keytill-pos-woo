@@ -2,12 +2,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-05 20:14\n"
+"POT-Creation-Date: 2026-11-05 20:33\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "%1$d label · %2$d product · 3.5 × 3.5 cm"
+msgid_plural "%1$d labels · %2$d products · 3.5 × 3.5 cm"
+msgstr[0] "%1$d etiqueta · %2$d producto · 3,5 × 3,5 cm"
+msgstr[1] "%1$d etiquetas · %2$d productos · 3,5 × 3,5 cm"
+
+msgid "%d product did not fit within the batch limit."
+msgid_plural "%d products did not fit within the batch limit."
+msgstr[0] "%d producto no entró por el tope del lote."
+msgstr[1] "%d productos no entraron por el tope del lote."
+
+msgid "%d product was skipped for having no barcode."
+msgid_plural "%d products were skipped for having no barcode."
+msgstr[0] "%d producto se salteó por no tener código de barras."
+msgstr[1] "%d productos se saltearon por no tener código de barras."
+
+msgid "Label (%d)"
+msgid_plural "Labels (%d)"
+msgstr[0] "Etiqueta (%d)"
+msgstr[1] "Etiquetas (%d)"
 
 msgid "\n• …and %d more"
 msgstr "\n• …y %d más"
@@ -23,12 +43,6 @@ msgstr " (se quitó el descuento general)"
 
 msgid " · credit %s"
 msgstr " · crédito %s"
-
-msgid "%1$d label · %2$d product · 3.5 × 3.5 cm"
-msgstr "%1$d etiqueta · %2$d producto · 3,5 × 3,5 cm"
-
-msgid "%1$d labels · %2$d products · 3.5 × 3.5 cm"
-msgstr "%1$d etiquetas · %2$d productos · 3,5 × 3,5 cm"
 
 msgid "%1$d labels · %2$s · 3.5 × 3.5 cm"
 msgstr "%1$d etiquetas · %2$s · 3,5 × 3,5 cm"
@@ -50,18 +64,6 @@ msgstr "%d borrada(s)"
 
 msgid "%d new"
 msgstr "%d nueva(s)"
-
-msgid "%d product did not fit within the batch limit."
-msgstr "%d producto no entró por el tope del lote."
-
-msgid "%d product was skipped for having no barcode."
-msgstr "%d producto se salteó por no tener código de barras."
-
-msgid "%d products did not fit within the batch limit."
-msgstr "%d productos no entraron por el tope del lote."
-
-msgid "%d products were skipped for having no barcode."
-msgstr "%d productos se saltearon por no tener código de barras."
 
 msgid "%s: no discount"
 msgstr "%s: sin descuento"
@@ -957,17 +959,11 @@ msgstr "Keytill POS necesita WooCommerce activo para funcionar."
 msgid "Keytill — Full screen"
 msgstr "Keytill — Pantalla completa"
 
-msgid "Label (%d)"
-msgstr "Etiqueta (%d)"
-
 msgid "Labels"
 msgstr "Etiquetas"
 
 msgid "Labels %1$s (%2$d)"
 msgstr "Etiquetas %1$s (%2$d)"
-
-msgid "Labels (%d)"
-msgstr "Etiquetas (%d)"
 
 msgid "Line removed: %s"
 msgstr "Línea quitada: %s"

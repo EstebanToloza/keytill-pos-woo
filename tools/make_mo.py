@@ -23,12 +23,29 @@ def write_mo(entries, path):
     open(path, 'wb').write(out + otab + ttab + data)
 
 cat = json.load(open(os.path.join(ROOT, 'tools', 'catalog.json'), encoding='utf-8'))
+# Pares singular->plural de las llamadas _n(). En el formato MO un plural NO son
+# dos entradas sueltas: es UNA entrada cuya clave es "singular\0plural" y cuyo
+# valor es "traduccion_singular\0traduccion_plural". Si se guardan por separado,
+# ngettext() no encuentra la forma plural y devuelve siempre el singular.
+PLURALS = os.path.join(ROOT, 'tools', 'plurals.json')
+plurals = json.load(open(PLURALS, encoding='utf-8')) if os.path.exists(PLURALS) else {}
+
 header = ('Content-Type: text/plain; charset=UTF-8\n'
           'Content-Transfer-Encoding: 8bit\n'
           'Language: es_ES\n'
           'Plural-Forms: nplurals=2; plural=(n != 1);\n')
 entries = [(b'', header.encode('utf-8'))]
-entries += [(en.encode('utf-8'), es.encode('utf-8')) for en, es in cat.items()]
+consumed = set()
+for sing, plur in sorted(plurals.items()):
+    if sing not in cat or plur not in cat:
+        print(f"  AVISO: par de plural sin traduccion completa: {sing!r}")
+        continue
+    key = sing.encode('utf-8') + b'\x00' + plur.encode('utf-8')
+    val = cat[sing].encode('utf-8') + b'\x00' + cat[plur].encode('utf-8')
+    entries.append((key, val))
+    consumed.update((sing, plur))
+entries += [(en.encode('utf-8'), es.encode('utf-8'))
+            for en, es in cat.items() if en not in consumed]
 dest = os.path.join(ROOT, 'languages', 'keytill-es_ES.mo')
 write_mo(entries, dest)
-print(f".mo escrito: {dest} ({len(entries)} mensajes)")
+print(f".mo escrito: {dest} ({len(entries)} mensajes, {len(plurals)} con plural)")

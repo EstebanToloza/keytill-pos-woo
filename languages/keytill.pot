@@ -2,12 +2,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-05 20:14\n"
+"POT-Creation-Date: 2026-11-05 20:33\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "%1$d label · %2$d product · 3.5 × 3.5 cm"
+msgid_plural "%1$d labels · %2$d products · 3.5 × 3.5 cm"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d product did not fit within the batch limit."
+msgid_plural "%d products did not fit within the batch limit."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d product was skipped for having no barcode."
+msgid_plural "%d products were skipped for having no barcode."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Label (%d)"
+msgid_plural "Labels (%d)"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "\n• …and %d more"
 msgstr ""
@@ -22,12 +42,6 @@ msgid " (the overall discount was removed)"
 msgstr ""
 
 msgid " · credit %s"
-msgstr ""
-
-msgid "%1$d label · %2$d product · 3.5 × 3.5 cm"
-msgstr ""
-
-msgid "%1$d labels · %2$d products · 3.5 × 3.5 cm"
 msgstr ""
 
 msgid "%1$d labels · %2$s · 3.5 × 3.5 cm"
@@ -49,18 +63,6 @@ msgid "%d deleted"
 msgstr ""
 
 msgid "%d new"
-msgstr ""
-
-msgid "%d product did not fit within the batch limit."
-msgstr ""
-
-msgid "%d product was skipped for having no barcode."
-msgstr ""
-
-msgid "%d products did not fit within the batch limit."
-msgstr ""
-
-msgid "%d products were skipped for having no barcode."
 msgstr ""
 
 msgid "%s: no discount"
@@ -957,16 +959,10 @@ msgstr ""
 msgid "Keytill — Full screen"
 msgstr ""
 
-msgid "Label (%d)"
-msgstr ""
-
 msgid "Labels"
 msgstr ""
 
 msgid "Labels %1$s (%2$d)"
-msgstr ""
-
-msgid "Labels (%d)"
 msgstr ""
 
 msgid "Line removed: %s"

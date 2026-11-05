@@ -1,0 +1,6 @@
+{
+ "%1$d label · %2$d product · 3.5 × 3.5 cm": "%1$d labels · %2$d products · 3.5 × 3.5 cm",
+ "%d product did not fit within the batch limit.": "%d products did not fit within the batch limit.",
+ "%d product was skipped for having no barcode.": "%d products were skipped for having no barcode.",
+ "Label (%d)": "Labels (%d)"
+}
