@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-05 23:31\n"
+"POT-Creation-Date: 2026-11-06 18:48\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -519,6 +519,9 @@ msgid "Could not upload an image."
 msgstr ""
 
 msgid "Could not upload the image."
+msgstr ""
+
+msgid "Count and close that register"
 msgstr ""
 
 msgid "Counted"
@@ -1914,6 +1917,9 @@ msgid "There are no items to discount"
 msgstr ""
 
 msgid "There are no items to refund."
+msgstr ""
+
+msgid "There is a register opened by %s that has not been counted yet."
 msgstr ""
 
 msgid "There is no open cash register. Open it from the Sale screen."

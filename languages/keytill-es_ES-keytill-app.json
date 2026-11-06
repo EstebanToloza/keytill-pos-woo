@@ -1,5 +1,5 @@
 {
- "translation-revision-date": "2026-11-06 02:31:59+00:00",
+ "translation-revision-date": "2026-11-06 21:48:29+00:00",
  "generator": "keytill tools/make_json.py",
  "domain": "messages",
  "locale_data": {
@@ -296,6 +296,9 @@
    ],
    "There are no items to discount": [
     "No hay prendas para bonificar"
+   ],
+   "There is a register opened by %s that has not been counted yet.": [
+    "Hay una caja abierta por %s que todavía no se arqueó."
    ],
    "This device/browser does not allow camera use.": [
     "Este dispositivo/navegador no permite usar la cámara."

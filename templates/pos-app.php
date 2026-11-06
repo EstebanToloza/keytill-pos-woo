@@ -2112,6 +2112,20 @@ if ( $keytill_tax_status ) :
 			<span class="mono modal__sub" x-show="openCtx === 'pay'" x-cloak><?php esc_html_e( 'You need an open register to take payment. Enter the opening float · ENTER opens the register', 'keytill' ); ?></span>
 			<span class="mono modal__sub" x-show="openCtx === 'return'" x-cloak><?php esc_html_e( 'You need an open register to process a refund. Enter the opening float · ENTER opens the register', 'keytill' ); ?></span>
 			<span class="mono modal__sub" x-show="!openCtx" x-cloak><?php esc_html_e( 'Enter the opening cash float · ENTER opens the register', 'keytill' ); ?></span>
+			<?php if ( $keytill_can_manage ) : ?>
+			<!--
+			Caja de otro cajero sin arquear. Las sesiones son por cajero y cerrar es
+			función de gestión, así que es acá —y solo acá— donde el encargado puede
+			llegar a la caja que abrió alguien más. Sin esto, esa caja no la cierra
+			nadie. No habilita vender: para eso hace falta abrir la propia.
+			-->
+			<div class="cash-foreign" x-show="closable" x-cloak>
+				<p class="cash-foreign__txt" x-text="keytillT( 'There is a register opened by %s that has not been counted yet.', ( closable && closable.cajero_name ) ? closable.cajero_name : '—' )"></p>
+				<button type="button" class="sheet-btn sheet-btn--ghost" @click="openClose( true )" :disabled="busy">
+					<?php esc_html_e( 'Count and close that register', 'keytill' ); ?>
+				</button>
+			</div>
+			<?php endif; ?>
 			<!-- Sucursal de la caja: de dónde sale/entra el stock por sucursal. -->
 			<label class="modal__label" x-show="branches.length" x-cloak><?php esc_html_e( 'Register location', 'keytill' ); ?>
 				<select x-model="openBranch" class="modal__input">

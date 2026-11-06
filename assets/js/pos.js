@@ -205,6 +205,8 @@
 			cashError: '',       // error de operaciones de caja
 			openCtx: '',         // contexto del modal de apertura: '' (inicio) | 'pay' | 'return'
 			closeStage: 'form',  // form | done
+			closable: null,      // caja de otro cajero que gestion puede arquear
+			closingId: 0,        // sesion que se esta cerrando (0 = la propia)
 			closeResult: null,   // payload del cierre para el resumen
 
 			// --- devoluciones ---
@@ -366,6 +368,9 @@
 					.then( function ( r ) { return r.ok ? r.json() : { session: null }; } )
 					.then( function ( res ) {
 						self.session = ( res && res.session ) ? res.session : null;
+						// Caja de OTRO cajero que gestión puede arquear. No habilita
+						// vender (para eso hace falta caja propia), solo cerrar.
+						self.closable = ( res && res.closable ) ? res.closable : null;
 						self.sessionReady = true;
 						if ( ! self.session && self.mode === 'sale' ) {
 							self.mode = 'open'; // sin caja abierta: forzar apertura
@@ -492,8 +497,12 @@
 				} );
 			},
 
-			openClose: function () {
-				if ( ! this.session ) { return; }
+			openClose: function ( foreign ) {
+				// `foreign`: arquear la caja de otro cajero (gestion). Sin eso, la
+				// caja que abre un cajero no la puede cerrar nadie: el cajero no
+				// tiene permiso y gestion no es dueña de esa sesion.
+				var target = foreign ? this.closable : this.session;
+				if ( ! target ) { return; }
 				// Cerrar/arquear = función de control: solo encargado/admin (el server
 				// también lo valida). Un cajero no cierra su propio cajón.
 				if ( this.$store && this.$store.pos && ! this.$store.pos.canManage ) {
@@ -509,6 +518,13 @@
 				var self = this;
 				// Refresca el esperado (pudo haber ventas desde la última carga).
 				this.loadSession().then( function () {
+					var t = foreign ? self.closable : self.session;
+					if ( ! t ) { return; }
+					// La vista del arqueo lee `session`: si se cierra una ajena, se le
+					// pone esa, y `closingId` manda el id al servidor para no depender
+					// de cual sesion resuelva por el usuario actual.
+					self.closingId = foreign ? ( t.register_session_id || 0 ) : 0;
+					if ( foreign ) { self.session = t; }
 					self.mode = 'close';
 					self.closeStage = 'form';
 					self.countedCash = '';
@@ -524,7 +540,9 @@
 				var self = this;
 				this.busy = true;
 				this.cashError = '';
-				this.cashPost( 'cash/close', { counted_cash: c }, function ( d ) {
+				var payload = { counted_cash: c };
+				if ( this.closingId ) { payload.session_id = this.closingId; }
+				this.cashPost( 'cash/close', payload, function ( d ) {
 					self.closeResult = d;
 					self.closeStage = 'done';
 				} );
@@ -532,6 +550,8 @@
 
 			finishClose: function () {
 				this.session = null;
+				this.closable = null;
+				this.closingId = 0;
 				this.closeResult = null;
 				this.closeStage = 'form';
 				this.countedCash = '';

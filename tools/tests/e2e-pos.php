@@ -217,10 +217,11 @@ kt_ok( 403 === $s, 'el cajero NO puede cerrar la caja', "status $s" );
 
 wp_set_current_user( $encargado->ID );
 list( $s, $d ) = kt_req( 'GET', '/keytill/v1/cash/current' );
-$sum = $d['session'] ?? $d;
+kt_ok( empty( $d['session'] ), 'no recibe la ajena como propia' );
 kt_ok( 200 === $s, 'el encargado ve la caja', "status $s" );
 // esperado = 100 fondo + 62 ventas en efectivo - 24 devuelto a credito (NO es efectivo) = 162
-kt_ok( (int) ( $sum['register_session_id'] ?? 0 ) === $sid, 'el encargado ve la sesion DEL CAJERO', 'sesion ' . ( $sum['register_session_id'] ?? '?' ) );
+$sum = is_array( $d['closable'] ?? null ) ? $d['closable'] : array();
+kt_ok( (int) ( $sum['register_session_id'] ?? 0 ) === $sid, 've la sesion DEL CAJERO como closable', 'sesion ' . ( $sum['register_session_id'] ?? '?' ) );
 kt_ok( abs( (float) ( $sum['expected_cash'] ?? 0 ) - 162.0 ) < 0.01, 'efectivo esperado = 162.00', 'es ' . ( $sum['expected_cash'] ?? '?' ) );
 
 list( $s, $d ) = kt_req( 'POST', '/keytill/v1/cash/close', array( 'counted_cash' => 160 ) );
@@ -228,8 +229,45 @@ kt_ok( 200 === $s || 201 === $s, 'el encargado cierra la caja', "status $s" );
 kt_ok( abs( (float) ( $d['difference'] ?? 0 ) + 2.0 ) < 0.01, 'diferencia = -2.00 (faltan 2)', 'es ' . ( $d['difference'] ?? '?' ) );
 
 list( $s, $d ) = kt_req( 'GET', '/keytill/v1/cash/current' );
-$cur = $d['session'] ?? $d;
-kt_ok( empty( $cur['register_session_id'] ) || 'closed' === ( $cur['status'] ?? '' ), 'ya no hay caja abierta' );
+kt_ok( empty( $d['session'] ) && empty( $d['closable'] ), 'ya no hay ninguna caja abierta' );
+
+
+echo "\n=== 7b. CAJA AJENA: gestion la ve y la cierra, pero NO vende con ella ===\n";
+// El cajero abre; gestion no tiene caja propia. Antes esto era un deadlock:
+// el cajero no puede cerrar (no tiene permiso) y gestion no encontraba la
+// sesion (es de otro). Y la sesion ajena NO debe habilitar la venta.
+wp_set_current_user( $cajero->ID );
+list( $s, $d ) = kt_req( 'POST', '/keytill/v1/cash/open', array( 'opening_float' => 80 ) );
+$sid2 = (int) ( $d['register_session_id'] ?? 0 );
+kt_ok( $sid2 > 0, 'el cajero abre una caja nueva', "id $sid2" );
+
+wp_set_current_user( $encargado->ID );
+list( $s, $d ) = kt_req( 'GET', '/keytill/v1/cash/current' );
+kt_ok( empty( $d['session'] ), 'gestion NO recibe la ajena como propia (no habilita vender)' );
+kt_ok( (int) ( $d['closable']['register_session_id'] ?? 0 ) === $sid2, 'la recibe aparte, como closable', 'closable ' . ( $d['closable']['register_session_id'] ?? '-' ) );
+kt_ok( ( $d['closable']['cajero_name'] ?? '' ) !== '', 'con el nombre del cajero, para el aviso', $d['closable']['cajero_name'] ?? '-' );
+
+// gestion sin caja propia no puede cobrar: el server lo rechaza
+list( $s ) = kt_req( 'POST', '/keytill/v1/orders', array(
+	'items'           => array( array( 'product_id' => $mug->get_id(), 'qty' => 1 ) ),
+	'payment_method'  => 'efectivo',
+	'amount_tendered' => 50,
+	'idempotency_key' => 'e2e-ajena-venta',
+) );
+kt_ok( 409 === $s, 'gestion NO puede cobrar sin caja propia', "status $s" );
+
+// pero SI puede cerrar la ajena, pasando su id
+list( $s, $d ) = kt_req( 'POST', '/keytill/v1/cash/close', array( 'session_id' => $sid2, 'counted_cash' => 80 ) );
+kt_ok( 200 === $s, 'gestion cierra la caja AJENA por session_id', "status $s" );
+kt_ok( abs( (float) ( $d['difference'] ?? 9 ) ) < 0.01, 'diferencia = 0', 'es ' . ( $d['difference'] ?? '?' ) );
+kt_ok( ! KEYTILL_Cash::is_session_open( $sid2 ), 'la sesion quedo cerrada' );
+
+list( $s, $d ) = kt_req( 'GET', '/keytill/v1/cash/current' );
+kt_ok( empty( $d['closable'] ), 'ya no hay nada por arquear' );
+
+// session_id invalido no pasa
+list( $s ) = kt_req( 'POST', '/keytill/v1/cash/close', array( 'session_id' => 999999, 'counted_cash' => 10 ) );
+kt_ok( 409 === $s, 'rechaza un session_id que no esta abierto', "status $s" );
 
 echo "\n=== 8. CAJA DIGITAL ===\n";
 list( $s, $d ) = kt_req( 'POST', '/keytill/v1/digital/open', array( 'initial' => 1000 ) );

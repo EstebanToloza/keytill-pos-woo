@@ -2627,13 +2627,28 @@ class KEYTILL_REST {
 	 */
 	public static function cash_current() {
 		$id = KEYTILL_Cash::get_open_session_id();
-		// Gestión: si no tiene caja propia, ve la que haya abierta. Es la que va a
-		// arquear (cerrar es función suya, y las sesiones son por cajero).
+
+		// `session` es SIEMPRE la caja propia: es la que habilita vender (el
+		// servidor exige sesión propia para cobrar). No se sustituye por una
+		// ajena, porque entonces la pantalla de venta se habilitaría para alguien
+		// que después no puede cobrar.
+		//
+		// `closable` es aparte: la caja de OTRO cajero que gestión puede arquear.
+		// Hace falta porque las sesiones son por cajero pero cerrar es función de
+		// gestión; sin esto, la caja que abre un cajero no la cierra nadie.
+		$closable = null;
 		if ( ! $id && current_user_can( KEYTILL_CAP_MANAGE ) ) {
-			$id = KEYTILL_Cash::get_any_open_session_id();
+			$other = KEYTILL_Cash::get_any_open_session_id();
+			if ( $other ) {
+				$closable = KEYTILL_Cash::session_payload( $other );
+			}
 		}
+
 		return new WP_REST_Response(
-			array( 'session' => $id ? KEYTILL_Cash::session_payload( $id ) : null ),
+			array(
+				'session'  => $id ? KEYTILL_Cash::session_payload( $id ) : null,
+				'closable' => $closable,
+			),
 			200
 		);
 	}
