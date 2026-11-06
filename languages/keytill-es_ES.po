@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-05 20:33\n"
+"POT-Creation-Date: 2026-11-05 23:31\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1780,6 +1780,9 @@ msgstr "Recibido"
 
 msgid "Thank you for your purchase! These are your gift card code(s):"
 msgstr "¡Gracias por tu compra! Estos son los códigos de tu(s) gift card(s):"
+
+msgid "That register session is not open."
+msgstr "Esa sesión de caja no está abierta."
 
 msgid "The attribute name is required."
 msgstr "El nombre del atributo es obligatorio."

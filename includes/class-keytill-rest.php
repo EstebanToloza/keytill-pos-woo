@@ -1535,9 +1535,18 @@ class KEYTILL_REST {
 
 	/**
 	 * Busca el id de una orden por su clave de idempotencia acotada a un cajero.
-	 * Storage-agnóstico: consulta DIRECTO la tabla de meta que corresponda según
-	 * esté HPOS activo (wc_orders_meta) o no (postmeta legacy). Se hace así porque
-	 * wc_get_orders + meta_query no es fiable con el store legacy (lo ignora).
+	 *
+	 * Consulta las DOS tablas de meta (la de HPOS y postmeta) en vez de elegir
+	 * una segun si HPOS esta activo. El motivo es el costo del error: un falso
+	 * negativo acá no es un detalle, es una venta duplicada con el stock
+	 * descontado dos veces. Y detectar el almacenamiento no es confiable —
+	 * OrderUtil::custom_orders_table_usage_is_enabled() devuelve distinto segun
+	 * el momento del request (depende de los feature flags y del orden de carga:
+	 * se vio devolver false en un sitio cuyas ordenes estaban en wc_orders).
+	 *
+	 * Mirar las dos tablas cuesta una consulta indexada extra y no puede dar un
+	 * falso positivo: la clave es unica por intento de venta, asi que cualquier
+	 * coincidencia es un duplicado real.
 	 *
 	 * @param string $idem      Clave de idempotencia.
 	 * @param int    $cajero_id Id del cajero (usuario actual).
@@ -1546,39 +1555,49 @@ class KEYTILL_REST {
 	private static function find_order_id_by_idem( $idem, $cajero_id ) {
 		global $wpdb;
 
-		$hpos = class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' )
-			&& \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+		$hpos_meta = $wpdb->prefix . 'wc_orders_meta';
 
-		if ( $hpos ) {
-			$meta = $wpdb->prefix . 'wc_orders_meta';
-			$id   = $wpdb->get_var(
-				$wpdb->prepare(
-					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
-					"SELECT k.order_id FROM {$meta} k
-					 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- el nombre de tabla es interno ($wpdb->prefix + constante), no entra por request; todos los valores van por placeholders de prepare().
-					 INNER JOIN {$meta} c ON c.order_id = k.order_id
-					 WHERE k.meta_key = '_keytill_idempotency_key' AND k.meta_value = %s
-					   AND c.meta_key = '_keytill_cajero_id' AND c.meta_value = %s
-					 ORDER BY k.order_id DESC LIMIT 1",
-					$idem,
-					(string) $cajero_id
-				)
-			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- lookup por clave única, storage-agnóstico a propósito.
-		} else {
-			$id = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT k.post_id FROM {$wpdb->postmeta} k
-					 INNER JOIN {$wpdb->postmeta} c ON c.post_id = k.post_id
-					 WHERE k.meta_key = '_keytill_idempotency_key' AND k.meta_value = %s
-					   AND c.meta_key = '_keytill_cajero_id' AND c.meta_value = %s
-					 ORDER BY k.post_id DESC LIMIT 1",
-					$idem,
-					(string) $cajero_id
-				)
-			); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- lookup por clave única, storage-agnóstico a propósito.
+		// (tabla, columna del id de la orden). Los nombres son internos.
+		$stores = array();
+		if ( self::table_exists( $hpos_meta ) ) {
+			$stores[] = array( $hpos_meta, 'order_id' );
+		}
+		$stores[] = array( $wpdb->postmeta, 'post_id' );
+
+		foreach ( $stores as $store ) {
+			list( $table, $col ) = $store;
+
+			$sql = "SELECT k.{$col} FROM {$table} k
+					INNER JOIN {$table} c ON c.{$col} = k.{$col}
+					WHERE k.meta_key = '_keytill_idempotency_key' AND k.meta_value = %s
+					  AND c.meta_key = '_keytill_cajero_id' AND c.meta_value = %s
+					ORDER BY k.{$col} DESC LIMIT 1";
+
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$id = $wpdb->get_var( $wpdb->prepare( $sql, $idem, (string) $cajero_id ) );
+			if ( $id ) {
+				return (int) $id;
+			}
 		}
 
-		return (int) $id;
+		return 0;
+	}
+
+	/**
+	 * ¿Existe la tabla? Se cachea por request: la idempotencia la consulta en
+	 * cada venta y no tiene sentido pagar un SHOW TABLES cada vez.
+	 *
+	 * @param string $table Nombre completo de la tabla (con prefijo).
+	 * @return bool
+	 */
+	private static function table_exists( $table ) {
+		static $cache = array();
+		if ( ! isset( $cache[ $table ] ) ) {
+			global $wpdb;
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$cache[ $table ] = ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) === $table );
+		}
+		return $cache[ $table ];
 	}
 
 	/**
@@ -2608,6 +2627,11 @@ class KEYTILL_REST {
 	 */
 	public static function cash_current() {
 		$id = KEYTILL_Cash::get_open_session_id();
+		// Gestión: si no tiene caja propia, ve la que haya abierta. Es la que va a
+		// arquear (cerrar es función suya, y las sesiones son por cajero).
+		if ( ! $id && current_user_can( KEYTILL_CAP_MANAGE ) ) {
+			$id = KEYTILL_Cash::get_any_open_session_id();
+		}
 		return new WP_REST_Response(
 			array( 'session' => $id ? KEYTILL_Cash::session_payload( $id ) : null ),
 			200
@@ -2661,8 +2685,23 @@ class KEYTILL_REST {
 		if ( ! current_user_can( KEYTILL_CAP_MANAGE ) ) {
 			return new WP_Error( 'keytill_forbidden', __( 'Only a manager or administrator can close the register.', 'keytill' ), array( 'status' => 403 ) );
 		}
-		$params  = self::body( $request );
-		$id      = KEYTILL_Cash::get_open_session_id();
+		$params = self::body( $request );
+
+		// Qué caja se cierra. Las sesiones son por cajero, pero cerrar es función
+		// de gestión: si solo se buscara la sesión propia, la caja que abrió un
+		// cajero no la podría cerrar nadie (él no tiene permiso; el encargado no
+		// es el dueño de esa sesión). Orden: la que pidan explícitamente, la
+		// propia, o cualquiera abierta.
+		$id = isset( $params['session_id'] ) ? (int) $params['session_id'] : 0;
+		if ( $id && ! KEYTILL_Cash::is_session_open( $id ) ) {
+			return new WP_Error( 'keytill_cash_closed', __( 'That register session is not open.', 'keytill' ), array( 'status' => 409 ) );
+		}
+		if ( ! $id ) {
+			$id = KEYTILL_Cash::get_open_session_id();
+		}
+		if ( ! $id ) {
+			$id = KEYTILL_Cash::get_any_open_session_id();
+		}
 		if ( ! $id ) {
 			return new WP_Error( 'keytill_cash_closed', __( 'There is no open register to close.', 'keytill' ), array( 'status' => 409 ) );
 		}

@@ -285,6 +285,52 @@ class KEYTILL_Cash {
 	}
 
 	/**
+	 * Id de CUALQUIER sesión abierta, sin importar de quién sea.
+	 *
+	 * Hace falta porque cerrar la caja es función de gestión (un cajero no cierra
+	 * su propio cajón, para que no pueda tapar un faltante) pero las sesiones son
+	 * por cajero. Sin esto, la caja que abre un cajero no la puede cerrar nadie:
+	 * el cajero no tiene permiso, y el encargado solo encontraba su propia sesión
+	 * —que nunca abrió—. Usar SOLO desde código que ya verificó KEYTILL_CAP_MANAGE.
+	 *
+	 * Si hay varias abiertas (varios cajeros a la vez) devuelve la más antigua,
+	 * que es la que corresponde arquear primero.
+	 *
+	 * @return int Session ID o 0.
+	 */
+	public static function get_any_open_session_id() {
+		$ids = get_posts(
+			array(
+				'post_type'        => self::CPT,
+				'post_status'      => 'publish',
+				'numberposts'      => 1,
+				'fields'           => 'ids',
+				'orderby'          => 'ID',
+				'order'            => 'ASC',
+				'suppress_filters' => false,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'meta_query'       => array(
+					array( 'key' => '_keytill_status', 'value' => 'open' ),
+				),
+			)
+		);
+		return $ids ? (int) $ids[0] : 0;
+	}
+
+	/**
+	 * ¿Esa sesión está abierta?
+	 *
+	 * @param int $id Session ID.
+	 * @return bool
+	 */
+	public static function is_session_open( $id ) {
+		$id = (int) $id;
+		return $id > 0
+			&& self::CPT === get_post_type( $id )
+			&& 'open' === get_post_meta( $id, '_keytill_status', true );
+	}
+
+	/**
 	 * ¿El post es una sesión de caja abierta?
 	 *
 	 * @param int $id Post ID.
