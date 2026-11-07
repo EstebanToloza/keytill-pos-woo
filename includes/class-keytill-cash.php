@@ -707,7 +707,11 @@ class KEYTILL_Cash {
 			'register_session_id' => (int) $id,
 			'status'              => $status,
 			'cajero_id'           => $cajero_id,
-			'cajero_name'         => $cajero_user ? $cajero_user->display_name : '',
+			// cashier_label() y no display_name directo: hay usuarios con display_name
+			// vacio (pasa con los creados por email), y entonces el nombre salia en
+			// blanco y la fila «Opened by» quedaba oculta. El helper cae a user_login
+			// y despues a user_email.
+			'cajero_name'         => $cajero_id ? self::cashier_label( $cajero_id ) : '',
 			'branch_id'           => $branch_id,
 			'branch_name'         => ( '' !== $branch_id && class_exists( 'KEYTILL_Branches' ) ) ? KEYTILL_Branches::name_of( $branch_id ) : '',
 			'opening_float'       => (float) get_post_meta( $id, '_keytill_opening_float', true ),
