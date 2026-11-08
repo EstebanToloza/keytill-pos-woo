@@ -135,10 +135,10 @@
 	var METHODS = ( CONFIG.methods && CONFIG.methods.length )
 		? CONFIG.methods
 		: [
-			{ key: '1', id: 'efectivo', name: 'Efectivo' },
-			{ key: '2', id: 'tarjeta', name: 'Tarjeta' },
-			{ key: '3', id: 'transferencia', name: 'Transferencia' },
-			{ key: '4', id: 'qr', name: 'QR' },
+			{ key: '1', id: 'efectivo', name: __( 'Cash', 'keytill' ) },
+			{ key: '2', id: 'tarjeta', name: __( 'Card', 'keytill' ) },
+			{ key: '3', id: 'transferencia', name: __( 'Bank transfer', 'keytill' ) },
+			{ key: '4', id: 'qr', name: __( 'QR', 'keytill' ) },
 		];
 
 	function keytillApp() {
@@ -2332,9 +2332,9 @@
 			tabs: ( function () {
 				var t = [
 					{ id: 'venta', label: __( 'Sale', 'keytill' ) },
-					{ id: 'pedidos', label: 'Pedidos' },
-					{ id: 'productos', label: 'Productos' },
-					{ id: 'clientes', label: 'Clientes' }
+					{ id: 'pedidos', label: __( 'Orders', 'keytill' ) },
+					{ id: 'productos', label: __( 'Products', 'keytill' ) },
+					{ id: 'clientes', label: __( 'Customers', 'keytill' ) }
 				];
 				// Caja/Banco: solo gestión (ve ambas cajas, abre/cierra la digital).
 				if ( CONFIG.canManage ) { t.push( { id: 'cajabanco', label: __( 'Register / Bank', 'keytill' ) } ); }

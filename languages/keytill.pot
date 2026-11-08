@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-06 18:48\n"
+"POT-Creation-Date: 2026-11-08 09:18\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -282,6 +282,9 @@ msgid "Camera permission denied. Enable it in the browser and retry."
 msgstr ""
 
 msgid "Cancel"
+msgstr ""
+
+msgid "Card"
 msgstr ""
 
 msgid "Cart"
@@ -585,6 +588,9 @@ msgid "Customer tax status"
 msgstr ""
 
 msgid "Customer: %s"
+msgstr ""
+
+msgid "Customers"
 msgstr ""
 
 msgid "Customers can enter a custom amount on the web in addition to the denominations. At the POS the cashier can always type an amount."
@@ -1394,10 +1400,16 @@ msgstr ""
 msgid "Product not found."
 msgstr ""
 
+msgid "Products"
+msgstr ""
+
 msgid "Purchase history"
 msgstr ""
 
 msgid "Purchase summary"
+msgstr ""
+
+msgid "QR"
 msgstr ""
 
 msgid "Quantity"

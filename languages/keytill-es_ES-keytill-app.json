@@ -1,5 +1,5 @@
 {
- "translation-revision-date": "2026-11-06 21:48:29+00:00",
+ "translation-revision-date": "2026-11-08 12:18:07+00:00",
  "generator": "keytill tools/make_json.py",
  "domain": "messages",
  "locale_data": {
@@ -51,8 +51,17 @@
    "Available at %s": [
     "Disponible en sucursal %s"
    ],
+   "Bank transfer": [
+    "Transferencia"
+   ],
    "Camera permission denied. Enable it in the browser and retry.": [
     "Permiso de cámara denegado. Habilitalo en el navegador y reintentá."
+   ],
+   "Card": [
+    "Tarjeta"
+   ],
+   "Cash": [
+    "Efectivo"
    ],
    "Cash · type what you received": [
     "Efectivo · tipeá lo recibido"
@@ -113,6 +122,9 @@
    ],
    "Customer: %s": [
     "Cliente: %s"
+   ],
+   "Customers": [
+    "Clientes"
    ],
    "Deposit": [
     "Ingreso"
@@ -222,6 +234,9 @@
    "Opening balance of the digital register (first time only):": [
     "Saldo inicial de la caja digital (solo la primera vez):"
    ],
+   "Orders": [
+    "Pedidos"
+   ],
    "Out of stock": [
     "Sin stock"
    ],
@@ -233,6 +248,12 @@
    ],
    "Payment: choose a salesperson": [
     "Cobro: elegí vendedor"
+   ],
+   "Products": [
+    "Productos"
+   ],
+   "QR": [
+    "QR"
    ],
    "Ready. Scan to start.": [
     "Listo. Escaneá para empezar."
