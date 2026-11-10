@@ -93,6 +93,10 @@ class KEYTILL_Labels {
 			wp_die( esc_html__( 'You do not have permission to print labels.', 'keytill' ), 403 );
 		}
 
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::LABELS ) ) {
+			wp_die( esc_html__( 'Printing barcode labels is part of Keytill PRO.', 'keytill' ), 403 );
+		}
+
 		if ( 'batch' === $_GET[ self::QV ] ) {
 			self::render_batch();
 			exit;

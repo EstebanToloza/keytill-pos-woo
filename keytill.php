@@ -193,6 +193,10 @@ add_action(
 /* -------------------------------------------------------------------------
  * API REST (namespace keytill/v1)
  * ---------------------------------------------------------------------- */
+// Licencia: todo el gating free/PRO pasa por acá. Va primero porque el resto
+// de los módulos la consulta.
+require_once KEYTILL_DIR . 'includes/class-keytill-pro.php';
+
 require_once KEYTILL_DIR . 'includes/credit/class-keytill-credit.php';
 KEYTILL_Credit::init();
 
@@ -606,6 +610,9 @@ function keytill_enqueue_assets() {
 			'sellers'      => KEYTILL_Sellers::front(),
 			'branches'     => KEYTILL_Branches::front(),
 			'ordersExport' => KEYTILL_Export::url(),
+			// Features disponibles: el front esconde lo que no corresponde. El
+			// servidor igual lo valida; esto es solo para no mostrar botones muertos.
+			'pro'          => KEYTILL_Pro::front(),
 			// Formato de precio: se toma de WooCommerce para que el POS muestre los
 			// importes igual que la tienda, en cualquier país/moneda.
 			'currency'     => function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD',

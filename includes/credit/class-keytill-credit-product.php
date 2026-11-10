@@ -348,6 +348,15 @@ class KEYTILL_Credit_Product {
 	 * @return array Lista de códigos emitidos en esta pasada [{code, amount, expires}].
 	 */
 	public static function issue_for_order( $order ) {
+		// EMITIR gift cards es PRO. Se corta acá y no en la venta a propósito:
+		// si alguien baja a FREE con una orden de gift card ya pagada, no se le
+		// emite el código nuevo, pero los códigos YA emitidos se siguen
+		// canjeando (ver KEYTILL_Pro). Nunca se deja a un cliente del comercio
+		// con un código que el sistema rechaza.
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::ISSUE_CREDIT ) ) {
+			return;
+		}
+
 		if ( ! $order instanceof WC_Order ) {
 			return array();
 		}

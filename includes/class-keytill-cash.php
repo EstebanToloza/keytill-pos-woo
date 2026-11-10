@@ -423,6 +423,20 @@ class KEYTILL_Cash {
 			return new WP_Error( 'keytill_cash_open', __( 'You already have an open register.', 'keytill' ), array( 'status' => 409 ) );
 		}
 
+		// FREE: una sola caja a la vez en todo el sitio. Varias cajas en paralelo
+		// —un cajón por cajero— es PRO. No es un tope arbitrario: cada caja
+		// abierta es un cajón físico distinto que hay que arquear por separado.
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::MULTI_REGISTER ) ) {
+			$other = self::get_any_open_session_id();
+			if ( $other ) {
+				return new WP_Error(
+					'keytill_pro_required',
+					__( 'There is already an open register. Running several registers at once is part of Keytill PRO.', 'keytill' ),
+					array( 'status' => 403 )
+				);
+			}
+		}
+
 		// Sucursal de la caja: si hay sucursales activas, es obligatoria (define de
 		// dónde se descuenta/reingresa el stock por sucursal). Sin sucursales, se ignora.
 		$branch = '';

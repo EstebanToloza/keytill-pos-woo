@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-08 09:18\n"
+"POT-Creation-Date: 2026-11-09 23:07\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -241,6 +241,9 @@ msgstr "Volver a apertura"
 
 msgid "Balance"
 msgstr "Saldo"
+
+msgid "Bank reconciliation is part of Keytill PRO."
+msgstr "La conciliación bancaria es parte de Keytill PRO."
 
 msgid "Bank transfer"
 msgstr "Transferencia"
@@ -548,6 +551,12 @@ msgstr "Crear atributo (ej. Talle)"
 msgid "Create customer"
 msgstr "Crear cliente"
 
+msgid "Creating attribute values from the POS is part of Keytill PRO."
+msgstr "Crear valores de atributo desde el POS es parte de Keytill PRO."
+
+msgid "Creating attributes from the POS is part of Keytill PRO."
+msgstr "Crear atributos desde el POS es parte de Keytill PRO."
+
 msgid "Creating…"
 msgstr "Creando…"
 
@@ -836,6 +845,9 @@ msgstr "Generar etiquetas"
 msgid "Generate variations"
 msgstr "Generar variaciones"
 
+msgid "Generating variations from the POS is part of Keytill PRO."
+msgstr "Generar variaciones desde el POS es parte de Keytill PRO."
+
 msgid "Generating…"
 msgstr "Generando…"
 
@@ -1064,6 +1076,9 @@ msgstr "Libro de movimientos"
 msgid "Movement: all"
 msgstr "Movimiento: todos"
 
+msgid "Moving stock between locations is part of Keytill PRO."
+msgstr "Mover stock entre sucursales es parte de Keytill PRO."
+
 msgid "NEW CUSTOMER"
 msgstr "NUEVO CLIENTE"
 
@@ -1250,6 +1265,9 @@ msgstr "Solo un encargado o administrador puede cerrar la caja."
 msgid "Only a manager or administrator can move the digital register."
 msgstr "Solo un encargado o administrador puede mover la caja digital."
 
+msgid "Only one location is available in the free version. Several locations, with stock per location, are part of Keytill PRO."
+msgstr "La versión gratuita permite una sola sucursal. Varias sucursales, con stock por local, son parte de Keytill PRO."
+
 msgid "Only the manager can close the register"
 msgstr "Solo el encargado puede cerrar la caja"
 
@@ -1379,6 +1397,9 @@ msgstr "Imprimir pedido"
 msgid "Print voucher"
 msgstr "Imprimir voucher"
 
+msgid "Printing barcode labels is part of Keytill PRO."
+msgstr "Imprimir etiquetas con código de barras es parte de Keytill PRO."
+
 msgid "Process refund"
 msgstr "Procesar devolución"
 
@@ -1486,6 +1507,9 @@ msgstr "Devuelto"
 
 msgid "Refunded by bank transfer (deducted from the digital register)"
 msgstr "Se devuelve por transferencia (resta de la caja digital)"
+
+msgid "Refunding to store credit is part of Keytill PRO."
+msgstr "Devolver a crédito en tienda es parte de Keytill PRO."
 
 msgid "Refunds"
 msgstr "Devoluciones"
@@ -1739,6 +1763,9 @@ msgstr "Stock"
 msgid "Stock by location"
 msgstr "Stock por sucursal"
 
+msgid "Stock by location is part of Keytill PRO."
+msgstr "El stock por sucursal es parte de Keytill PRO."
+
 msgid "Stock restored ✓"
 msgstr "Stock reingresado ✓"
 
@@ -1799,6 +1826,9 @@ msgstr "¡Gracias por tu compra! Estos son los códigos de tu(s) gift card(s):"
 msgid "That register session is not open."
 msgstr "Esa sesión de caja no está abierta."
 
+msgid "The Register / Bank tab is part of Keytill PRO."
+msgstr "La pestaña Caja / Banco es parte de Keytill PRO."
+
 msgid "The attribute name is required."
 msgstr "El nombre del atributo es obligatorio."
 
@@ -1856,6 +1886,9 @@ msgstr "La caja digital está cerrada. ¿Abrirla ahora?"
 msgid "The digital register is not open."
 msgstr "La caja digital no está abierta."
 
+msgid "The digital register is part of Keytill PRO."
+msgstr "La caja digital es parte de Keytill PRO."
+
 msgid "The email does not match the one on file for that customer."
 msgstr "El email no coincide con el registrado en ese cliente."
 
@@ -1882,6 +1915,9 @@ msgstr "El enlace de etiquetas venció. Reabrilo desde el producto."
 
 msgid "The label session expired. Generate the labels again from the POS."
 msgstr "La sesión de etiquetas venció. Volvé a generarlas desde el POS."
+
+msgid "The movement log is part of Keytill PRO."
+msgstr "El libro de movimientos es parte de Keytill PRO."
 
 msgid "The name is required."
 msgstr "El nombre es obligatorio."
@@ -1913,6 +1949,9 @@ msgstr "No se pudo completar la venta."
 msgid "The sale is not paid; it cannot be refunded."
 msgstr "La venta no está pagada; no se puede devolver."
 
+msgid "The sales-by-salesperson report is part of Keytill PRO."
+msgstr "El reporte de ventas por vendedor es parte de Keytill PRO."
+
 msgid "The tax ID does not match the one on file for that customer."
 msgstr "El documento no coincide con el registrado en ese cliente."
 
@@ -1934,6 +1973,9 @@ msgstr "No hay ítems para devolver."
 msgid "There is a register opened by %s that has not been counted yet."
 msgstr "Hay una caja abierta por %s que todavía no se arqueó."
 
+msgid "There is already an open register. Running several registers at once is part of Keytill PRO."
+msgstr "Ya hay una caja abierta. Tener varias cajas a la vez es parte de Keytill PRO."
+
 msgid "There is no open cash register. Open it from the Sale screen."
 msgstr "No hay caja física abierta. Se abre desde Venta."
 
@@ -1954,6 +1996,9 @@ msgstr "Todavía no hay una página con el shortcode [keytill]. Creá una págin
 
 msgid "This device/browser does not allow camera use."
 msgstr "Este dispositivo/navegador no permite usar la cámara."
+
+msgid "This feature is part of Keytill PRO."
+msgstr "Esta función es parte de Keytill PRO."
 
 msgid "This point of sale is for cashiers only. Sign in with an authorized user."
 msgstr "Este punto de venta es solo para cajeros. Iniciá sesión con un usuario autorizado."
@@ -1996,6 +2041,9 @@ msgstr "Precio unit."
 
 msgid "Upload image"
 msgstr "Subir imagen"
+
+msgid "Uploading product images from the POS is part of Keytill PRO."
+msgstr "Subir imágenes de producto desde el POS es parte de Keytill PRO."
 
 msgid "Uploading…"
 msgstr "Subiendo…"

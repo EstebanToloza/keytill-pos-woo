@@ -78,11 +78,13 @@ function kt_reset() {
 	$wpdb->query( 'TRUNCATE TABLE ' . $wpdb->prefix . 'keytill_credit_ledger' );
 	delete_option( 'keytill_digital_last_balance' );
 	delete_option( 'keytill_digital_seeded' );
-	foreach ( array( 'DEMO-1001' => 24, 'DEMO-4001' => 40, 'DEMO-1004' => 0 ) as $sku => $qty ) {
+	foreach ( array( 'DEMO-1001' => array( 24, '24.00' ), 'DEMO-4001' => array( 40, '14.00' ), 'DEMO-1004' => array( 0, '12.90' ) ) as $sku => $base ) {
 		$p = wc_get_product( wc_get_product_id_by_sku( $sku ) );
 		if ( $p ) {
-			$p->set_stock_quantity( $qty );
-			$p->set_stock_status( $qty > 0 ? 'instock' : 'outofstock' );
+			$p->set_stock_quantity( $base[0] );
+			$p->set_stock_status( $base[0] > 0 ? 'instock' : 'outofstock' );
+			$p->set_regular_price( $base[1] );
+			$p->set_price( $base[1] );
 			$p->save();
 		}
 	}

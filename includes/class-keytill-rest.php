@@ -631,6 +631,17 @@ class KEYTILL_REST {
 			$refund_method = ( 'efectivo' === $order->get_payment_method() ) ? 'efectivo' : 'credito';
 		}
 
+		// FREE devuelve en efectivo. EMITIR crédito es PRO; CANJEAR el ya emitido
+		// funciona siempre (ver KEYTILL_Pro). Si el default cayó en crédito porque
+		// la venta no fue en efectivo, se pasa a efectivo en silencio: el cajón es
+		// el reintegro que FREE sí sabe hacer.
+		if ( 'credito' === $refund_method && ! KEYTILL_Pro::has( KEYTILL_Pro::ISSUE_CREDIT ) ) {
+			if ( isset( $params['refund_method'] ) ) {
+				return KEYTILL_Pro::denied( __( 'Refunding to store credit is part of Keytill PRO.', 'keytill' ) );
+			}
+			$refund_method = 'efectivo';
+		}
+
 		$line_items = array();
 		$amount     = 0.0;
 		foreach ( $raw_lines as $ln ) {
@@ -1203,6 +1214,9 @@ class KEYTILL_REST {
 	 * atómica: el total no cambia. Devuelve la fila actualizada (con branch_stock).
 	 */
 	public static function admin_product_move_stock( WP_REST_Request $request ) {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::MULTI_LOCATION ) ) {
+			return KEYTILL_Pro::denied( __( 'Moving stock between locations is part of Keytill PRO.', 'keytill' ) );
+		}
 		$id      = absint( $request->get_param( 'id' ) );
 		$product = wc_get_product( $id );
 		if ( ! $product instanceof WC_Product ) {
@@ -1224,6 +1238,9 @@ class KEYTILL_REST {
 	}
 
 	public static function admin_products_bulk_branch( WP_REST_Request $request ) {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::MULTI_LOCATION ) ) {
+			return KEYTILL_Pro::denied( __( 'Stock by location is part of Keytill PRO.', 'keytill' ) );
+		}
 		$params     = self::body( $request );
 		$branch_raw = isset( $params['branch_id'] ) ? (string) $params['branch_id'] : '';
 		$clear      = ( '' === trim( $branch_raw ) );
@@ -1751,6 +1768,9 @@ class KEYTILL_REST {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public static function admin_attribute_create( WP_REST_Request $request ) {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::PRODUCT_EDITOR ) ) {
+			return KEYTILL_Pro::denied( __( 'Creating attributes from the POS is part of Keytill PRO.', 'keytill' ) );
+		}
 		$params = self::body( $request );
 		$name   = isset( $params['name'] ) ? sanitize_text_field( $params['name'] ) : '';
 		if ( '' === $name ) {
@@ -1798,6 +1818,9 @@ class KEYTILL_REST {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public static function admin_attribute_term_create( WP_REST_Request $request ) {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::PRODUCT_EDITOR ) ) {
+			return KEYTILL_Pro::denied( __( 'Creating attribute values from the POS is part of Keytill PRO.', 'keytill' ) );
+		}
 		$attr_id = absint( $request->get_param( 'id' ) );
 		$tax_obj = self::get_attribute_taxonomy( $attr_id );
 		if ( ! $tax_obj ) {
@@ -2227,6 +2250,9 @@ class KEYTILL_REST {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public static function admin_variations_generate( WP_REST_Request $request ) {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::PRODUCT_EDITOR ) ) {
+			return KEYTILL_Pro::denied( __( 'Generating variations from the POS is part of Keytill PRO.', 'keytill' ) );
+		}
 		$product = wc_get_product( absint( $request->get_param( 'id' ) ) );
 		if ( ! $product instanceof WC_Product ) {
 			return new WP_Error( 'keytill_not_found', __( 'Product not found.', 'keytill' ), array( 'status' => 404 ) );
@@ -2537,6 +2563,9 @@ class KEYTILL_REST {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public static function admin_media_upload( WP_REST_Request $request ) {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::PRODUCT_EDITOR ) ) {
+			return KEYTILL_Pro::denied( __( 'Uploading product images from the POS is part of Keytill PRO.', 'keytill' ) );
+		}
 		$files = $request->get_file_params();
 		if ( empty( $files['file'] ) || empty( $files['file']['name'] ) ) {
 			return new WP_Error( 'keytill_no_file', __( 'No image was received.', 'keytill' ), array( 'status' => 400 ) );
@@ -2767,10 +2796,16 @@ class KEYTILL_REST {
 	 * ------------------------------------------------------------------ */
 
 	public static function digital_current() {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::DIGITAL_REGISTER ) ) {
+			return KEYTILL_Pro::denied( __( 'The digital register is part of Keytill PRO.', 'keytill' ) );
+		}
 		return new WP_REST_Response( array( 'digital' => KEYTILL_Cash_Digital::current_payload() ), 200 );
 	}
 
 	public static function digital_open( WP_REST_Request $request ) {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::DIGITAL_REGISTER ) ) {
+			return KEYTILL_Pro::denied( __( 'The digital register is part of Keytill PRO.', 'keytill' ) );
+		}
 		$params  = self::body( $request );
 		$initial = array_key_exists( 'initial', $params ) ? (float) $params['initial'] : null;
 		$res     = KEYTILL_Cash_Digital::open_session( get_current_user_id(), $initial );
@@ -2778,6 +2813,9 @@ class KEYTILL_REST {
 	}
 
 	public static function digital_close() {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::DIGITAL_REGISTER ) ) {
+			return KEYTILL_Pro::denied( __( 'The digital register is part of Keytill PRO.', 'keytill' ) );
+		}
 		$id = KEYTILL_Cash_Digital::get_open_session_id();
 		if ( ! $id ) {
 			return new WP_Error( 'keytill_digital_closed', __( 'The digital register is not open.', 'keytill' ), array( 'status' => 409 ) );
@@ -2787,6 +2825,9 @@ class KEYTILL_REST {
 	}
 
 	public static function digital_verify( WP_REST_Request $request ) {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::DIGITAL_REGISTER ) ) {
+			return KEYTILL_Pro::denied( __( 'Bank reconciliation is part of Keytill PRO.', 'keytill' ) );
+		}
 		$params = self::body( $request );
 		$oid    = isset( $params['order_id'] ) ? absint( $params['order_id'] ) : 0;
 		$status = isset( $params['status'] ) ? sanitize_key( $params['status'] ) : '';
@@ -2799,6 +2840,9 @@ class KEYTILL_REST {
 
 	/** Resumen combinado para la pestaña Caja/Banco (ambas cajas). */
 	public static function cashbank_summary() {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::DIGITAL_REGISTER ) ) {
+			return KEYTILL_Pro::denied( __( 'The Register / Bank tab is part of Keytill PRO.', 'keytill' ) );
+		}
 		$cash_id = KEYTILL_Cash::get_open_session_id();
 		return new WP_REST_Response(
 			array(
@@ -2817,6 +2861,9 @@ class KEYTILL_REST {
 	 * Filtros (query): from, to (Y-m-d), origen, movement, type, account.
 	 */
 	public static function cashbank_ledger( WP_REST_Request $request ) {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::DIGITAL_REGISTER ) ) {
+			return KEYTILL_Pro::denied( __( 'The movement log is part of Keytill PRO.', 'keytill' ) );
+		}
 		$from = (string) $request->get_param( 'from' );
 		$to   = (string) $request->get_param( 'to' );
 		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $from ) ) {

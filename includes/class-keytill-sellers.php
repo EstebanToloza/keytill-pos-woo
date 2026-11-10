@@ -202,6 +202,10 @@ class KEYTILL_Sellers {
 
 	/** Reporte de ventas por vendedor, filtrable por rango de fechas. */
 	public static function render_report() {
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::REPORTS ) ) {
+			wp_die( esc_html__( 'The sales-by-salesperson report is part of Keytill PRO.', 'keytill' ), 403 );
+		}
+
 		// Rango: default mes actual (desde el 1° hasta hoy).
 		$today   = current_time( 'Y-m-d' );
 		$from_in = isset( $_GET['from'] ) ? sanitize_text_field( wp_unslash( $_GET['from'] ) ) : '';

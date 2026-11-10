@@ -128,6 +128,26 @@ class KEYTILL_Branches {
 				);
 			}
 		}
+
+		// FREE: una sola sucursal. Varias —con stock por local y movimientos
+		// entre locales— es PRO. Se recorta en el sanitize del setting, así el
+		// tope no depende de la pantalla: vale igual si se guarda por código.
+		// Se conservan las que ya existan: bajar de PRO a FREE no borra datos,
+		// solo deja de poder agregar.
+		if ( ! KEYTILL_Pro::has( KEYTILL_Pro::MULTI_LOCATION ) ) {
+			$previas = (array) get_option( self::OPTION, array() );
+			$tope    = max( 1, count( $previas ) );
+			if ( count( $out ) > $tope ) {
+				$out = array_slice( $out, 0, $tope );
+				add_settings_error(
+					self::OPTION,
+					'keytill_pro_required',
+					__( 'Only one location is available in the free version. Several locations, with stock per location, are part of Keytill PRO.', 'keytill' ),
+					'warning'
+				);
+			}
+		}
+
 		return $out;
 	}
 
