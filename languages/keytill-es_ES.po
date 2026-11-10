@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-09 23:07\n"
+"POT-Creation-Date: 2026-11-10 08:06\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -281,6 +281,9 @@ msgstr "EFECTIVO A DEVOLVER"
 msgid "CODE"
 msgstr "CÓDIGO"
 
+msgid "CUSTOMER"
+msgstr "CLIENTE"
+
 msgid "Camera permission denied. Enable it in the browser and retry."
 msgstr "Permiso de cámara denegado. Habilitalo en el navegador y reintentá."
 
@@ -298,6 +301,9 @@ msgstr "Efectivo"
 
 msgid "Cash refunds"
 msgstr "Devoluciones efectivo"
+
+msgid "Cash register"
+msgstr "Caja física"
 
 msgid "Cash register (cash)"
 msgstr "Caja física (efectivo)"
@@ -605,8 +611,14 @@ msgstr "Clientes"
 msgid "Customers can enter a custom amount on the web in addition to the denominations. At the POS the cashier can always type an amount."
 msgstr "El cliente puede escribir un importe libre en la web además de las denominaciones. En el POS el cajero siempre puede tipear un monto."
 
+msgid "DEL"
+msgstr "SUPR"
+
 msgid "DEL removes"
 msgstr "SUPR quita"
+
+msgid "DESCRIPTION"
+msgstr "DESCRIPCIÓN"
 
 msgid "DISCOUNT"
 msgstr "DESCUENTO"
@@ -731,8 +743,14 @@ msgstr "Descargar CSV para Excel"
 msgid "E.g. birthday gift"
 msgstr "Ej: regalo cumpleaños"
 
+msgid "EMPTY CART"
+msgstr "CARRITO VACÍO"
+
 msgid "ENTER to confirm"
 msgstr "Enter para confirmar"
+
+msgid "ESC back"
+msgstr "ESC volver"
 
 msgid "Edit product"
 msgstr "Editar producto"
@@ -1079,6 +1097,9 @@ msgstr "Movimiento: todos"
 msgid "Moving stock between locations is part of Keytill PRO."
 msgstr "Mover stock entre sucursales es parte de Keytill PRO."
 
+msgid "N* + code = N units"
+msgstr "N* + código = N unidades"
+
 msgid "NEW CUSTOMER"
 msgstr "NUEVO CLIENTE"
 
@@ -1247,6 +1268,9 @@ msgstr "Lista numerada"
 msgid "OK"
 msgstr "OK"
 
+msgid "OPEN REGISTER"
+msgstr "ABRIR CAJA"
+
 msgid "OPENING BALANCE · DIGITAL REGISTER"
 msgstr "SALDO INICIAL · CAJA DIGITAL"
 
@@ -1327,6 +1351,12 @@ msgstr "Sin stock"
 
 msgid "Out of stock: %s"
 msgstr "Sin stock: %s"
+
+msgid "PAYMENT"
+msgstr "COBRO"
+
+msgid "PAYMENT METHOD"
+msgstr "MEDIO DE PAGO"
 
 msgid "POS operating guide. You can print it (Ctrl/Cmd + P) to keep a copy at the register."
 msgstr "Guía de operatoria del POS. Se puede imprimir (Ctrl/Cmd + P) para dejar una copia en la caja."
@@ -1433,6 +1463,9 @@ msgstr "Resumen de compra"
 msgid "QR"
 msgstr "QR"
 
+msgid "QTY"
+msgstr "CANT"
+
 msgid "Quantity"
 msgstr "Cantidad"
 
@@ -1441,6 +1474,9 @@ msgstr "Cantidad a devolver mayor a la disponible: %s."
 
 msgid "Quantity: %d"
 msgstr "Cantidad: %d"
+
+msgid "REFUND"
+msgstr "DEVOLUCIÓN"
 
 msgid "REFUND DONE"
 msgstr "DEVOLUCIÓN OK"
@@ -1451,8 +1487,17 @@ msgstr "REINTEGRO"
 msgid "REGISTER 01"
 msgstr "CAJA 01"
 
+msgid "REGISTER CLOSE"
+msgstr "CIERRE DE CAJA"
+
 msgid "REGISTER CLOSED"
 msgstr "CAJA CERRADA"
+
+msgid "REGISTER OPEN"
+msgstr "CAJA ABIERTA"
+
+msgid "RESULTS"
+msgstr "RESULTADOS"
 
 msgid "Read only — editing requires management permission."
 msgstr "Solo lectura — la edición requiere permiso de gestión."
@@ -1589,6 +1634,9 @@ msgstr "VENDEDOR"
 msgid "SCAN CODE"
 msgstr "ESCANEAR CÓDIGO"
 
+msgid "SCAN OR SEARCH"
+msgstr "ESCANEÁ O BUSCÁ"
+
 msgid "SHORT"
 msgstr "FALTA"
 
@@ -1597,6 +1645,9 @@ msgstr "SKU"
 
 msgid "SKU / code"
 msgstr "SKU / código"
+
+msgid "SOURCE"
+msgstr "ORIGEN"
 
 msgid "STORE CREDIT"
 msgstr "CRÉDITO EN TIENDA"
@@ -1802,8 +1853,17 @@ msgstr "Montos sugeridos separados por coma. Se ofrecen como opciones rápidas e
 msgid "TAB switches % / amount · ENTER apply · ESC cancel"
 msgstr "TAB cambia % / monto · ENTER aplica · ESC cancela"
 
+msgid "TAKE PAYMENT"
+msgstr "COBRAR"
+
 msgid "TENDERED"
 msgstr "RECIBIDO"
+
+msgid "TO CHARGE"
+msgstr "A COBRAR"
+
+msgid "TO REFUND BY BANK TRANSFER"
+msgstr "A DEVOLVER POR TRANSFERENCIA"
 
 msgid "TOTAL"
 msgstr "TOTAL"
@@ -2033,6 +2093,9 @@ msgstr "Tipo"
 msgid "Type: all"
 msgstr "Tipo: todos"
 
+msgid "UNIT"
+msgstr "P. UNIT"
+
 msgid "Underline"
 msgstr "Subrayado"
 
@@ -2225,6 +2288,9 @@ msgstr "Locales del negocio. El stock se lleva por sucursal (se carga en el edit
 msgid "Your session expired. Reload the page (F5) and sign in again."
 msgstr "Tu sesión expiró. Recargá la página (F5) y volvé a iniciar sesión."
 
+msgid "add / confirm"
+msgstr "agregar / confirmar"
+
 msgid "add to the ticket · ESC cancel"
 msgstr "agregar al ticket · ESC cancela"
 
@@ -2239,6 +2305,9 @@ msgstr "volver a apertura"
 
 msgid "barcode / product name…"
 msgstr "código de barras / nombre del producto…"
+
+msgid "cancel / close"
+msgstr "cancelar / cerrar"
 
 msgid "cash count"
 msgstr "arqueo de efectivo"
@@ -2270,8 +2339,14 @@ msgstr "crear nuevo"
 msgid "credit"
 msgstr "crédito"
 
+msgid "customer"
+msgstr "cliente"
+
 msgid "customers"
 msgstr "clientes"
+
+msgid "discount"
+msgstr "descuento"
 
 msgid "done · for an exchange, scan the new products"
 msgstr "listo · para un cambio, escaneá los productos nuevos"
@@ -2285,8 +2360,17 @@ msgstr "vence"
 msgid "find sale"
 msgstr "buscar venta"
 
+msgid "idle"
+msgstr "en espera"
+
+msgid "items"
+msgstr "ítems"
+
 msgid "labels in total"
 msgstr "etiquetas en total"
+
+msgid "lines"
+msgstr "líneas"
 
 msgid "max %s"
 msgstr "máx %s"
@@ -2351,6 +2435,9 @@ msgstr "sin stock"
 msgid "out of stock at %1$s (available %2$s, requested %3$s)"
 msgstr "sin stock en %1$s (hay %2$s, pedís %3$s)"
 
+msgid "pending"
+msgstr "en espera"
+
 msgid "per variation"
 msgstr "por variación"
 
@@ -2360,8 +2447,14 @@ msgstr "procesar devolución"
 msgid "products"
 msgstr "productos"
 
+msgid "quantity"
+msgstr "cantidad"
+
 msgid "record withdrawal"
 msgstr "registrar retiro"
+
+msgid "refund"
+msgstr "devolución"
 
 msgid "refund #%d"
 msgstr "devolución #%d"
@@ -2372,11 +2465,17 @@ msgstr "devolvibles"
 msgid "remove"
 msgstr "quitar"
 
+msgid "remove line"
+msgstr "quitar línea"
+
 msgid "sale #%d"
 msgstr "venta #%d"
 
 msgid "save and assign"
 msgstr "guardar y asignar"
+
+msgid "select line"
+msgstr "elegir línea"
 
 msgid "selected"
 msgstr "seleccionado(s)"
@@ -2399,6 +2498,9 @@ msgstr "total"
 msgid "total spent"
 msgstr "total gastado"
 
+msgid "units to refund"
+msgstr "u. a devolver"
+
 msgid "use the highlighted method"
 msgstr "usar el medio resaltado"
 
@@ -2410,6 +2512,9 @@ msgstr "validar crédito"
 
 msgid "withdrawal"
 msgstr "retiro"
+
+msgid "↑ ↓ to choose · ENTER adds"
+msgstr "↑ ↓ para elegir · ENTER agrega"
 
 msgid "↑↓ select line · + − quantity · C/E/T refund method · ENTER process"
 msgstr "↑↓ elegir línea · + − cantidad · C/E/T medio de reintegro · ENTER procesa"

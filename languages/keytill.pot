@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-09 23:07\n"
+"POT-Creation-Date: 2026-11-10 08:06\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -281,6 +281,9 @@ msgstr ""
 msgid "CODE"
 msgstr ""
 
+msgid "CUSTOMER"
+msgstr ""
+
 msgid "Camera permission denied. Enable it in the browser and retry."
 msgstr ""
 
@@ -297,6 +300,9 @@ msgid "Cash"
 msgstr ""
 
 msgid "Cash refunds"
+msgstr ""
+
+msgid "Cash register"
 msgstr ""
 
 msgid "Cash register (cash)"
@@ -605,7 +611,13 @@ msgstr ""
 msgid "Customers can enter a custom amount on the web in addition to the denominations. At the POS the cashier can always type an amount."
 msgstr ""
 
+msgid "DEL"
+msgstr ""
+
 msgid "DEL removes"
+msgstr ""
+
+msgid "DESCRIPTION"
 msgstr ""
 
 msgid "DISCOUNT"
@@ -731,7 +743,13 @@ msgstr ""
 msgid "E.g. birthday gift"
 msgstr ""
 
+msgid "EMPTY CART"
+msgstr ""
+
 msgid "ENTER to confirm"
+msgstr ""
+
+msgid "ESC back"
 msgstr ""
 
 msgid "Edit product"
@@ -1079,6 +1097,9 @@ msgstr ""
 msgid "Moving stock between locations is part of Keytill PRO."
 msgstr ""
 
+msgid "N* + code = N units"
+msgstr ""
+
 msgid "NEW CUSTOMER"
 msgstr ""
 
@@ -1247,6 +1268,9 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
+msgid "OPEN REGISTER"
+msgstr ""
+
 msgid "OPENING BALANCE · DIGITAL REGISTER"
 msgstr ""
 
@@ -1326,6 +1350,12 @@ msgid "Out of stock"
 msgstr ""
 
 msgid "Out of stock: %s"
+msgstr ""
+
+msgid "PAYMENT"
+msgstr ""
+
+msgid "PAYMENT METHOD"
 msgstr ""
 
 msgid "POS operating guide. You can print it (Ctrl/Cmd + P) to keep a copy at the register."
@@ -1433,6 +1463,9 @@ msgstr ""
 msgid "QR"
 msgstr ""
 
+msgid "QTY"
+msgstr ""
+
 msgid "Quantity"
 msgstr ""
 
@@ -1440,6 +1473,9 @@ msgid "Quantity to refund exceeds the available amount: %s."
 msgstr ""
 
 msgid "Quantity: %d"
+msgstr ""
+
+msgid "REFUND"
 msgstr ""
 
 msgid "REFUND DONE"
@@ -1451,7 +1487,16 @@ msgstr ""
 msgid "REGISTER 01"
 msgstr ""
 
+msgid "REGISTER CLOSE"
+msgstr ""
+
 msgid "REGISTER CLOSED"
+msgstr ""
+
+msgid "REGISTER OPEN"
+msgstr ""
+
+msgid "RESULTS"
 msgstr ""
 
 msgid "Read only — editing requires management permission."
@@ -1589,6 +1634,9 @@ msgstr ""
 msgid "SCAN CODE"
 msgstr ""
 
+msgid "SCAN OR SEARCH"
+msgstr ""
+
 msgid "SHORT"
 msgstr ""
 
@@ -1596,6 +1644,9 @@ msgid "SKU"
 msgstr ""
 
 msgid "SKU / code"
+msgstr ""
+
+msgid "SOURCE"
 msgstr ""
 
 msgid "STORE CREDIT"
@@ -1802,7 +1853,16 @@ msgstr ""
 msgid "TAB switches % / amount · ENTER apply · ESC cancel"
 msgstr ""
 
+msgid "TAKE PAYMENT"
+msgstr ""
+
 msgid "TENDERED"
+msgstr ""
+
+msgid "TO CHARGE"
+msgstr ""
+
+msgid "TO REFUND BY BANK TRANSFER"
 msgstr ""
 
 msgid "TOTAL"
@@ -2033,6 +2093,9 @@ msgstr ""
 msgid "Type: all"
 msgstr ""
 
+msgid "UNIT"
+msgstr ""
+
 msgid "Underline"
 msgstr ""
 
@@ -2225,6 +2288,9 @@ msgstr ""
 msgid "Your session expired. Reload the page (F5) and sign in again."
 msgstr ""
 
+msgid "add / confirm"
+msgstr ""
+
 msgid "add to the ticket · ESC cancel"
 msgstr ""
 
@@ -2238,6 +2304,9 @@ msgid "back to opening"
 msgstr ""
 
 msgid "barcode / product name…"
+msgstr ""
+
+msgid "cancel / close"
 msgstr ""
 
 msgid "cash count"
@@ -2270,7 +2339,13 @@ msgstr ""
 msgid "credit"
 msgstr ""
 
+msgid "customer"
+msgstr ""
+
 msgid "customers"
+msgstr ""
+
+msgid "discount"
 msgstr ""
 
 msgid "done · for an exchange, scan the new products"
@@ -2285,7 +2360,16 @@ msgstr ""
 msgid "find sale"
 msgstr ""
 
+msgid "idle"
+msgstr ""
+
+msgid "items"
+msgstr ""
+
 msgid "labels in total"
+msgstr ""
+
+msgid "lines"
 msgstr ""
 
 msgid "max %s"
@@ -2351,6 +2435,9 @@ msgstr ""
 msgid "out of stock at %1$s (available %2$s, requested %3$s)"
 msgstr ""
 
+msgid "pending"
+msgstr ""
+
 msgid "per variation"
 msgstr ""
 
@@ -2360,7 +2447,13 @@ msgstr ""
 msgid "products"
 msgstr ""
 
+msgid "quantity"
+msgstr ""
+
 msgid "record withdrawal"
+msgstr ""
+
+msgid "refund"
 msgstr ""
 
 msgid "refund #%d"
@@ -2372,10 +2465,16 @@ msgstr ""
 msgid "remove"
 msgstr ""
 
+msgid "remove line"
+msgstr ""
+
 msgid "sale #%d"
 msgstr ""
 
 msgid "save and assign"
+msgstr ""
+
+msgid "select line"
 msgstr ""
 
 msgid "selected"
@@ -2399,6 +2498,9 @@ msgstr ""
 msgid "total spent"
 msgstr ""
 
+msgid "units to refund"
+msgstr ""
+
 msgid "use the highlighted method"
 msgstr ""
 
@@ -2409,6 +2511,9 @@ msgid "validate credit"
 msgstr ""
 
 msgid "withdrawal"
+msgstr ""
+
+msgid "↑ ↓ to choose · ENTER adds"
 msgstr ""
 
 msgid "↑↓ select line · + − quantity · C/E/T refund method · ENTER process"

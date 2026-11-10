@@ -73,11 +73,11 @@ if ( $keytill_tax_status ) :
 		<!-- Campo de comando -->
 		<div class="keytill-card cmd-card">
 			<div class="cmd-card__head">
-				<span class="cmd-card__label">ESCANEÁ O BUSCÁ</span>
+				<span class="cmd-card__label"><?php esc_html_e( 'SCAN OR SEARCH', 'keytill' ); ?></span>
 				<span class="cmd-card__prefix" x-show="qtyPrefix > 0" x-cloak>
-					×<span x-text="qtyPrefix"></span> en espera
+					×<span x-text="qtyPrefix"></span> <?php esc_html_e( 'pending', 'keytill' ); ?>
 				</span>
-				<span class="cmd-card__hint">N* + código = N unidades</span>
+				<span class="cmd-card__hint"><?php esc_html_e( 'N* + code = N units', 'keytill' ); ?></span>
 			</div>
 			<input
 				type="text"
@@ -118,8 +118,8 @@ if ( $keytill_tax_status ) :
 		<!-- Resultados de búsqueda -->
 		<div class="keytill-card results" x-show="results().length > 0" x-cloak>
 			<div class="results__head">
-				<span>RESULTADOS (<span x-text="results().length"></span>)</span>
-				<span>↑ ↓ para elegir · ENTER agrega</span>
+				<span><?php esc_html_e( 'RESULTS', 'keytill' ); ?> (<span x-text="results().length"></span>)</span>
+				<span><?php esc_html_e( '↑ ↓ to choose · ENTER adds', 'keytill' ); ?></span>
 			</div>
 			<template x-for="(r, i) in results()" :key="r.id">
 				<div class="results__row" :class="{ 'is-sel': i === resIdx }" @click="addProduct(r)" role="button" tabindex="-1">
@@ -151,9 +151,9 @@ if ( $keytill_tax_status ) :
 			</div>
 			<div class="cart__head">
 				<span>#</span>
-				<span>DESCRIPCIÓN</span>
-				<span class="ta-c">CANT</span>
-				<span class="ta-r">P. UNIT</span>
+				<span><?php esc_html_e( 'DESCRIPTION', 'keytill' ); ?></span>
+				<span class="ta-c"><?php esc_html_e( 'QTY', 'keytill' ); ?></span>
+				<span class="ta-r"><?php esc_html_e( 'UNIT', 'keytill' ); ?></span>
 				<span class="ta-r">SUBTOTAL</span>
 			</div>
 			<div class="cart__body">
@@ -188,7 +188,7 @@ if ( $keytill_tax_status ) :
 					</div>
 				</template>
 				<div class="cart__empty" x-show="lines.length === 0" x-cloak>
-					<span class="mono">CARRITO VACÍO</span>
+					<span class="mono"><?php esc_html_e( 'EMPTY CART', 'keytill' ); ?></span>
 					<span><?php esc_html_e( 'Scan a product to start the sale', 'keytill' ); ?></span>
 				</div>
 			</div>
@@ -196,17 +196,17 @@ if ( $keytill_tax_status ) :
 
 		<!-- Leyenda de atajos -->
 		<div class="keytill-card legend">
-			<span class="legend__item"><kbd>ENTER</kbd> agregar / confirmar</span>
-			<span class="legend__item"><kbd>↑ ↓</kbd> elegir línea</span>
-			<span class="legend__item"><kbd>+ −</kbd> cantidad</span>
-			<span class="legend__item"><kbd>SUPR</kbd> quitar línea</span>
-			<span class="legend__item legend__item--strong"><kbd class="kbd-brand">F2</kbd> COBRAR</span>
-			<span class="legend__item"><kbd>F4</kbd> cliente</span>
-			<span class="legend__item"><kbd>F7</kbd> devolución</span>
-			<span class="legend__item"><kbd>F8</kbd> descuento</span>
-			<span class="legend__item" x-show="$store.pos.canManage"><kbd>F9</kbd> cerrar caja</span>
-			<span class="legend__item"><kbd>F10</kbd> retiro</span>
-			<span class="legend__item"><kbd>ESC</kbd> cancelar / cerrar</span>
+			<span class="legend__item"><kbd>ENTER</kbd> <?php esc_html_e( 'add / confirm', 'keytill' ); ?></span>
+			<span class="legend__item"><kbd>↑ ↓</kbd> <?php esc_html_e( 'select line', 'keytill' ); ?></span>
+			<span class="legend__item"><kbd>+ −</kbd> <?php esc_html_e( 'quantity', 'keytill' ); ?></span>
+			<span class="legend__item"><kbd><?php esc_html_e( 'DEL', 'keytill' ); ?></kbd> <?php esc_html_e( 'remove line', 'keytill' ); ?></span>
+			<span class="legend__item legend__item--strong"><kbd class="kbd-brand">F2</kbd> <?php esc_html_e( 'TAKE PAYMENT', 'keytill' ); ?></span>
+			<span class="legend__item"><kbd>F4</kbd> <?php esc_html_e( 'customer', 'keytill' ); ?></span>
+			<span class="legend__item"><kbd>F7</kbd> <?php esc_html_e( 'refund', 'keytill' ); ?></span>
+			<span class="legend__item"><kbd>F8</kbd> <?php esc_html_e( 'discount', 'keytill' ); ?></span>
+			<span class="legend__item" x-show="$store.pos.canManage"><kbd>F9</kbd> <?php esc_html_e( 'close register', 'keytill' ); ?></span>
+			<span class="legend__item"><kbd>F10</kbd> <?php esc_html_e( 'withdrawal', 'keytill' ); ?></span>
+			<span class="legend__item"><kbd>ESC</kbd> <?php esc_html_e( 'cancel / close', 'keytill' ); ?></span>
 		</div>
 	</div>
 
@@ -216,11 +216,11 @@ if ( $keytill_tax_status ) :
 		<!-- Totales -->
 		<div class="keytill-card totals">
 			<div class="totals__meta">
-				<span><span x-text="itemCount()"></span> ítems · <span x-text="lines.length"></span> líneas</span>
+				<span><span x-text="itemCount()"></span> <?php esc_html_e( 'items', 'keytill' ); ?> · <span x-text="lines.length"></span> <?php esc_html_e( 'lines', 'keytill' ); ?></span>
 				<span class="mono" x-text="money(subtotal())"></span>
 			</div>
 			<div class="totals__discount" x-show="discount > 0" x-cloak>
-				<span>DESCUENTO <span x-text="discountType === 'fixed' ? money(discount) : (discount + '%')"></span></span>
+				<span><?php esc_html_e( 'DISCOUNT', 'keytill' ); ?> <span x-text="discountType === 'fixed' ? money(discount) : (discount + '%')"></span></span>
 				<span class="mono">− <span x-text="money(discountAmount())"></span></span>
 			</div>
 			<div class="totals__sep"></div>
@@ -237,10 +237,10 @@ if ( $keytill_tax_status ) :
 		<!-- Cliente -->
 		<div class="keytill-card customer">
 			<div class="customer__head">
-				<span>CLIENTE</span>
+				<span><?php esc_html_e( 'CUSTOMER', 'keytill' ); ?></span>
 				<kbd>F4</kbd>
 			</div>
-			<span class="customer__name" x-text="customer ? customer.name || customer.doc : 'Consumidor final'"></span>
+			<span class="customer__name" x-text="customer ? customer.name || customer.doc : keytillT( 'Walk-in customer' )"></span>
 			<span class="mono muted customer__doc"
 				x-text="customer ? [customer.doc, customer.iva].filter(Boolean).join(' · ') || keytillT( 'no tax details' ) : ($store.pos.touch ? keytillT( 'no details · tap «Customer»' ) : keytillT( 'no details · F4 to add' ))"></span>
 		</div>
@@ -254,7 +254,7 @@ if ( $keytill_tax_status ) :
 		<!-- Caja abierta -->
 		<div class="keytill-card caja" x-show="session" x-cloak>
 			<div class="caja__head">
-				<span>CAJA ABIERTA</span>
+				<span><?php esc_html_e( 'REGISTER OPEN', 'keytill' ); ?></span>
 				<span class="mono" x-text="session ? '#' + session.register_session_id : ''"></span>
 			</div>
 			<div class="caja__row" x-show="session && session.branch_name" x-cloak>
@@ -1515,10 +1515,10 @@ if ( $keytill_tax_status ) :
 	<div class="keytill-modal" x-show="mode === 'pay'" x-cloak>
 		<div class="keytill-modal__card pay">
 			<div class="pay__head">
-				<span class="pay__title">COBRO</span>
+				<span class="pay__title"><?php esc_html_e( 'PAYMENT', 'keytill' ); ?></span>
 				<span class="mono pay__hint"
 					x-text="payStage === 'seller' ? keytillT( 'Choose the salesperson · 1·2·3… or arrows · ENTER' ) : (payStage === 'credit' ? keytillT( 'Credit code · ENTER validates' ) : (payStage === 'amount' ? (isCash() ? keytillT( 'Cash · type what you received' ) : (chargeTotal() <= 0 ? keytillT( 'Nothing left to charge · ENTER confirms' ) : keytillT( 'ENTER to confirm' ))) : (chargeTotal() <= 0 ? keytillT( 'Comped · ENTER confirms' ) : keytillT( 'Choose a method by number · C credit' ))))"></span>
-				<span class="mono pay__esc">ESC volver</span>
+				<span class="mono pay__esc"><?php esc_html_e( 'ESC back', 'keytill' ); ?></span>
 			</div>
 
 			<!-- Paso: vendedor (1° si hay vendedores cargados) -->
@@ -1555,7 +1555,7 @@ if ( $keytill_tax_status ) :
 			<!-- Etapas medio + monto -->
 			<div class="pay__body" x-show="payStage === 'method' || payStage === 'amount'">
 				<div class="pay__methods">
-					<span class="pay__col-label">MEDIO DE PAGO</span>
+					<span class="pay__col-label"><?php esc_html_e( 'PAYMENT METHOD', 'keytill' ); ?></span>
 					<template x-for="m in methods" :key="m.id">
 						<div class="pay__method" :class="{ 'is-on': m.id === payMethod }" @click="pickMethod(m.id)" role="button">
 							<span class="mono pay__key" x-text="m.key"></span>
@@ -1582,7 +1582,7 @@ if ( $keytill_tax_status ) :
 						<span class="mono">−<span x-text="money(discountAmount())"></span></span>
 					</div>
 					<div class="pay__row">
-						<span class="pay__col-label">A COBRAR</span>
+						<span class="pay__col-label"><?php esc_html_e( 'TO CHARGE', 'keytill' ); ?></span>
 						<span class="mono pay__total" x-text="money(chargeTotal())"></span>
 					</div>
 					<div class="pay__row pay__row--credit" x-show="creditApplied" x-cloak>
@@ -1627,7 +1627,7 @@ if ( $keytill_tax_status ) :
 	<!-- ================= MODAL CLIENTE ================= -->
 	<div class="keytill-modal" x-show="mode === 'customer'" x-cloak>
 		<div class="keytill-modal__card customer-modal">
-			<span class="modal__title">CLIENTE</span>
+			<span class="modal__title"><?php esc_html_e( 'CUSTOMER', 'keytill' ); ?></span>
 
 			<!-- BUSCAR / SELECCIONAR -->
 			<template x-if="custStage === 'search'">
@@ -1644,7 +1644,7 @@ if ( $keytill_tax_status ) :
 					</div>
 					<span class="mono muted cust__empty" x-show="custQuery && !custResults.length && !custBusy"><?php esc_html_e( 'No results · TAB to create a new one', 'keytill' ); ?></span>
 					<div class="cust__foot">
-						<span class="mono muted" x-show="customer"><?php esc_html_e( 'Current:', 'keytill' ); ?> <b x-text="customer ? (customer.name || customer.doc || customer.email) : ''"></b> · <kbd>SUPR</kbd> <?php esc_html_e( 'remove', 'keytill' ); ?></span>
+						<span class="mono muted" x-show="customer"><?php esc_html_e( 'Current:', 'keytill' ); ?> <b x-text="customer ? (customer.name || customer.doc || customer.email) : ''"></b> · <kbd><?php esc_html_e( 'DEL', 'keytill' ); ?></kbd> <?php esc_html_e( 'remove', 'keytill' ); ?></span>
 						<button type="button" class="cust__link" @click="startCreateCustomer()"><kbd class="kbd-brand">TAB</kbd> <?php esc_html_e( 'create new', 'keytill' ); ?></button>
 					</div>
 					<div class="sheet-actions" x-show="$store.pos.touch" x-cloak>
@@ -1955,9 +1955,9 @@ if ( $keytill_tax_status ) :
 	<div class="keytill-modal" x-show="mode === 'return'" x-cloak>
 		<div class="keytill-modal__card return-modal">
 			<div class="pay__head">
-				<span class="pay__title">DEVOLUCIÓN</span>
+				<span class="pay__title"><?php esc_html_e( 'REFUND', 'keytill' ); ?></span>
 				<span class="mono pay__hint"><?php esc_html_e( 'WooCommerce refund · stock restored', 'keytill' ); ?></span>
-				<span class="mono pay__esc">ESC volver</span>
+				<span class="mono pay__esc"><?php esc_html_e( 'ESC back', 'keytill' ); ?></span>
 			</div>
 
 			<!-- Etapa: buscar venta -->
@@ -1977,7 +1977,7 @@ if ( $keytill_tax_status ) :
 			<!-- Etapa: elegir cantidades -->
 			<div class="return-body" x-show="returnStage === 'select'">
 				<div class="return-info">
-					<span>Venta <span class="mono" x-text="returnData ? '#' + returnData.number : ''"></span> · <span class="mono" x-text="returnData ? returnData.payment_title : ''"></span></span>
+					<span><?php esc_html_e( 'Sale', 'keytill' ); ?> <span class="mono" x-text="returnData ? '#' + returnData.number : ''"></span> · <span class="mono" x-text="returnData ? returnData.payment_title : ''"></span></span>
 					<span class="mono muted" x-text="returnData ? returnData.date : ''"></span>
 				</div>
 				<div class="return-hint mono"><?php esc_html_e( '↑↓ select line · + − quantity · C/E/T refund method · ENTER process', 'keytill' ); ?></div>
@@ -2000,7 +2000,7 @@ if ( $keytill_tax_status ) :
 				</div>
 				<div class="return-foot">
 					<div class="return-total">
-						<span class="mono muted"><span x-text="returnUnits()"></span> u. a devolver</span>
+						<span class="mono muted"><span x-text="returnUnits()"></span> <?php esc_html_e( 'units to refund', 'keytill' ); ?></span>
 						<span class="return-total__amt mono"><span x-text="money(returnTotal())"></span></span>
 					</div>
 					<div class="return-method" x-show="returnUnits() > 0" x-cloak>
@@ -2047,7 +2047,7 @@ if ( $keytill_tax_status ) :
 					<span class="mono" x-text="returnResult ? money(returnResult.cash_back) : ''"></span>
 				</div>
 					<div class="cash-diff cash-diff--big is-neg" x-show="returnResult && returnResult.digital_back > 0" x-cloak>
-						<span>A DEVOLVER POR TRANSFERENCIA</span>
+						<span><?php esc_html_e( 'TO REFUND BY BANK TRANSFER', 'keytill' ); ?></span>
 						<span class="mono" x-text="returnResult ? money(returnResult.digital_back) : ''"></span>
 					</div>
 
@@ -2107,7 +2107,7 @@ if ( $keytill_tax_status ) :
 	<!-- ================= APERTURA DE CAJA ================= -->
 	<div class="keytill-modal keytill-modal--gate" x-show="mode === 'open'" x-cloak>
 		<div class="keytill-modal__card cash-modal">
-			<span class="modal__title">ABRIR CAJA</span>
+			<span class="modal__title"><?php esc_html_e( 'OPEN REGISTER', 'keytill' ); ?></span>
 			<!-- Motivo contextual: por qué se pide la apertura ahora. -->
 			<span class="mono modal__sub" x-show="openCtx === 'pay'" x-cloak><?php esc_html_e( 'You need an open register to take payment. Enter the opening float · ENTER opens the register', 'keytill' ); ?></span>
 			<span class="mono modal__sub" x-show="openCtx === 'return'" x-cloak><?php esc_html_e( 'You need an open register to process a refund. Enter the opening float · ENTER opens the register', 'keytill' ); ?></span>
@@ -2156,10 +2156,10 @@ if ( $keytill_tax_status ) :
 			<span class="modal__title" x-text="withdrawAccount === 'digital' ? keytillT( 'WITHDRAWAL · DIGITAL REGISTER' ) : keytillT( 'WITHDRAWAL · CASH' )"></span>
 			<span class="mono modal__sub"><?php esc_html_e( 'Amount and reason · TAB between fields · ENTER confirm · ESC cancel', 'keytill' ); ?></span>
 			<div class="return-method" x-show="$store.pos.canManage" x-cloak>
-				<span class="return-method__label">ORIGEN</span>
+				<span class="return-method__label"><?php esc_html_e( 'SOURCE', 'keytill' ); ?></span>
 				<div class="return-method__opts">
-					<button type="button" class="return-method__opt" :class="{ 'is-on': withdrawAccount === 'efectivo' }" @click="setWithdrawAccount('efectivo')" tabindex="-1">Caja física</button>
-					<button type="button" class="return-method__opt" :class="{ 'is-on': withdrawAccount === 'digital' }" @click="setWithdrawAccount('digital')" tabindex="-1">Caja digital</button>
+					<button type="button" class="return-method__opt" :class="{ 'is-on': withdrawAccount === 'efectivo' }" @click="setWithdrawAccount('efectivo')" tabindex="-1"><?php esc_html_e( 'Cash register', 'keytill' ); ?></button>
+					<button type="button" class="return-method__opt" :class="{ 'is-on': withdrawAccount === 'digital' }" @click="setWithdrawAccount('digital')" tabindex="-1"><?php esc_html_e( 'Digital register', 'keytill' ); ?></button>
 				</div>
 			</div>
 			<label class="modal__label"><?php esc_html_e( 'Amount', 'keytill' ); ?>
@@ -2181,9 +2181,9 @@ if ( $keytill_tax_status ) :
 	<div class="keytill-modal" x-show="mode === 'close'" x-cloak>
 		<div class="keytill-modal__card cash-close">
 			<div class="pay__head">
-				<span class="pay__title">CIERRE DE CAJA</span>
+				<span class="pay__title"><?php esc_html_e( 'REGISTER CLOSE', 'keytill' ); ?></span>
 				<span class="mono pay__hint"><?php esc_html_e( 'cash count', 'keytill' ); ?></span>
-				<span class="mono pay__esc">ESC volver</span>
+				<span class="mono pay__esc"><?php esc_html_e( 'ESC back', 'keytill' ); ?></span>
 			</div>
 
 			<!-- Etapa: formulario de arqueo -->
