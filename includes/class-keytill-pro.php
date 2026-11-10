@@ -144,21 +144,39 @@ class KEYTILL_Pro {
 	}
 
 	/**
-	 * Default mientras no haya proveedor de licencias integrado.
+	 * Estado por defecto de una feature.
 	 *
-	 * Hoy devuelve `true` a propósito: el plugin todavía no se publicó, y un
-	 * default restrictivo rompería la suite e2e y el uso en desarrollo sin que
-	 * eso pruebe nada. Cuando se integre el proveedor, esto consulta la licencia
-	 * y el default pasa a `false`.
+	 * Orden:
 	 *
-	 * Las compuertas YA están aplicadas en el código, así que el cambio es de
-	 * una línea y se puede probar hoy forzando el filtro.
+	 *   1. Si el proveedor de licencias está configurado y disponible, manda él:
+	 *      licencia paga o prueba vigente = PRO.
+	 *   2. Si no lo está, devuelve {@see self::UNLICENSED_DEFAULT}.
+	 *
+	 * El paso 2 es lo que permite desarrollar y correr las suites sin tener que
+	 * montar el proveedor. Ver la constante para por qué hoy está en `true`.
 	 *
 	 * @return bool
 	 */
 	private static function default_state() {
-		return true;
+		if ( class_exists( 'KEYTILL_License' ) && KEYTILL_License::active() ) {
+			return KEYTILL_License::is_paying() || KEYTILL_License::is_trial();
+		}
+		return self::UNLICENSED_DEFAULT;
 	}
+
+	/**
+	 * Qué pasa cuando NO hay proveedor de licencias configurado.
+	 *
+	 * Hoy `true` a propósito: el plugin no se publicó, el proveedor todavía no
+	 * está dado de alta, y un default restrictivo rompería el desarrollo y las
+	 * suites sin probar nada a cambio.
+	 *
+	 * **Antes de publicar esto tiene que pasar a `false`**, para que un sitio sin
+	 * licencia quede en FREE. Las compuertas ya están aplicadas y la suite
+	 * `tools/tests/e2e-free.php` ya prueba ese modo forzándolo por filtro, así
+	 * que el cambio es de una línea y está cubierto.
+	 */
+	const UNLICENSED_DEFAULT = true;
 
 	/**
 	 * Limpia el cache del estado.

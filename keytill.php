@@ -194,7 +194,9 @@ add_action(
  * API REST (namespace keytill/v1)
  * ---------------------------------------------------------------------- */
 // Licencia: todo el gating free/PRO pasa por acá. Va primero porque el resto
-// de los módulos la consulta.
+// de los módulos la consulta. KEYTILL_License es el puente con el proveedor;
+// si no está configurado, KEYTILL_Pro cae a su default y el plugin funciona.
+require_once KEYTILL_DIR . 'includes/class-keytill-license.php';
 require_once KEYTILL_DIR . 'includes/class-keytill-pro.php';
 
 require_once KEYTILL_DIR . 'includes/credit/class-keytill-credit.php';
