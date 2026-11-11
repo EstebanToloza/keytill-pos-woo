@@ -50,9 +50,15 @@ class KEYTILL_Settings {
 		);
 	}
 
-	/** Medios de pago no-efectivo por defecto (además de Efectivo, que es fijo). */
+	/**
+	 * Medios de pago no-efectivo por defecto (además de Efectivo, que es fijo).
+	 *
+	 * Traducibles: es lo que ve quien instala y no configura nada, así que en un
+	 * sitio en inglés tienen que salir en inglés. Una vez que el comercio los
+	 * edita quedan como datos suyos y ya no se traducen, que es lo correcto.
+	 */
 	public static function default_methods() {
-		return array( 'Tarjeta', 'Transferencia', 'QR' );
+		return array( __( 'Card', 'keytill' ), __( 'Bank transfer', 'keytill' ), __( 'QR', 'keytill' ) );
 	}
 
 	/**

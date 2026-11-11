@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Keytill POS\n"
 "Report-Msgid-Bugs-To: https://github.com/EstebanToloza/keytill-pos-woo\n"
-"POT-Creation-Date: 2026-11-10 08:06\n"
+"POT-Creation-Date: 2026-11-10 23:21\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -278,6 +278,9 @@ msgstr ""
 msgid "CASH TO RETURN"
 msgstr ""
 
+msgid "CHANGE"
+msgstr ""
+
 msgid "CODE"
 msgstr ""
 
@@ -318,6 +321,9 @@ msgid "Cash · type what you received"
 msgstr ""
 
 msgid "Cashier"
+msgstr ""
+
+msgid "Cashier: %s"
 msgstr ""
 
 msgid "Cashier: all"
@@ -743,6 +749,12 @@ msgstr ""
 msgid "E.g. birthday gift"
 msgstr ""
 
+msgid "E.g. owner contribution, change float"
+msgstr ""
+
+msgid "E.g. supplier payment"
+msgstr ""
+
 msgid "EMPTY CART"
 msgstr ""
 
@@ -750,6 +762,9 @@ msgid "ENTER to confirm"
 msgstr ""
 
 msgid "ESC back"
+msgstr ""
+
+msgid "EXACT"
 msgstr ""
 
 msgid "Edit product"
@@ -1640,6 +1655,9 @@ msgstr ""
 msgid "SHORT"
 msgstr ""
 
+msgid "SHORT BY"
+msgstr ""
+
 msgid "SKU"
 msgstr ""
 
@@ -1704,6 +1722,9 @@ msgid "Salespeople who serve at the counter. They are selected when confirming a
 msgstr ""
 
 msgid "Salesperson"
+msgstr ""
+
+msgid "Salesperson: %s"
 msgstr ""
 
 msgid "Save"

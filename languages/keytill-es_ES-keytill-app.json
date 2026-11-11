@@ -1,5 +1,5 @@
 {
- "translation-revision-date": "2026-11-10 11:08:34+00:00",
+ "translation-revision-date": "2026-11-11 02:21:35+00:00",
  "generator": "keytill tools/make_json.py",
  "domain": "messages",
  "locale_data": {
@@ -54,6 +54,9 @@
    "Bank transfer": [
     "Transferencia"
    ],
+   "CHANGE": [
+    "VUELTO"
+   ],
    "Camera permission denied. Enable it in the browser and retry.": [
     "Permiso de cámara denegado. Habilitalo en el navegador y reintentá."
    ],
@@ -65,6 +68,9 @@
    ],
    "Cash · type what you received": [
     "Efectivo · tipeá lo recibido"
+   ],
+   "Cashier: %s": [
+    "Cajero: %s"
    ],
    "Choose a method by number · C credit": [
     "Elegí el medio por número · C crédito"
@@ -83,6 +89,9 @@
    ],
    "Choose where each item comes from": [
     "Elegí de dónde descontar cada prenda"
+   ],
+   "Closed": [
+    "Cerrada"
    ],
    "Comped": [
     "Bonificado"
@@ -147,8 +156,17 @@
    "Discount %s%%": [
     "Descuento %s%%"
    ],
+   "E.g. owner contribution, change float": [
+    "Ej. aporte, cambio"
+   ],
+   "E.g. supplier payment": [
+    "Ej. pago proveedor"
+   ],
    "ENTER to confirm": [
     "Enter para confirmar"
+   ],
+   "EXACT": [
+    "EXACTO"
    ],
    "Empty cart: nothing to charge": [
     "Carrito vacío: nada que cobrar"
@@ -228,8 +246,14 @@
    "Nothing left to charge · ENTER confirms": [
     "Sin saldo a cobrar · ENTER confirma"
    ],
+   "OVER": [
+    "SOBRANTE"
+   ],
    "Only the manager can close the register": [
     "Solo el encargado puede cerrar la caja"
+   ],
+   "Open": [
+    "Abrir"
    ],
    "Opening balance of the digital register (first time only):": [
     "Saldo inicial de la caja digital (solo la primera vez):"
@@ -282,6 +306,12 @@
    "Retry the payment": [
     "Reintentá el cobro"
    ],
+   "SHORT": [
+    "FALTANTE"
+   ],
+   "SHORT BY": [
+    "FALTAN"
+   ],
    "Sale": [
     "Venta"
    ],
@@ -296,6 +326,9 @@
    ],
    "Sale not recorded": [
     "Venta no registrada"
+   ],
+   "Salesperson: %s": [
+    "Vendedor: %s"
    ],
    "Store credit": [
     "Crédito en tienda"

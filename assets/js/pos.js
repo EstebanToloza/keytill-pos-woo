@@ -577,7 +577,7 @@
 				return Math.round( ( c - this.session.expected_cash ) * 100 ) / 100;
 			},
 			diffLabel: function ( d ) {
-				return d < 0 ? 'FALTANTE' : ( d > 0 ? 'SOBRANTE' : 'EXACTO' );
+				return d < 0 ? __( 'SHORT', 'keytill' ) : ( d > 0 ? __( 'OVER', 'keytill' ) : __( 'EXACT', 'keytill' ) );
 			},
 			diffClass: function ( d ) {
 				return d < 0 ? 'is-neg' : ( d > 0 ? 'is-pos' : 'is-ok' );

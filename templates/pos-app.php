@@ -398,8 +398,8 @@ if ( $keytill_tax_status ) :
 						<div class="drawer__tags">
 							<span class="origin-tag" :class="'is-' + selected.origin" x-text="selected.origin === 'pos' ? 'POS' : 'Web'"></span>
 							<span class="status-tag" :class="'is-' + selected.status" x-text="selected.status_label"></span>
-							<span class="mono muted" x-show="selected.cashier" x-text="'Cajero: ' + selected.cashier"></span>
-							<span class="mono muted" x-show="selected.seller" x-text="'Vendedor: ' + selected.seller"></span>
+							<span class="mono muted" x-show="selected.cashier" x-text="keytillT( 'Cashier: %s', selected.cashier )"></span>
+							<span class="mono muted" x-show="selected.seller" x-text="keytillT( 'Salesperson: %s', selected.seller )"></span>
 						</div>
 
 						<div class="drawer__cust" x-show="selected.customer.name || selected.customer.doc || selected.customer.email">
@@ -1293,7 +1293,7 @@ if ( $keytill_tax_status ) :
 			<section class="cb__card">
 				<div class="cb__card-head">
 					<span class="cb__card-title"><?php esc_html_e( 'Cash register (cash)', 'keytill' ); ?></span>
-					<span class="cb__badge" :class="cash ? 'is-open' : 'is-closed'" x-text="cash ? 'Abierta' : 'Cerrada'"></span>
+					<span class="cb__badge" :class="cash ? 'is-open' : 'is-closed'" x-text="cash ? keytillT( 'Open' ) : keytillT( 'Closed' )"></span>
 				</div>
 				<template x-if="!cash">
 					<p class="cb__empty mono muted"><?php esc_html_e( 'There is no open cash register. Open it from the Sale screen.', 'keytill' ); ?></p>
@@ -1316,7 +1316,7 @@ if ( $keytill_tax_status ) :
 						<template x-if="(cash.deposits && cash.deposits.length) || (cash.withdrawals && cash.withdrawals.length)">
 							<div class="cb__moves">
 								<template x-for="(d, i) in cash.deposits" :key="'d'+i">
-									<div class="cb__move"><span class="cb__move-in">+ <span x-text="money(d.amount)"></span></span><span class="cb__move-c" x-text="d.concept || 'Ingreso'"></span><span class="mono muted" x-text="d.at"></span></div>
+									<div class="cb__move"><span class="cb__move-in">+ <span x-text="money(d.amount)"></span></span><span class="cb__move-c" x-text="d.concept || keytillT( 'Deposit' )"></span><span class="mono muted" x-text="d.at"></span></div>
 								</template>
 								<template x-for="(w, i) in cash.withdrawals" :key="'w'+i">
 									<div class="cb__move"><span class="cb__move-out">− <span x-text="money(w.amount)"></span></span><span class="cb__move-c" x-text="w.reason || keytillT( 'Withdrawal' )"></span><span class="mono muted" x-text="w.at"></span></div>
@@ -1331,7 +1331,7 @@ if ( $keytill_tax_status ) :
 			<section class="cb__card">
 				<div class="cb__card-head">
 					<span class="cb__card-title"><?php esc_html_e( 'Digital register (bank account)', 'keytill' ); ?></span>
-					<span class="cb__badge" :class="(digital && digital.open) ? 'is-open' : 'is-closed'" x-text="(digital && digital.open) ? 'Abierta' : 'Cerrada'"></span>
+					<span class="cb__badge" :class="(digital && digital.open) ? 'is-open' : 'is-closed'" x-text="(digital && digital.open) ? keytillT( 'Open' ) : keytillT( 'Closed' )"></span>
 				</div>
 				<template x-if="digital && !digital.open">
 					<div>
@@ -1500,7 +1500,7 @@ if ( $keytill_tax_status ) :
 					<input type="text" inputmode="decimal" x-model="move.amount" class="modal__input mono cash-amount" placeholder="0" @keydown.enter="submitMove()" autocomplete="off" />
 				</label>
 				<label class="modal__label"><?php esc_html_e( 'Description', 'keytill' ); ?>
-					<input type="text" x-model="move.concept" class="modal__input" :placeholder="move.kind === 'ingreso' ? 'Ej. aporte, cambio' : 'Ej. pago proveedor'" @keydown.enter="submitMove()" autocomplete="off" />
+					<input type="text" x-model="move.concept" class="modal__input" :placeholder="move.kind === 'ingreso' ? keytillT( 'E.g. owner contribution, change float' ) : keytillT( 'E.g. supplier payment' )" @keydown.enter="submitMove()" autocomplete="off" />
 				</label>
 				<div class="pay__error" x-show="move.error" x-cloak x-text="move.error"></div>
 				<div class="sheet-actions">
@@ -1595,7 +1595,7 @@ if ( $keytill_tax_status ) :
 							x-text="payStage === 'amount' ? (isCash() ? money(recibido()) : money(chargeTotal())) : '—'"></span>
 					</div>
 					<div class="pay__change" x-show="payStage === 'amount' && isCash()" :class="{ 'is-neg': vuelto() < 0 }" x-cloak>
-						<span class="mono" x-text="vuelto() < 0 ? 'FALTAN' : 'VUELTO'"></span>
+						<span class="mono" x-text="vuelto() < 0 ? keytillT( 'SHORT BY' ) : keytillT( 'CHANGE' )"></span>
 						<span class="mono pay__change-value" x-text="money(Math.abs(vuelto()))"></span>
 					</div>
 					<div class="pay__error" x-show="payError" x-cloak x-text="payError"></div>
