@@ -6,6 +6,8 @@
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Esteban Toloza
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       keytill
  * WC requires at least: 8.0
  * WC tested up to:   11.2

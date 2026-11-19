@@ -135,7 +135,12 @@ class KEYTILL_Labels {
 		if ( ! wp_verify_nonce( $nonce, self::BATCH_NONCE ) ) {
 			wp_die( esc_html__( 'The label session expired. Generate the labels again from the POS.', 'keytill' ), 403 );
 		}
-		$items = isset( $_POST['items'] ) && is_array( $_POST['items'] ) ? wp_unslash( $_POST['items'] ) : array();
+		// map_deep sanea cada elemento al leer; mas abajo igual se pasa cada id por
+		// absint() y cada cantidad por int. Doble red, y deja el analisis estatico
+		// sin falsos positivos sobre un array que viene de \$_POST.
+		$items = isset( $_POST['items'] ) && is_array( $_POST['items'] )
+			? map_deep( wp_unslash( $_POST['items'] ), 'sanitize_text_field' )
+			: array();
 		if ( empty( $items ) ) {
 			wp_die( esc_html__( 'You did not select any product to print.', 'keytill' ), 400 );
 		}

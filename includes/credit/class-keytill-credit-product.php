@@ -257,7 +257,7 @@ class KEYTILL_Credit_Product {
 		if ( ! self::is_giftcard( $product ) ) {
 			return $passed;
 		}
-		$amt = isset( $_POST['keytill_giftcard_amount'] ) ? round( (float) wp_unslash( $_POST['keytill_giftcard_amount'] ), 2 ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		$amt = isset( $_POST['keytill_giftcard_amount'] ) ? round( (float) sanitize_text_field( wp_unslash( $_POST['keytill_giftcard_amount'] ) ), 2 ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		if ( $amt <= 0 ) {
 			wc_add_notice( __( 'Choose an amount for the gift card.', 'keytill' ), 'error' );
 			return false;
@@ -282,7 +282,7 @@ class KEYTILL_Credit_Product {
 	 */
 	public static function web_add_cart_item_data( $data, $product_id ) {
 		if ( self::is_giftcard( wc_get_product( $product_id ) ) && isset( $_POST['keytill_giftcard_amount'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$amt = round( (float) wp_unslash( $_POST['keytill_giftcard_amount'] ), 2 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$amt = round( (float) sanitize_text_field( wp_unslash( $_POST['keytill_giftcard_amount'] ) ), 2 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( $amt > 0 ) {
 				$data['keytill_giftcard_amount'] = $amt;
 				// Clave única: dos montos distintos no se fusionan en una línea.

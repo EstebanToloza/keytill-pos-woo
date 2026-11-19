@@ -625,7 +625,7 @@ class KEYTILL_Credit {
 		);
 
 		// Código recién emitido (para mostrarlo destacado tras el redirect).
-		$issued = isset( $_GET['issued'] ) ? self::normalize_code( wp_unslash( $_GET['issued'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$issued = isset( $_GET['issued'] ) ? self::normalize_code( sanitize_text_field( wp_unslash( $_GET['issued'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$issued = ( '' !== $issued && self::get_by_code( $issued ) ) ? $issued : '';
 		?>
 		<div class="wrap">

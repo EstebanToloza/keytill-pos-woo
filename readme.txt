@@ -1,4 +1,4 @@
-=== Keytill POS — Point of Sale for WooCommerce ===
+=== Keytill POS ===
 Contributors: estebantoloza
 Tags: point of sale, pos, woocommerce, cash register, barcode
 Requires at least: 6.0

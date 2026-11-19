@@ -16,11 +16,18 @@ $keytill_brand = KEYTILL_Settings::business()['name'];
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Manual de Mostrador · <?php echo esc_html( $keytill_brand ); ?></title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<title><?php esc_html_e( 'Counter manual', 'keytill' ); ?> · <?php echo esc_html( $keytill_brand ); ?></title>
 <style>
+/* Fuentes propias del plugin, servidas localmente. El manual tenía su propio
+   <head> con enlaces al CDN de Google: WordPress.org no permite recursos
+   externos, y además expone la IP de quien abre la página. Usa las mismas dos
+   familias que el POS, así la tipografía queda coherente y no hay nada que
+   descargar de afuera. */
+@font-face{font-family:'Inter';src:url('<?php echo esc_url( KEYTILL_URL . 'assets/fonts/inter-latin.woff2' ); ?>') format('woff2');font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Inter';src:url('<?php echo esc_url( KEYTILL_URL . 'assets/fonts/inter-latin-ext.woff2' ); ?>') format('woff2');font-weight:100 900;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+@font-face{font-family:'Roboto Mono';src:url('<?php echo esc_url( KEYTILL_URL . 'assets/fonts/roboto-mono-latin.woff2' ); ?>') format('woff2');font-weight:100 700;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Roboto Mono';src:url('<?php echo esc_url( KEYTILL_URL . 'assets/fonts/roboto-mono-latin-ext.woff2' ); ?>') format('woff2');font-weight:100 700;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+
 	:root {
 	--paper:#F4F6F9; --surface:#FFFFFF; --surface-2:#EDF1F7;
 	--ink:#10192A; --ink-soft:#45526A; --ink-faint:#8291A6;
@@ -31,9 +38,9 @@ $keytill_brand = KEYTILL_Settings::business()['name'];
 	--danger:#B4362B; --danger-bg:#FBE7E4; --danger-line:#F0C1BB;
 	--key-face:#FFFFFF; --key-edge:#B9C3D3; --key-ink:#1B2740;
 	--shadow:0 1px 2px rgba(16,25,42,.06),0 8px 24px rgba(16,25,42,.06);
-	--font-display:'Archivo',system-ui,sans-serif;
-	--font-body:'IBM Plex Sans',system-ui,sans-serif;
-	--font-mono:'IBM Plex Mono',ui-monospace,monospace;
+	--font-display:'Inter',system-ui,sans-serif;
+	--font-body:'Inter',system-ui,sans-serif;
+	--font-mono:'Roboto Mono',ui-monospace,monospace;
 	color-scheme:light dark;
 	}
 	@media (prefers-color-scheme:dark){

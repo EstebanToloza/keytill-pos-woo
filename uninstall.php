@@ -84,7 +84,6 @@ function keytill_uninstall_site() {
 				'post_status'      => 'any',
 				'numberposts'      => -1,
 				'fields'           => 'ids',
-				'suppress_filters' => true,
 			)
 		);
 		foreach ( $ids as $id ) {
