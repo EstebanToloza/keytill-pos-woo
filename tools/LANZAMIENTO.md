@@ -1,6 +1,6 @@
 # Lanzamiento: lo que falta y en qué orden
 
-Estado al 9-nov-2026. Lo que está hecho no se repite acá; esto es la lista de lo
+Estado al 18-nov-2026. Lo que está hecho no se repite acá; esto es la lista de lo
 que **no puedo hacer yo** y lo que queda pendiente, con el motivo.
 
 ---
@@ -106,5 +106,5 @@ En las dos, la arquitectura ya sirve: `KEYTILL_License` está aislada y
 
 Los puntos 1 y 2 son los únicos que no puedo hacer yo. El resto, cuando digas.
 
-El paso 9 aprovecha la única latencia del proceso: la cola de revisión de
+El paso 7 aprovecha la única latencia del proceso: la cola de revisión de
 WordPress.org no la controlás, todo lo demás sí.
