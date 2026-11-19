@@ -9,11 +9,11 @@ que **no puedo hacer yo** y lo que queda pendiente, con el motivo.
 
 ### WordPress.org
 
-| Qué | Dónde aparece | Por qué no lo puedo hacer |
-|---|---|---|
-| **Usuario de WordPress.org** | `readme.txt` → `Contributors:` | Hoy dice `estebantoloza`, que me inventé. Tiene que ser tu usuario real o el submit no te identifica como autor. |
-| **Verificar el slug `keytill`** | La URL será `wordpress.org/plugins/keytill` | Se reclama al hacer el submit. Si está tomado, hay que elegir otro y renombrar el text-domain. |
-| **6 capturas de pantalla** | La sección `Screenshots` ya las describe | Van como `assets/screenshot-1.png` … `-6.png` **en el repo SVN de .org**, no en el zip del plugin. |
+| Qué | Estado |
+|---|---|
+| **Usuario de WordPress.org** | ✅ `estebantoloza`, confirmado (el perfil existe). Ya está en `readme.txt` → `Contributors:`. |
+| **Slug `keytill`** | ✅ **Libre** (verificado 18-nov-2026 contra la API de plugins: *Plugin not found*). Se reclama al hacer el submit — quien lo pida primero se lo queda. |
+| **6 capturas de pantalla** | ✅ Generadas, en `.wordpress-org/`. Al hacer el submit van al repo SVN de .org, en su carpeta `assets/` — **no** en el zip del plugin. |
 
 ### Freemius
 
@@ -98,13 +98,13 @@ En las dos, la arquitectura ya sirve: `KEYTILL_License` está aislada y
 
 1. Decidir A o B (arriba).
 2. Dar de alta el producto en Freemius y definir precios.
-3. Generar las 6 capturas.
-4. Poner el usuario real de WordPress.org en `Contributors`.
-5. Ajustar el FAQ del readme si va la opción A.
-6. Pasar `UNLICENSED_DEFAULT` a `false`.
-7. Correr las dos suites por última vez (`e2e-pos` y `e2e-free`).
-8. Armar el zip respetando `.distignore` y hacer el submit.
-9. Mientras espera la revisión, construir PRO.
+3. Ajustar el FAQ del readme si va la opción A.
+4. Pasar `UNLICENSED_DEFAULT` a `false`.
+5. Correr las dos suites por última vez (`e2e-pos` y `e2e-free`).
+6. Armar el zip respetando `.distignore` y hacer el submit.
+7. Mientras espera la revisión, construir PRO.
+
+Los puntos 1 y 2 son los únicos que no puedo hacer yo. El resto, cuando digas.
 
 El paso 9 aprovecha la única latencia del proceso: la cola de revisión de
 WordPress.org no la controlás, todo lo demás sí.
