@@ -15,7 +15,32 @@ que **no puedo hacer yo** y lo que queda pendiente, con el motivo.
 | **Slug `keytill`** | ✅ **Libre** (verificado 18-nov-2026 contra la API de plugins: *Plugin not found*). Se reclama al hacer el submit — quien lo pida primero se lo queda. |
 | **6 capturas de pantalla** | ✅ Generadas, en `.wordpress-org/`. Al hacer el submit van al repo SVN de .org, en su carpeta `assets/` — **no** en el zip del plugin. |
 
-### Freemius
+### Freemius — ✅ HECHO Y VERIFICADO
+
+Producto `45553`, slug `keytill`. Plan PRO `80241` publicado, trial de 14 días
+sin tarjeta, tres escalones (1 / 5 / ilimitado) a 99 / 249 / 499 por año.
+SDK vendorizado en `vendor/freemius`. Sitio de prueba registrado
+(install `20918828`) y el trial probado de punta a punta:
+
+- Con trial activo: **7/7 compuertas abiertas**.
+- Al vencer: **7/7 cerradas**, devolver a crédito da `keytill_pro_required`,
+  pero devolver en efectivo sigue funcionando.
+- **Los códigos de gift card ya emitidos siguen canjeándose sin licencia**, con
+  su saldo intacto. Es la regla que no se negocia y quedó comprobada contra una
+  licencia real.
+
+Detalle que importó: con el trial, `is_paying()` es **false** y `is_trial()` es
+true. Si la condición fuera solo `is_paying()`, ningún usuario en prueba vería
+las funciones PRO. Por eso es `is_paying() || is_trial()`.
+
+Quedan dos cosas del panel, no del código:
+- **Support del plan PRO**: hoy dice "Forum Support" y el FAQ genera
+  *"extra support is currently not provided"* en una página donde alguien está
+  por pagar 99 dólares. Hay que poner Email.
+- **Refund Policy**: hoy es "no refunds". Conviene 14 días, que coincide con
+  el trial y baja el riesgo percibido.
+
+<details><summary>Referencia: los datos del panel</summary>
 
 Hay que dar de alta el producto en su panel y anotar tres datos:
 
@@ -44,6 +69,8 @@ Con eso, la integración ya está escrita y solo hay que:
 Mientras falte cualquiera de las dos, `KEYTILL_License::active()` devuelve
 `false`, `KEYTILL_Pro` cae a su default y **el plugin funciona igual**. Eso no es
 por las dudas: el zip que se publica tiene que poder correr sin el SDK.
+
+</details>
 
 ---
 
