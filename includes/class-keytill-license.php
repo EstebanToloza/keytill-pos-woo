@@ -74,6 +74,23 @@ class KEYTILL_License {
 	}
 
 	/**
+	 * Arranca el SDK. Se llama una sola vez, al cargar el plugin.
+	 *
+	 * Va temprano a propósito: el SDK se engancha a `admin_menu` para registrar
+	 * sus pantallas (precios, cuenta) y para mostrar el opt-in. Si se inicializa
+	 * tarde —por ejemplo la primera vez que alguien consulta la licencia— esos
+	 * hooks ya pasaron y no registra nada.
+	 *
+	 * Además dispara `keytill_fs_loaded`, que es la señal que espera el
+	 * ecosistema de Freemius para engancharse.
+	 */
+	public static function boot() {
+		if ( self::sdk() ) {
+			do_action( 'keytill_fs_loaded' );
+		}
+	}
+
+	/**
 	 * ¿Está el proveedor configurado Y disponible?
 	 *
 	 * @return bool

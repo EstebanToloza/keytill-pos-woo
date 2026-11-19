@@ -199,6 +199,7 @@ add_action(
 require_once KEYTILL_DIR . 'includes/class-keytill-license.php';
 require_once KEYTILL_DIR . 'includes/class-keytill-pro.php';
 
+
 require_once KEYTILL_DIR . 'includes/credit/class-keytill-credit.php';
 KEYTILL_Credit::init();
 
@@ -237,6 +238,18 @@ KEYTILL_REST::init();
 
 require_once KEYTILL_DIR . 'includes/class-keytill-settings.php';
 KEYTILL_Settings::init();
+
+// El SDK de licencias se arranca acá: necesita KEYTILL_Settings::MENU para
+// colgar sus pantallas, y tiene que estar vivo antes de que dispare
+// `admin_menu` para registrarlas (precios, cuenta) y mostrar el opt-in.
+//
+// No se puede hacer perezoso —arrancarlo cuando alguien consulta la licencia—
+// porque para entonces esos hooks ya pasaron: el SDK no registra nada y
+// upgrade_url() apunta a una página que no existe.
+//
+// Sigue degradando: sin el SDK vendorizado o sin credenciales, sdk() devuelve
+// null y el plugin funciona igual.
+KEYTILL_License::boot();
 
 require_once KEYTILL_DIR . 'includes/class-keytill-sellers.php';
 KEYTILL_Sellers::init();
