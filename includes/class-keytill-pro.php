@@ -167,14 +167,13 @@ class KEYTILL_Pro {
 	/**
 	 * Qué pasa cuando NO hay proveedor de licencias configurado.
 	 *
-	 * Hoy `true` a propósito: el plugin no se publicó, el proveedor todavía no
-	 * está dado de alta, y un default restrictivo rompería el desarrollo y las
-	 * suites sin probar nada a cambio.
+	 * Desde que el SDK está vendorizado esto casi no se usa: el proveedor
+	 * responde y manda él. Solo aplica si alguien corre el plugin con la carpeta
+	 * `vendor/freemius` borrada.
 	 *
-	 * **Antes de publicar esto tiene que pasar a `false`**, para que un sitio sin
-	 * licencia quede en FREE. Las compuertas ya están aplicadas y la suite
-	 * `tools/tests/e2e-free.php` ya prueba ese modo forzándolo por filtro, así
-	 * que el cambio es de una línea y está cubierto.
+	 * Queda en `true` para ese caso: un desarrollador que trabaja sin el SDK ve
+	 * el producto completo. Un sitio real sí tiene el SDK, así que sin licencia
+	 * paga queda en FREE, que es lo que corresponde.
 	 */
 	const UNLICENSED_DEFAULT = true;
 

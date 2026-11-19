@@ -13,6 +13,10 @@
  * Requisitos del sitio: WooCommerce activo, Keytill activo, productos demo
  * cargados (`wp keytill seed-demo`) y los usuarios cajero1 / encargado1.
  *
+ * Fuerza el modo PRO por filtro: con el SDK de licencias integrado y sin una
+ * licencia paga, las compuertas se cierran solas. Su contraparte es
+ * tools/tests/e2e-free.php, que fuerza el modo gratuito.
+ *
  * DESTRUCTIVO: borra todas las ordenes y sesiones de caja del sitio antes de
  * arrancar. Correr SOLO en un sitio de pruebas dedicado.
  *
@@ -103,6 +107,22 @@ if ( ! $cajero || ! $encargado ) {
 	echo "FALTAN los usuarios cajero1 / encargado1\n";
 	return;
 }
+
+// Modo PRO explicito. Hace falta desde que el SDK de licencias esta integrado:
+// sin una licencia paga real, KEYTILL_Pro cierra las 7 compuertas, que es el
+// comportamiento correcto. Esta suite prueba el POS COMPLETO, asi que fuerza
+// las features por filtro igual que e2e-free.php fuerza lo contrario.
+add_filter(
+	'keytill_pro_features',
+	function ( $state ) {
+		foreach ( $state as $k => $_ ) {
+			$state[ $k ] = true;
+		}
+		return $state;
+	},
+	99
+);
+KEYTILL_Pro::flush();
 
 kt_reset();
 do_action( 'rest_api_init' );
