@@ -1,0 +1,45 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: 'Inter';
+    src: url('file:///Users/estebantoloza/Trabajo/ProWebsite/keytill/assets/fonts/inter-latin.woff2') format('woff2');
+    font-weight: 100 900;
+    font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 300px; height: 300px; background: transparent; }
+
+  .icon {
+    width: 300px; height: 300px;
+    background: #00255A;              /* navy de marca */
+    border-radius: 66px;              /* proporcion de icono de app */
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+
+  /* La tecla: cuerpo claro + canto inferior, que es lo que la lee como fisica. */
+  .cap {
+    width: 168px; height: 168px;
+    border-radius: 34px;
+    background: #FFFFFF;
+    position: relative;
+    /* el canto: sombra solida abajo, no difusa, para que aguante a 32px */
+    box-shadow: 0 14px 0 0 #3CD39C;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;              /* compensa el canto para centrar el conjunto */
+  }
+
+  .k {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 108px;
+    line-height: 1;
+    color: #00255A;
+    letter-spacing: -0.04em;
+    margin-top: -4px;                 /* centrado optico de la K */
+  }
+</style>
+<div class="icon">
+  <div class="cap"><span class="k">K</span></div>
+</div>
